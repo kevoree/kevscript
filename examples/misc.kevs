@@ -1,0 +1,19 @@
+set a.b = '12'
+
+let configuration {
+    cool: "we''
+                    sh"
+    foo: 'bar'
+}
+
+add {dotnetNode} : DotnetNode/1.0.4
+add $mainGroup : WSGroup/5.3.1
+add node0 : JavaNode
+set {dotnetNode}.ticker.period = "hello
+word"
+attach {group} [{dotnetNode}, {javaNode}, {jsNode}]
+detach node0 identifier1
+detach node2 [elem1, {elem2}]
+bind {chanDotnet2js} [{jsNode}.console.input, {dotnetNode}.ticker.tick]
+
+add node0: JavaNode

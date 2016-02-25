@@ -21,7 +21,7 @@ identifier_list :  LIST_START identifier (LIST_SEP identifier)* LIST_END ;
 assignable : string | identifier;
 string : SQ_STRING | DQ_STRING ; // TODO : escaping quotes in strings. keeping link break in text ok string values
 identifier : (ID | BLOCK_START ID BLOCK_END | GENERATED_START ID) (VAR_SEP ID)* ;
-type : ID (VERSION_SEP VERSION)?;
+type : ID (VERSION_SEP VERSION(VERSION_SEP VERSION)?)?;
 
 ASSIGN_SEPARATOR: '=' ;
 KEYVAL_SEPARATOR : ':' ;

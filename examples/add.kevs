@@ -1,0 +1,3 @@
+add node0: JavaNode
+add {dotnetNode} : DotnetNode/1.0.4
+add $whatIsMyName: JsNode/1.0.0/2.3.8
