@@ -1,118 +1,52 @@
 grammar KevScript;
 
-// entry point
-kevscript
-    :
-    (   addStmt
-    |   setStmt
-    |   repoStmt
-    |   attachStmt
-    |   detachStmt
-    |   bindStmt
-    |   unbindStmt
-    |   moveStmt
-    |   removeStmt
-    |   networkStmt
-    |   includeStmt
-    |   startStmt
-    |   stopStmt
-    |   pauseStmt
-    )* COMMENT* EOF
-    ;
+/**
+ * add package on TD
+ * dealing with DU ?
+ * network conf ?
+ * how to deal with repository configuration (maven, npm, nuget private repo & co) ?
+ * allowing list definition in let elements ?
+*/
 
-// statement rules
-addStmt
-    :   ADD declList ':' ID ('.' ID)* ('/' SEMVER)?
-    ;
-setStmt
-    :   SET ID '.' ID ('.' ID)? ('/' identifier)? '=' (SQ_STRING | DQ_STRING)
-    ;
-repoStmt
-    :   REPO ADDRESS
-    ;
-attachStmt
-    :   ATTACH instanceList identifier
-    ;
-detachStmt
-    :   DETACH instanceList identifier
-    ;
-bindStmt
-    :   BIND triplePath identifier
-    ;
-unbindStmt
-    :   UNBIND triplePath identifier
-    ;
-moveStmt
-    :   MOVE instanceList identifier
-    ;
-removeStmt
-    :   REMOVE instanceList
-    ;
-networkStmt
-    :   NETWORK triplePath
-    ;
-includeStmt
-    :   INCLUDE ID ':'  (':' STRING_2)? (':' SEMVER)?
-    ;
-startStmt
-    :   START instanceList
-    ;
-stopStmt
-    :   STOP instanceList
-    ;
-pauseStmt
-    :   PAUSE instanceList
-    ;
+script : (add|set|attach|bind|detach|unbind|define)+ ;
+add : ADD identifier KEYVAL_SEPARATOR type ;
+set : SET identifier ASSIGN_SEPARATOR assignable ;
+attach : ATTACH identifier (identifier_list | identifier) ;
+detach : DETACH identifier (identifier_list | identifier) ;
+bind : BIND identifier (identifier_list | identifier) ;
+unbind : UNBIND identifier (identifier_list | identifier) ;
+define : DEFINE_TOKEN ID BLOCK_START (ID KEYVAL_SEPARATOR assignable)* BLOCK_END ;
 
-// shared rules
-identifier
-    :   ID
-    |   '*'
-    ;
-instanceList
-    :   instance (',' instance)*
-    ;
-declList
-    :   declInstance (',' declInstance)*
-    ;
-instance
-    :   identifier ('.' identifier)*
-    ;
-declInstance
-    :   ID ('.' ID)*
-    ;
-triplePath
-    :   ID '.' ID '.' ID;
+identifier_list :  LIST_START identifier (LIST_SEP identifier)* LIST_END ;
+assignable : string | identifier;
+string : SQ_STRING | DQ_STRING ; // TODO : escaping quotes in strings. keeping link break in text ok string values
+identifier : (ID | BLOCK_START ID BLOCK_END | GENERATED_START ID) (VAR_SEP ID)* ;
+type : ID (VERSION_SEP VERSION)?;
 
-// KevScript tokens
-ADD:     'add';
-SET:     'set';
-REPO:    'repo';
-ATTACH:  'attach';
-DETACH:  'detach';
-BIND:    'bind';
-UNBIND:  'unbind';
-MOVE:    'move';
-REMOVE:  'remove';
-NETWORK: 'network';
-INCLUDE: 'include';
-START:   'start';
-STOP:    'stop';
-PAUSE:   'pause';
-
-SEMVER
-    :   ('0'|[1-9][0-9]*)'.'('0'|[1-9][0-9]*)'.'('0'|[1-9][0-9]*)('-'[0-9a-zA-Z\-]+('.'[0-9a-zA-Z\-]+)*)?('+'[0-9A-Za-z\-]+('.'[0-9a-zA-Z\-]+)*)?;
-ID
-    :   [a-zA-Z][a-zA-Z0-9_]+;
-ADDRESS
-    :   ('"' ~[\r\n]* '"')|('\'' ~[\r\n]* '\'');
-fragment STRING_2
-    :   [a-zA-Z0-9.%@_-]+;
-SQ_STRING
-    :   '\'' .*? '\'';
-DQ_STRING
-    :   '"' .*? '"';
-WS
-    :   [ \t\r\n]+ -> skip;
-COMMENT
-    :   [ \t]* '//' ~[\r\n]* -> skip;
+ASSIGN_SEPARATOR: '=' ;
+KEYVAL_SEPARATOR : ':' ;
+LIST_START : '[' ;
+LIST_SEP : ',' ;
+LIST_END : ']' ;
+BLOCK_START : '{' ;
+BLOCK_END : '}' ;
+VAR_SEP : '.' ;
+GENERATED_START : '$' ;
+VERSION_SEP : '/' ;
+ADD : 'add';
+SET : 'set' ;
+DETACH : 'detach' ;
+ATTACH : 'attach' ;
+BIND : 'bind' ;
+UNBIND : 'unbind' ;
+DEFINE_TOKEN : 'let' ;
+ID : [a-zA-Z_][a-zA-Z0-9_-]* ;
+VERSION : [0-9]+('.'[0-9]+('.'[0-9]+)?)? ;
+SQ_STRING : '\'' .*? '\'';
+DQ_STRING : '"' .*? '"';
+STRING  : DQUOTE ( STR_TEXT | EOL )* DQUOTE ;
+fragment STR_TEXT: ( ~["\r\n\\] | ESC_SEQ )+ ;
+fragment ESC_SEQ : '\\' ( [btf"\\] | EOF ) ;
+fragment DQUOTE  : '"' ;
+fragment EOL     : '\r'? '\n' ;
+WS : [ \t\r\n]+ -> skip;
