@@ -11,9 +11,10 @@ basic_operation
     | detach
     | unbind
     | define
+    | function_call
     ;
 add
-    : ADD identifier KEYVAL_SEPARATOR type
+    : ADD root_identifiers KEYVAL_SEPARATOR type
     ;
 set
     : SET identifier ASSIGN_SEPARATOR assignable
@@ -33,6 +34,14 @@ unbind
 define
     : DEFINE_TOKEN ID ASSIGN_SEPARATOR value
     ;
+function_call
+    : ID '(' parameters ')'
+    ;
+
+parameters
+    : ((basic_identifier | string) ',') * (basic_identifier | string)
+    | (basic_identifier | string)
+    ;
 
 value :
     BLOCK_START (ID KEYVAL_SEPARATOR assignable)* BLOCK_END
@@ -42,12 +51,14 @@ value :
 
 parameter: ID;
 function
-    : FUNCTION '(' (parameter (',' parameter)*)? ')' BLOCK_START basic_operation* BLOCK_END
+    : FUNCTION ID '(' (parameter (',' parameter)*)? ')' BLOCK_START basic_operation* BLOCK_END
     ;
 
-
 identifier_list
-    :  LIST_START identifier (LIST_SEP identifier)* LIST_END
+    :  LIST_START identifiers LIST_END
+    ;
+identifiers
+    : identifier (LIST_SEP identifier)*
     ;
 assignable
     : string
@@ -56,12 +67,20 @@ assignable
 string
     : SQ_STRING
     | DQ_STRING
-    ; // TODO : escaping quotes in strings. keeping link break in text ok string values
+    ;
 basic_identifier
     : ID
     ;
+root_identifier
+    : basic_identifier
+    | (basic_identifier | BLOCK_START basic_identifier BLOCK_END)
+    ;
+root_identifiers
+    : (root_identifier ',')* root_identifier
+    | root_identifier
+    ;
 identifier
-    : (basic_identifier | BLOCK_START basic_identifier BLOCK_END) (VAR_SEP basic_identifier)*
+    : root_identifier (VAR_SEP basic_identifier)*
     ;
 type
     : (ID '.')*ID (VERSION_SEP VERSION(VERSION_SEP VERSION)?)?
