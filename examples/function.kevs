@@ -1,0 +1,6 @@
+function() {}
+function(a) {}
+function(a, b) {
+    add node0: JS
+    bind node0.a [a,b,c,d]
+}

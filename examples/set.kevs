@@ -1,0 +1,4 @@
+add node0: JavaNode
+set node0.param = "1"
+let variable = "hello"
+set node0.vue = variable
