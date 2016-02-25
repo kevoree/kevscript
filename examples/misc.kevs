@@ -1,19 +1,43 @@
-set a.b = '12'
-
-let configuration {
-    cool: "we''
-                    sh"
-    foo: 'bar'
+function configureChan(chan, uuid, host, path) {
+  set chan.uuid = uuid
+  set chan.host = host
+  set chan.path = path
 }
 
-add {dotnetNode} : DotnetNode/1.0.4
-add $mainGroup : WSGroup/5.3.1
-add node0 : JavaNode
-set {dotnetNode}.ticker.period = "hello
-word"
-attach {group} [{dotnetNode}, {javaNode}, {jsNode}]
-detach node0 identifier1
-detach node2 [elem1, {elem2}]
-bind {chanDotnet2js} [{jsNode}.console.input, {dotnetNode}.ticker.tick]
+function defineCluster(group, dotnetNode, javaNode, jsNode, delay, path, host) {
+  add dotnetNode.ticker, javaNode.ticker, jsNode.ticker : Ticker/5.3.1
+  add dotnetNode.{console1}, javaNode.console, jsNode.console : ConsolePrinter/5.3.1
+  add {chanJava2dotnet}, {chanDotnet2js}, {chanJs2java} : RemoteWSChan/5.3.1
 
-add node0: JavaNode
+  attach group [dotnetNode, javaNode, jsNode]
+
+  bind chanJava2dotnet [dotnetNode.console.input, javaNode.ticker.tick]
+  bind chanJs2java [javaNode.console.input, jsNode.ticker.tick]
+  bind chanDotnet2js [jsNode.console.input, dotnetNode.ticker.tick]
+
+  set dotnetNode.ticker.period = delay
+
+  configureChan(chanJava2dotnet, uuid1, host, path)
+  configureChan(chanJs2java, uuid2, host, path)
+  configureChan(chanDotnet2js, uuid3, host, path)
+}
+
+
+add {mainGroup} : WSGroup/5.3.1/1.0.3
+
+let configuration = {
+  host: "ws.kevoree.org",
+  value: {
+    key: {test}
+  }
+}
+
+defineCluster(mainGroup, dotnetNode, javaNode, jsNode, value.delay, value.path, configuration.host)
+
+for (index, value) in [{delay: '1', path: 'clusterPath' },{delay: '2'}, {delay:'3'}, "1", a] {
+  add {dotnetNode} : DotnetNode/1.0.4
+  add {javaNode} : JavaNode/5.3.1
+  add {jsNode} : JavascriptNode/5.3.3
+  let randomValue = "prefix" + {generatedName}
+  defineCluster(mainGroup, dotnetNode, javaNode, jsNode, value.delay, value.path, configuration.host, "knownnalme" + {random})
+}
