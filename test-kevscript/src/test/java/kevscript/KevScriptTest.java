@@ -1,11 +1,11 @@
-package org.kevoree.kevscript;
+package kevscript;
 
 import org.antlr.v4.runtime.*;
 import org.junit.Test;
 
 import java.io.InputStream;
 
-public class TestKevScript {
+public class KevScriptTest {
 
     private void tester(InputStream is) throws Exception {
         KevScriptLexer l = new KevScriptLexer(new ANTLRInputStream(is));
@@ -16,11 +16,12 @@ public class TestKevScript {
                 throw new IllegalStateException("failed to parse at line " + line + ":" + charPositionInLine + " due to " + msg, e);
             }
         });
-        p.kevscript();
+        p.script();
     }
 
     @Test
     public void testMain() throws Exception {
+        System.out.println("Hullooo");
         tester(getClass().getResourceAsStream("/main.kevs"));
     }
 

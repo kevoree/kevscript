@@ -48,25 +48,21 @@ define
     : DEFINE_TOKEN varName=identifier ASSIGN_SEPARATOR val=assignable
     ;
 function_call
-    : ID '(' assignables ')'
+    : ID LBRACKET assignables RBRACKET
     ;
 loop
-    : 'for' '(' index=identifier ',' val=identifier ')' 'in'
-    '[' assignables ']'
-    '{' basic_operation* '}'
+    : FOR RBRACKET index=identifier COMMA val=identifier LBRACKET IN
+    LIST_START assignables LIST_END
+    BLOCK_START basic_operation* BLOCK_END
     ;
-
 object :
-    BLOCK_START (keyAndValue ',')* keyAndValue BLOCK_END
+    BLOCK_START (keyAndValue COMMA)* keyAndValue BLOCK_END
     ;
 keyAndValue
     : identifier KEYVAL_SEPARATOR assignable
     ;
-
-parameter
-    : ID;
 function
-    : FUNCTION functionName=identifier '(' (parameter (',' parameter)*)? ')' BLOCK_START basic_operation* BLOCK_END
+    : FUNCTION functionName=identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* BLOCK_END
     ;
 
 identifier_list
@@ -80,10 +76,10 @@ assignable
     | identifier
     | object
     | BLOCK_START identifier BLOCK_END
-    | assignable '+' assignable
+    | assignable CONCAT assignable
     ;
 assignables
-    : (assignable ',')* assignable
+    : (assignable COMMA)* assignable
     | assignable
     ;
 string
@@ -94,19 +90,19 @@ basic_identifier
     : ID
     ;
 left_hand_identifier
-    : basic_identifier ('.' basic_identifier) ?
-    | basic_identifier ('.' BLOCK_START basic_identifier BLOCK_END) ?
+    : basic_identifier (VAR_SEP basic_identifier) ?
+    | basic_identifier (VAR_SEP BLOCK_START basic_identifier BLOCK_END) ?
     | BLOCK_START basic_identifier BLOCK_END
     ;
 left_hand_identifiers
-    : (left_hand_identifier ',')* left_hand_identifier
+    : (left_hand_identifier COMMA)* left_hand_identifier
     | left_hand_identifier
     ;
 identifier
     : basic_identifier (VAR_SEP basic_identifier)*
     ;
 type
-    : (ID '.')*ID (VERSION_SEP VERSION(VERSION_SEP VERSION)?)?
+    : (ID VAR_SEP)*ID (VERSION_SEP VERSION(VERSION_SEP VERSION)?)?
     ;
 
 ASSIGN_SEPARATOR
@@ -181,6 +177,12 @@ SQ_STRING
 DQ_STRING
     : '"' .*? '"'
     ;
+COMMA : ',' ;
+FOR : 'for' ;
+RBRACKET : ')' ;
+LBRACKET : '(' ;
+IN : 'in' ;
+CONCAT : '+' ;
 WS
     : [ \t\r\n]+ -> skip
     ;
