@@ -23,5 +23,7 @@ List of missing features :
  ```
  
  * network conf ?
- * how to deal with repository configuration (maven, npm, nuget private repo & co) ? To me it is node related, not kevscript related
+ * how to deal with repository configuration (maven, npm, nuget private repo & co) ?
+   * **@manuelleduc**: to me it is node related, not kevscript related
+   * **@maxleiko**: One might want to dinamically add an external repository @runtime so we have to be able to express it in Kevscript
  * allowing list definition in let elements ? did not found a usecase yet
