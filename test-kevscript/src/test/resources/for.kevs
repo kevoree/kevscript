@@ -1,0 +1,14 @@
+/* simple iterator only */
+for (itt in [{}]) {
+
+}
+
+/* simple loop with index and iterator */
+for (k, l in [a]) {
+
+}
+
+/* simple loop with a few instructions */
+for (k, l in [{a:"3"}, {a:'4'}]) {
+    set n.a = l.a
+}

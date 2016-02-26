@@ -13,12 +13,25 @@ basic_operation
     | bind
     | detach
     | unbind
-    | define
+    | let
     | function_call
-    | loop
+    | for_loop
+    | netinit
+    | netmerge
+    | netremove
     ;
 add
-    : ADD left_hand_identifiers KEYVAL_OP typeDef=type
+    : ADD left_add_definitions KEYVAL_OP typeDef=type
+    ;
+left_add_definitions
+    : (left_add_definition COMMA)* left_add_definition
+    | left_add_definition
+    ;
+left_add_definition
+    : short_identifier (ASSIGN_OP (string|special_internal_operation))?
+    ;
+special_internal_operation
+    : '@' short_identifier LBRACKET RBRACKET
     ;
 remove
     : REMOVE left_hand_identifiers
@@ -30,44 +43,54 @@ stop
     : STOP left_hand_identifiers
     ;
 set
-    : SET key=identifier ASSIGN_OP val=assignable
+    : SET key=long_identifier ASSIGN_OP val=assignable
     ;
 attach
-    : ATTACH groupId=identifier nodes=identifier+
+    : ATTACH groupId=long_identifier nodes=long_identifier+
     ;
 detach
-    : DETACH groupId=identifier nodes=identifier+
+    : DETACH groupId=long_identifier nodes=long_identifier+
     ;
 bind
-    : BIND chan=identifier nodes=identifier+
+    : BIND chan=long_identifier nodes=long_identifier+
     ;
 unbind
-    : UNBIND chan=identifier nodes=identifier+
+    : UNBIND chan=long_identifier nodes=long_identifier+
     ;
-define
-    : DEFINE_TOKEN varName=identifier ASSIGN_OP val=assignable
+let
+    : DEFINE_TOKEN varName=long_identifier ASSIGN_OP val=assignable
     ;
 function_call
     : ID LBRACKET assignables? RBRACKET
     ;
-loop
-    : FOR LBRACKET index=basic_identifier COMMA val=basic_identifier IN LSQUARE_BRACKET assignables RSQUARE_BRACKET RBRACKET BLOCK_START basic_operation* BLOCK_END
+for_loop
+    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET assignables RSQUARE_BRACKET RBRACKET BLOCK_START basic_operation* BLOCK_END
+    ;
+netinit
+    : NETINIT short_identifier object
+    ;
+netmerge
+    : NETMERGE short_identifier object
+    ;
+netremove
+    : NETREMOVE short_identifier long_identifier+
     ;
 object :
     BLOCK_START ((keyAndValue COMMA)* keyAndValue)? BLOCK_END
     ;
 keyAndValue
-    : identifier KEYVAL_OP assignable
+    : long_identifier KEYVAL_OP assignable
     ;
 function
-    : FUNCTION functionName=identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* BLOCK_END
+    : FUNCTION functionName=long_identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* BLOCK_END
     ;
 assignable
     : string
-    | identifier
+    | long_identifier
     | object
-    | BLOCK_START identifier BLOCK_END
+    | BLOCK_START long_identifier BLOCK_END
     | assignable CONCAT assignable
+    | special_internal_operation
     ;
 assignables
     : (assignable COMMA)* assignable
@@ -77,23 +100,23 @@ string
     : SQ_STRING
     | DQ_STRING
     ;
-basic_identifier
+short_identifier
     : ID
     ;
 left_hand_identifier
-    : basic_identifier (DOT basic_identifier) ?
-    | basic_identifier (DOT BLOCK_START basic_identifier BLOCK_END) ?
-    | BLOCK_START basic_identifier BLOCK_END
+    : short_identifier (DOT short_identifier) ?
+    | short_identifier (DOT BLOCK_START short_identifier BLOCK_END) ?
+    | BLOCK_START short_identifier BLOCK_END
     ;
 left_hand_identifiers
     : (left_hand_identifier COMMA)* left_hand_identifier
     | left_hand_identifier
     ;
-identifier
-    : basic_identifier (DOT basic_identifier)*
+long_identifier
+    : short_identifier (DOT short_identifier)*
     ;
 type
-    : (ID DOT)? ID (VERSION_SEP VERSION  (object|identifier)?)?
+    : (ID DOT)? ID (VERSION_SEP NUMERIC_VALUE  (object|long_identifier)?)?
     ;
 ASSIGN_OP
     : '='
@@ -161,12 +184,9 @@ DEFINE_TOKEN
 FUNCTION
     : 'function'
     ;
-ID
-    : [a-zA-Z_][a-zA-Z0-9_-]*
-    ;
-VERSION
-    : NUMERIC_VALUE
-    ;
+NETINIT : 'net-init' ;
+NETMERGE : 'net-merge' ;
+NETREMOVE : 'net-remove' ;
 SQ_STRING
     : '\'' .*? '\''
     ;
@@ -190,6 +210,9 @@ CONCAT
     ;
 NUMERIC_VALUE
     : [0-9]+
+    ;
+ID
+    : [a-zA-Z_][a-zA-Z0-9_-]*
     ;
 WS
     : [ \t\r\n]+ -> skip

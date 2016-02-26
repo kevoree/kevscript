@@ -1,10 +1,11 @@
 /* pre comment */
 add node0: JavaNode
-add {id1} : DotnetNode/1 // end of line comment
-add {whatIsMyName}: JsNode/1 {java: {name: "test", version: "12"}}
-add node0, {node1}: DotnetNode
+add id1 : DotnetNode/1 // end of line comment
+add whatIsMyName: JsNode/1 {java: {name: "test", version: "12"}}
+add node0="ok", node1: DotnetNode
 
 
 // start of line comment
 add node0: non.NewNode/1
-add {id1}, node8 : DotnetNode/1 ok
+add id1, node8 : DotnetNode/1 ok
+add n0, n1="abc", n3=@genPort(): JavaNode

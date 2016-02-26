@@ -22,6 +22,16 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testAdd() throws Exception {
+        tester(getClass().getResourceAsStream("/add.kevs"));
+    }
+
+    @Test
+    public void testFor() throws Exception {
+        tester(getClass().getResourceAsStream("/for.kevs"));
+    }
+
+    @Test
     public void testFunction() throws Exception {
         tester(getClass().getResourceAsStream("/function.kevs"));
     }
@@ -32,7 +42,21 @@ public class KevScriptTest {
     }
 
     @Test
-    public void testAdd() throws Exception {
-        tester(getClass().getResourceAsStream("/add.kevs"));
+    public void testLet() throws Exception {
+        tester(getClass().getResourceAsStream("/let.kevs"));
+    }
+    @Test
+    public void testNetInit() throws Exception {
+        tester(getClass().getResourceAsStream("/net-init.kevs"));
+    }
+
+    @Test
+    public void testNetmerge() throws Exception {
+        tester(getClass().getResourceAsStream("/net-merge.kevs"));
+    }
+
+    @Test
+    public void testNetremove() throws Exception {
+        tester(getClass().getResourceAsStream("/net-remove.kevs"));
     }
 }

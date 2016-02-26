@@ -32,8 +32,22 @@ List of missing features :
    * **@maxleiko**: One might want to dynamically add an external repository @runtime so we have to be able to express it in Kevscript
  * allowing list definition in let elements ? did not found a usecase yet
 
+
+## node name definition
+
+either variable name and node is autodefined or @"string" and
+
+add n0, n1="abc", n3=@genPort(): JavaNode
+
+function defaultInit(n0) {
+    start n0
+    init-network n0 {...}
+}
+
 # DISCUSSED FEATURES
  * Is `let` the right keyword for variable declaration ? (what about `var`, `const` or just `$`)
  * Notation for **context variables** and **auto-generated variables** (e.g. {ctxVar} and {{autoGenVar}})
    * **@maxleiko**: is curly braces self-explanatory enough? 
  * todo.
+
+
