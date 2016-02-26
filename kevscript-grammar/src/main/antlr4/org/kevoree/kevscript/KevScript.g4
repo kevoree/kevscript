@@ -18,7 +18,7 @@ basic_operation
     | loop
     ;
 add
-    : ADD left_hand_identifiers KEYVAL_SEPARATOR typeDef=type
+    : ADD left_hand_identifiers KEYVAL_OP typeDef=type
     ;
 remove
     : REMOVE left_hand_identifiers
@@ -30,46 +30,37 @@ stop
     : STOP left_hand_identifiers
     ;
 set
-    : SET key=identifier ASSIGN_SEPARATOR val=assignable
+    : SET key=identifier ASSIGN_OP val=assignable
     ;
 attach
-    : ATTACH groupId=identifier (nodes=identifier_list | node=identifier)
+    : ATTACH groupId=identifier nodes=identifier+
     ;
 detach
-    : DETACH groupId=identifier (nodes=identifier_list | node=identifier)
+    : DETACH groupId=identifier nodes=identifier+
     ;
 bind
-    : BIND chan=identifier (ports=identifier_list | port=identifier)
+    : BIND chan=identifier nodes=identifier+
     ;
 unbind
-    : UNBIND chan=identifier (ports=identifier_list | port=identifier)
+    : UNBIND chan=identifier nodes=identifier+
     ;
 define
-    : DEFINE_TOKEN varName=identifier ASSIGN_SEPARATOR val=assignable
+    : DEFINE_TOKEN varName=identifier ASSIGN_OP val=assignable
     ;
 function_call
-    : ID LBRACKET assignables RBRACKET
+    : ID LBRACKET assignables? RBRACKET
     ;
 loop
-    : FOR RBRACKET index=identifier COMMA val=identifier LBRACKET IN
-    LIST_START assignables LIST_END
-    BLOCK_START basic_operation* BLOCK_END
+    : FOR LBRACKET index=basic_identifier COMMA val=basic_identifier IN LSQUARE_BRACKET assignables RSQUARE_BRACKET RBRACKET BLOCK_START basic_operation* BLOCK_END
     ;
 object :
-    BLOCK_START (keyAndValue COMMA)* keyAndValue BLOCK_END
+    BLOCK_START ((keyAndValue COMMA)* keyAndValue)? BLOCK_END
     ;
 keyAndValue
-    : identifier KEYVAL_SEPARATOR assignable
+    : identifier KEYVAL_OP assignable
     ;
 function
     : FUNCTION functionName=identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* BLOCK_END
-    ;
-
-identifier_list
-    :  LIST_START identifiers LIST_END
-    ;
-identifiers
-    : identifier (LIST_SEP identifier)*
     ;
 assignable
     : string
@@ -90,8 +81,8 @@ basic_identifier
     : ID
     ;
 left_hand_identifier
-    : basic_identifier (VAR_SEP basic_identifier) ?
-    | basic_identifier (VAR_SEP BLOCK_START basic_identifier BLOCK_END) ?
+    : basic_identifier (DOT basic_identifier) ?
+    | basic_identifier (DOT BLOCK_START basic_identifier BLOCK_END) ?
     | BLOCK_START basic_identifier BLOCK_END
     ;
 left_hand_identifiers
@@ -99,26 +90,31 @@ left_hand_identifiers
     | left_hand_identifier
     ;
 identifier
-    : basic_identifier (VAR_SEP basic_identifier)*
+    : basic_identifier (DOT basic_identifier)*
     ;
 type
-    : (ID VAR_SEP)*ID (VERSION_SEP VERSION(VERSION_SEP VERSION)?)?
+    : (ID DOT)? ID (VERSION_SEP VERSION  (object|identifier)?)?
     ;
-
-ASSIGN_SEPARATOR
+ASSIGN_OP
     : '='
     ;
-KEYVAL_SEPARATOR
+KEYVAL_OP
     : ':'
     ;
-LIST_START
+LSQUARE_BRACKET
     : '['
     ;
-LIST_SEP
-    : ','
-    ;
-LIST_END
+RSQUARE_BRACKET
     : ']'
+    ;
+FOR
+    : 'for'
+    ;
+IN
+    : 'in'
+    ;
+COMMA
+    : ','
     ;
 BLOCK_START
     : '{'
@@ -126,7 +122,7 @@ BLOCK_START
 BLOCK_END
     : '}'
     ;
-VAR_SEP
+DOT
     : '.'
     ;
 VERSION_SEP
@@ -169,7 +165,7 @@ ID
     : [a-zA-Z_][a-zA-Z0-9_-]*
     ;
 VERSION
-    : [0-9]+('.'[0-9]+('.'[0-9]+)?)?
+    : NUMERIC_VALUE
     ;
 SQ_STRING
     : '\'' .*? '\''
@@ -177,12 +173,24 @@ SQ_STRING
 DQ_STRING
     : '"' .*? '"'
     ;
-COMMA : ',' ;
-FOR : 'for' ;
-RBRACKET : ')' ;
-LBRACKET : '(' ;
-IN : 'in' ;
-CONCAT : '+' ;
+COMMENT
+    : '/*' .*? '*/' -> skip
+    ;
+SINGLELINE_COMMENT
+    : '//' ~[\r\n]* -> skip
+    ;
+RBRACKET
+    : ')'
+    ;
+LBRACKET
+    : '('
+    ;
+CONCAT
+    : '+'
+    ;
+NUMERIC_VALUE
+    : [0-9]+
+    ;
 WS
     : [ \t\r\n]+ -> skip
     ;

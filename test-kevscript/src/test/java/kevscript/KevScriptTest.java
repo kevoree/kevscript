@@ -2,6 +2,8 @@ package kevscript;
 
 import org.antlr.v4.runtime.*;
 import org.junit.Test;
+import org.kevoree.kevscript.KevScriptLexer;
+import org.kevoree.kevscript.KevScriptParser;
 
 import java.io.InputStream;
 
@@ -20,9 +22,13 @@ public class KevScriptTest {
     }
 
     @Test
-    public void testMain() throws Exception {
-        System.out.println("Hullooo");
-        tester(getClass().getResourceAsStream("/main.kevs"));
+    public void testFunction() throws Exception {
+        tester(getClass().getResourceAsStream("/function.kevs"));
+    }
+
+    @Test
+    public void testFunctionCall() throws Exception {
+        tester(getClass().getResourceAsStream("/function_call.kevs"));
     }
 
     @Test

@@ -1,26 +1,10 @@
-add node0: JavascriptNode
-add node0: JavascriptNode//hello
-add node0: JavascriptNode   //hello
-add node0: JavascriptNode/1.2.3
-add node0: JavascriptNode/1.2.3-SNAPSHOT
-add node0: JavascriptNode/1.2.3-SNAPSHOT// hello
-add node0: JavascriptNode/1.2.3-SNAPSHOT // hello
-add node0: JavascriptNode/1.2.3-SNAPSHOT    // hello
+/* pre comment */
+add node0: JavaNode
+add {id1} : DotnetNode/1 // end of line comment
+add {whatIsMyName}: JsNode/1 {java: {name: "test", version: "12"}}
+add node0, {node1}: DotnetNode
 
-add node0: org.kevoree.library.JavascriptNode
-add node0: org.kevoree.library.JavascriptNode//hello
-add node0: org.kevoree.library.JavascriptNode   //hello
-add node0: org.kevoree.library.JavascriptNode/1.2.3
-add node0: org.kevoree.library.JavascriptNode/1.2.3-SNAPSHOT
-add node0: org.kevoree.library.JavascriptNode/1.2.3-SNAPSHOT// hello
-add node0: org.kevoree.library.JavascriptNode/1.2.3-SNAPSHOT // hello
-add node0: org.kevoree.library.JavascriptNode/1.2.3-SNAPSHOT    // hello
 
-add node0, node1: JavascriptNode
-add node0, node1: JavascriptNode//hello
-add node0, node1: JavascriptNode   //hello
-add node0, node1: JavascriptNode/1.2.3
-add node0, node1: JavascriptNode/1.2.3-SNAPSHOT
-add node0, node1: JavascriptNode/1.2.3-SNAPSHOT// hello
-add node0, node1: JavascriptNode/1.2.3-SNAPSHOT // hello
-add node0, node1: JavascriptNode/1.2.3-SNAPSHOT    // hello
+// start of line comment
+add node0: non.NewNode/1
+add {id1}, node8 : DotnetNode/1 ok

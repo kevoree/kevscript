@@ -21,12 +21,15 @@ List of missing features :
  }
  add myChan: MyChanType/42 versionSpecs // using TypeDefinition v42 but forcing usage of DeployUnits 1.2.3 for Java and 1.2.5-rc1 for JavaScript (other platforms will get the latest release available)
  ```
- 
+
+ * b64 DU integration ?
+ * external files reference ?
+ * graphical representation ?
  * network conf ?
    * **@maxleiko**: we need some kind of sugar around network configurations, something that helps defining dynamic ranges of IP (v4/v6) for instance, etc.
  * how to deal with repository configuration (maven, npm, nuget private repo & co) ?
    * **@manuelleduc**: to me it is node related, not kevscript related
-   * **@maxleiko**: One might want to dinamically add an external repository @runtime so we have to be able to express it in Kevscript
+   * **@maxleiko**: One might want to dynamically add an external repository @runtime so we have to be able to express it in Kevscript
  * allowing list definition in let elements ? did not found a usecase yet
 
 # DISCUSSED FEATURES

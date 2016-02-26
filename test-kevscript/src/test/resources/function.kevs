@@ -1,0 +1,7 @@
+function hello() {
+    add node0: NodeJava
+}
+
+function test(test) {
+    set node0.a = test
+}
