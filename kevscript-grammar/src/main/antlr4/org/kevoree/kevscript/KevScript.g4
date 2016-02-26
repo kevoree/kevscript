@@ -31,7 +31,7 @@ left_add_definition
     : short_identifier (ASSIGN_OP (string|special_internal_operation))?
     ;
 special_internal_operation
-    : '@' short_identifier LBRACKET RBRACKET
+    : AT short_identifier LBRACKET RBRACKET
     ;
 remove
     : REMOVE left_hand_identifiers
@@ -118,72 +118,34 @@ long_identifier
 type
     : (ID DOT)? ID (VERSION_SEP NUMERIC_VALUE  (object|long_identifier)?)?
     ;
-ASSIGN_OP
-    : '='
-    ;
-KEYVAL_OP
-    : ':'
-    ;
-LSQUARE_BRACKET
-    : '['
-    ;
-RSQUARE_BRACKET
-    : ']'
-    ;
-FOR
-    : 'for'
-    ;
-IN
-    : 'in'
-    ;
-COMMA
-    : ','
-    ;
-BLOCK_START
-    : '{'
-    ;
-BLOCK_END
-    : '}'
-    ;
-DOT
-    : '.'
-    ;
-VERSION_SEP
-    : '/'
-    ;
-ADD
-    : 'add'
-    ;
-REMOVE
-    : 'remove'
-    ;
-START
-    : 'start'
-    ;
-STOP
-    : 'stop'
-    ;
-SET
-    : 'set'
-    ;
-DETACH
-    : 'detach'
-    ;
-ATTACH
-    : 'attach'
-    ;
-BIND
-    : 'bind'
-    ;
-UNBIND
-    : 'unbind'
-    ;
-DEFINE_TOKEN
-    : 'let'
-    ;
-FUNCTION
-    : 'function'
-    ;
+
+
+ASSIGN_OP : '=' ;
+KEYVAL_OP : ':' ;
+COMMA : ',' ;
+DOT : '.' ;
+CONCAT : '+' ;
+AT : '@' ;
+VERSION_SEP : '/' ;
+LSQUARE_BRACKET : '[' ;
+RSQUARE_BRACKET : ']' ;
+BLOCK_START : '{' ;
+BLOCK_END : '}' ;
+RBRACKET : ')' ;
+LBRACKET : '(' ;
+FOR : 'for' ;
+IN : 'in' ;
+ADD : 'add' ;
+REMOVE : 'remove' ;
+START : 'start' ;
+STOP : 'stop' ;
+SET : 'set' ;
+DETACH : 'detach' ;
+ATTACH : 'attach' ;
+BIND : 'bind' ;
+UNBIND : 'unbind' ;
+DEFINE_TOKEN : 'let' ;
+FUNCTION : 'function' ;
 NETINIT : 'net-init' ;
 NETMERGE : 'net-merge' ;
 NETREMOVE : 'net-remove' ;
@@ -198,15 +160,6 @@ COMMENT
     ;
 SINGLELINE_COMMENT
     : '//' ~[\r\n]* -> skip
-    ;
-RBRACKET
-    : ')'
-    ;
-LBRACKET
-    : '('
-    ;
-CONCAT
-    : '+'
     ;
 NUMERIC_VALUE
     : [0-9]+

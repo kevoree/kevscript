@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <version>6.0.0-SNAPSHOT</version>
     <modules>
-        <module>test-kevscript</module>
+        <module>kevscript-test</module>
         <module>kevscript-grammar</module>
     </modules>
     <name>Kevoree :: KevScript</name>
