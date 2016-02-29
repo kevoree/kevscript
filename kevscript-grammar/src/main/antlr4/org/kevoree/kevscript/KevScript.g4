@@ -82,7 +82,7 @@ keyAndValue
     : long_identifier KEYVAL_OP assignable
     ;
 function
-    : FUNCTION functionName=long_identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* BLOCK_END
+    : FUNCTION functionName=long_identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* ('return' assignable)? BLOCK_END
     ;
 assignable
     : string
@@ -91,6 +91,7 @@ assignable
     | BLOCK_START long_identifier BLOCK_END
     | assignable CONCAT assignable
     | special_internal_operation
+    | function_call
     ;
 assignables
     : (assignable COMMA)* assignable
