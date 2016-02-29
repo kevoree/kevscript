@@ -1,0 +1,74 @@
+let confs = {
+    chan: {
+        host: "ws.kevoree.org"
+    },
+    group: {
+        host: "ws.kevoree.org",
+        path: "/edisons"
+    },
+    nodes: {
+        javascript: {
+            version: "5.3.3"
+        }
+    }
+}
+
+
+function initWebNode(nodeName, group, nodeVersion) {
+    add web=nodeName : JavascriptNode/nodeVersion
+    add web.chart1: Chart/2
+    add web.chart2: Chart/2
+    add web.chart3: Chart/2
+    attach group web
+}
+
+function initEdison(nodeName, group, nodeVersion) {
+    add edison=nodeName : JavascriptNode/nodeVersion
+    add edison.lcd : eu_heads.HeadsLCDDisplayComp/2
+    add edison.led : eu_heads.HeadsDigitalWriteComp/2
+    add edison.noise : eu_heads.HeadsAnalogSensorComp/2
+    add edison.light : eu_heads.HeadsAnalogSensorComp/2
+    set edison.lcd.test = 'false'
+    set edison.led.pin = '7'
+    set edison.led.test = 'false'
+    set edison.light.pin = '2'
+    set edison.light.test = 'false'
+    set edison.noise.test = 'false'
+    set edison.temp.pin = '1'
+    set edison.temp.test = 'false'
+    attach group edison
+}
+
+function bindByChan(port0, port1, chanName, host, uuid) {
+    add chan=chanName:  RemoteWSChan/5
+    set chan.host = host
+    set chan.uuid = uuid
+    bind chan port0 port1
+}
+
+
+add mainGroup: RemoteWSGroup
+set mainGroup.host = confs.group.host
+set mainGroup.path = confs.group.path
+set edison.answerPull/edison2 = "false"
+set edison.answerPull/edison3 = "false"
+set edison.answerPull/edison4 = "false"
+set edison.answerPull/edison5 = "false"
+
+initWebNode("web1", mainGroup, confs.nodes.javascript.version)
+initWebNode("web2", mainGroup, confs.nodes.javascript.version)
+initWebNode("web3", mainGroup, confs.nodes.javascript.version)
+initEdison("edison1", mainGroup, confs.nodes.javascript.version)
+initEdison("edison2", mainGroup, confs.nodes.javascript.version)
+initEdison("edison3", mainGroup, confs.nodes.javascript.version)
+initEdison("edison4", mainGroup, confs.nodes.javascript.version)
+initEdison("edison5", mainGroup, confs.nodes.javascript.version)
+bindByChan(web1.chart2.input, edison1.temp.out, "chan", conf.chan.host, "edison1Temp")
+bindByChan(web1.chart3.input, edison1.light.out, "chan1", conf.chan.host, "edison1Light")
+bindByChan(web1.chart1.input, edison1.noise.out, "chan2", conf.chan.host, "edison1Noise")
+bindByChan(web2.chart2.input, edison2.temp.out, "chan_0", conf.chan.host, "edison2Temp")
+bindByChan(web2.chart3.input, edison2.light.out, "chan_1", conf.chan.host, "edison2Light")
+bindByChan(web2.chart1.input, edison2.noise.out, "chan_2", conf.chan.host, "edison2Noise")
+bindByChan(web3.chart2.input, edison3.temp.out, "chan_5", conf.chan.host, "edison3Temp")
+bindByChan(web3.chart3.input, edison3.light.out, "chan_6", conf.chan.host, "edison3Light")
+bindByChan(web3.chart1.input, edison3.noise.out, "chan_7", conf.chan.host, "edison3Noise")

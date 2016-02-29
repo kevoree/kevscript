@@ -27,6 +27,11 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testAttachDetachBindUnbind() throws Exception {
+        tester(getClass().getResourceAsStream("/attach_detach_bind_unbind.kevs"));
+    }
+
+    @Test
     public void testFor() throws Exception {
         tester(getClass().getResourceAsStream("/for.kevs"));
     }
@@ -58,5 +63,14 @@ public class KevScriptTest {
     @Test
     public void testNetremove() throws Exception {
         tester(getClass().getResourceAsStream("/net-remove.kevs"));
+    }
+    @Test
+    public void testRemove() throws Exception {
+        tester(getClass().getResourceAsStream("/remove.kevs"));
+    }
+
+    @Test
+    public void testSensorNetwork() throws Exception {
+        tester(getClass().getResourceAsStream("/sensor_network.kevs"));
     }
 }

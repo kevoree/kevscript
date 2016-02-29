@@ -1,0 +1,7 @@
+attach group0 node0
+attach group0 node1 node2
+detach group0 node0
+detach group0 node1 node2
+bind chan0 node1.comp1.input
+bind chan0 node0.comp1.input node1.comp2.output node1.comp3.input
+unbind chan0 node0.comp1.input node1.comp2.output node1.comp3.input

@@ -5,7 +5,15 @@ add whatIsMyName: JsNode/1 {java: {name: "test", version: "12"}}
 add node0="ok", node1: DotnetNode
 
 
+let versions = {
+    nodes: {
+        java: "12"
+    }
+}
+add node12 : JavaNode/versions.nodes.java
+
+
 // start of line comment
 add node0: non.NewNode/1
 add id1, node8 : DotnetNode/1 ok
-add n0, n1="abc", n3=@genPort(): JavaNode
+add n0, n1="abc", n3=@random(): JavaNode

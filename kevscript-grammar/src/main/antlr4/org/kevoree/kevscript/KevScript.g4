@@ -28,7 +28,7 @@ left_add_definitions
     | left_add_definition
     ;
 left_add_definition
-    : short_identifier (ASSIGN_OP (string|special_internal_operation))?
+    : short_identifier (DOT short_identifier)? (ASSIGN_OP assignable)?
     ;
 special_internal_operation
     : AT short_identifier LBRACKET RBRACKET
@@ -43,7 +43,7 @@ stop
     : STOP left_hand_identifiers
     ;
 set
-    : SET key=long_identifier ASSIGN_OP val=assignable
+    : SET key=long_identifier (SLASH frag=short_identifier)? ASSIGN_OP val=assignable
     ;
 attach
     : ATTACH groupId=long_identifier nodes=long_identifier+
@@ -116,7 +116,7 @@ long_identifier
     : short_identifier (DOT short_identifier)*
     ;
 type
-    : (ID DOT)? ID (VERSION_SEP NUMERIC_VALUE  (object|long_identifier)?)?
+    : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier)  (object|long_identifier)?)?
     ;
 
 
@@ -126,7 +126,7 @@ COMMA : ',' ;
 DOT : '.' ;
 CONCAT : '+' ;
 AT : '@' ;
-VERSION_SEP : '/' ;
+SLASH : '/' ;
 LSQUARE_BRACKET : '[' ;
 RSQUARE_BRACKET : ']' ;
 BLOCK_START : '{' ;
