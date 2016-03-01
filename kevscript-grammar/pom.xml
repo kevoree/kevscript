@@ -2,31 +2,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>kevscript</artifactId>
-        <groupId>org.kevoree</groupId>
-        <version>6.0.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.kevoree.kevscript.grammar</groupId>
-    <artifactId>kevscript-grammar</artifactId>
+	<artifactId>kevscript-grammar</artifactId>
+  <name>Kevoree :: KevScript :: Grammar</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>${antlr.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+  <parent>
+      <artifactId>kevscript</artifactId>
+      <groupId>org.kevoree</groupId>
+      <version>6.0.0-SNAPSHOT</version>
+  </parent>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>${antlr.version}</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>${antlr.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>${antlr.version}</version>
                 <configuration>
                     <options>
                         <!--<language>JavaScript</language>-->
@@ -35,16 +36,14 @@
                     </options>
                     <listener>true</listener>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-
-    </build>
-
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
