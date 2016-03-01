@@ -1,0 +1,14 @@
+set node0.test = "ok"
+
+set node0.hello/a = "test"
+
+set node0.@random().tick = "ok"
+
+let randVal = @random()
+set node0.@randVal.tick = "ok"
+
+let arr = [{a:"1"}, {a:"2"}, {a:"3"}]
+let arr2 = ["a", "b", "c"]
+let z = arr[0].a
+let u = arr2[1]
+let x = arr[3]

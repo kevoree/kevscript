@@ -1,34 +1,34 @@
 grammar KevScript;
 
 script
-    : (basic_operation | function)*
+    : (basic_operation | function_operation)*
     ;
 basic_operation
     : add
-    | remove
+    | attach
     | start
+    | detach
     | stop
     | set
-    | attach
     | bind
-    | detach
     | unbind
-    | let
+    | let_operation
     | function_call
     | for_loop
     | netinit
     | netmerge
     | netremove
+    | remove
     ;
 add
-    : ADD left_add_definitions KEYVAL_OP typeDef=type
+    : ADD list_add_members=left_add_definitions KEYVAL_OP typeDef=type
     ;
 left_add_definitions
     : (left_add_definition COMMA)* left_add_definition
     | left_add_definition
     ;
 left_add_definition
-    : short_identifier (DOT short_identifier)? (ASSIGN_OP assignable)?
+    : (short_identifier|AT assignable) (DOT (short_identifier|AT assignable))?
     ;
 special_internal_operation
     : AT short_identifier LBRACKET RBRACKET
@@ -57,7 +57,7 @@ bind
 unbind
     : UNBIND chan=long_identifier nodes=long_identifier+
     ;
-let
+let_operation
     : DEFINE_TOKEN varName=long_identifier ASSIGN_OP val=assignable
     ;
 function_call
@@ -81,17 +81,23 @@ object :
 keyAndValue
     : long_identifier KEYVAL_OP assignable
     ;
-function
+function_operation
     : FUNCTION functionName=long_identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* ('return' assignable)? BLOCK_END
     ;
 assignable
     : string
     | long_identifier
+    | AT assignable
     | object
     | BLOCK_START long_identifier BLOCK_END
     | assignable CONCAT assignable
     | special_internal_operation
     | function_call
+    | array
+    | assignable LSQUARE_BRACKET NUMERIC_VALUE RSQUARE_BRACKET (DOT assignable )?
+    ;
+array
+    : LSQUARE_BRACKET assignables? RSQUARE_BRACKET
     ;
 assignables
     : (assignable COMMA)* assignable
@@ -114,12 +120,11 @@ left_hand_identifiers
     | left_hand_identifier
     ;
 long_identifier
-    : short_identifier (DOT short_identifier)*
+    : (short_identifier|AT assignable) (DOT (short_identifier|AT assignable))*
     ;
 type
-    : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier)  (object|long_identifier)?)?
+    : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?
     ;
-
 
 ASSIGN_OP : '=' ;
 KEYVAL_OP : ':' ;
