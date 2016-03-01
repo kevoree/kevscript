@@ -35,7 +35,7 @@
                         <!--<language>CSharp</language>-->
                     </options>
                     <listener>true</listener>
-					<visitor>false</visitor>
+					<visitor>true</visitor>
                 </configuration>
 				<executions>
 					<execution>
