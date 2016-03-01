@@ -64,9 +64,15 @@ public class KevScriptTest {
     public void testNetremove() throws Exception {
         tester(getClass().getResourceAsStream("/net-remove.kevs"));
     }
+
     @Test
     public void testRemove() throws Exception {
         tester(getClass().getResourceAsStream("/remove.kevs"));
+    }
+
+    @Test
+    public void testSet() throws Exception {
+        tester(getClass().getResourceAsStream("/set.kevs"));
     }
 
     @Test

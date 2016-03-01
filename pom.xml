@@ -10,6 +10,7 @@
     <modules>
         <module>kevscript-test</module>
         <module>kevscript-grammar</module>
+        <module>kevscript-language</module>
     </modules>
     <name>Kevoree :: KevScript</name>
 

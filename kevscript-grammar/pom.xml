@@ -27,6 +27,14 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr.version}</version>
+                <configuration>
+                    <options>
+                        <!--<language>JavaScript</language>-->
+                        <language>Java</language>
+                        <!--<language>CSharp</language>-->
+                    </options>
+                    <listener>true</listener>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
