@@ -35,6 +35,10 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<listener>true</listener>
+					<visitor>true</visitor>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

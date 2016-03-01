@@ -15,8 +15,9 @@
     </properties>
 
     <modules>
-        <module>kevscript-test</module>
-        <module>kevscript-grammar</module>
+        <module>grammar</module>
+        <module>test</module>
+        <module>interpreter</module>
     </modules>
 
     <build>

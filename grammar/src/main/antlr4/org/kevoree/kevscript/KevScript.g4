@@ -1,7 +1,7 @@
 grammar KevScript;
 
 script
-    : (basic_operation | function)+
+    : (basic_operation | function)*
     ;
 basic_operation
     : add
