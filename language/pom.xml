@@ -11,6 +11,7 @@
 
     <groupId>org.kevoree.kevscript</groupId>
     <artifactId>kevscript-language</artifactId>
+    <name>Kevoree :: KevScript :: Language</name>
 
     <dependencies>
         <dependency>
