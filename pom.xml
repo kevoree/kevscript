@@ -18,7 +18,7 @@
         <module>grammar</module>
         <module>test</module>
         <module>interpreter</module>
-        <module>language</module>
+        <module>v5-translator</module>
     </modules>
 
     <build>
