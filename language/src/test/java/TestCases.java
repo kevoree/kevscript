@@ -18,13 +18,28 @@ import static org.junit.Assert.assertEquals;
 public class TestCases {
 
     @Test
-    public void testA()  throws Exception {
+    public void testAdd0()  throws Exception {
         analyzeDirectory("add_0");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testB() throws Exception {
+    public void testAdd1() throws Exception {
         interpret(pathToString("/add_1/new.kevs"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAttach0Error1() throws Exception {
+        interpret(pathToString("/attach_0/error1.kevs"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAttach0Error2() throws Exception {
+        interpret(pathToString("/attach_0/error2.kevs"));
+    }
+
+    @Test
+    public void testAttach1()  throws Exception {
+        analyzeDirectory("attach_1");
     }
 
     private void analyzeDirectory(String add_0) throws IOException {

@@ -95,14 +95,22 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitAttach(AttachContext ctx) {
 
-        return "attach " + visit(ctx.nodes) + " " + ctx.groupId.getText();
+        final String groupId = ctx.groupId.getText();
+        if(!setInstances.contains(groupId)) {
+            throw  new IllegalArgumentException("instance " + groupId + " not found");
+        }
+        return "attach " + visit(ctx.nodes) + " " + groupId;
     }
 
     @Override
     public String visitLong_identifiers(Long_identifiersContext ctx) {
         final List l = new ArrayList<>();
         for( Long_identifierContext x : ctx.long_identifier()) {
-            l.add(x.getText());
+            final String textId = x.getText();
+            if(!setInstances.contains(textId)) {
+                throw new IllegalArgumentException("instance " + textId + "not found");
+            }
+            l.add(textId);
         }
         return StringUtils.join(l, ", ");
     }

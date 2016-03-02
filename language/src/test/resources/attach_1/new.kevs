@@ -1,0 +1,6 @@
+add node0, node1 : JavaNode
+let a = '42'
+add node3 : JavaNode/a
+add group0 : WSGroup
+
+attach group0 node3 node0 node1
