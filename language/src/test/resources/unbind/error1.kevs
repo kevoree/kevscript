@@ -1,0 +1,2 @@
+add chan0: WSChan
+unbind chan0 node1

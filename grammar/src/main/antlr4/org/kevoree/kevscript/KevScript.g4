@@ -18,6 +18,9 @@ basic_operation
     | netinit
     | netmerge
     | netremove
+    | metainit
+    | metamerge
+    | metaremove
     | remove
     ;
 add
@@ -48,17 +51,17 @@ set
 attach
     : ATTACH groupId=long_identifier nodes=long_identifiers
     ;
+detach
+    : DETACH groupId=long_identifier nodes=long_identifiers
+    ;
 long_identifiers
     : long_identifier+
     ;
-detach
-    : DETACH groupId=long_identifier nodes=long_identifier+
-    ;
 bind
-    : BIND chan=long_identifier nodes=long_identifier+
+    : BIND chan=long_identifier nodes=long_identifiers
     ;
 unbind
-    : UNBIND chan=long_identifier nodes=long_identifier+
+    : UNBIND chan=long_identifier nodes=long_identifiers
     ;
 let_operation
     : DEFINE_TOKEN varName=long_identifier ASSIGN_OP val=assignable
@@ -76,7 +79,16 @@ netmerge
     : NETMERGE short_identifier object
     ;
 netremove
-    : NETREMOVE short_identifier long_identifier+
+    : NETREMOVE short_identifier long_identifiers
+    ;
+metainit
+    : METAINIT short_identifier object
+    ;
+metamerge
+    : METAMERGE short_identifier object
+    ;
+metaremove
+    : METAREMOVE short_identifier long_identifiers
     ;
 object :
     BLOCK_START ((keyAndValue COMMA)* keyAndValue)? BLOCK_END
@@ -165,6 +177,9 @@ FUNCTION : 'function' ;
 NETINIT : 'net-init' ;
 NETMERGE : 'net-merge' ;
 NETREMOVE : 'net-remove' ;
+METAINIT : 'meta-init' ;
+METAMERGE : 'meta-merge' ;
+METAREMOVE : 'meta-remove' ;
 
 COMMENT
     : '/*' .*? '*/' -> skip

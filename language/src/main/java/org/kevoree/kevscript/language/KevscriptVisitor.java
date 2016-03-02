@@ -30,13 +30,13 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitAdd(AddContext ctx) {
         final List instances = new ArrayList();
         for(Left_add_definitionContext elem : ctx.list_add_members.members) {
-            final String nodeId = elem.getText();
-            boolean res = setInstances.add(nodeId);
+            final String elementId = elem.getText();
+            boolean res = setInstances.add(elementId);
             if(!res) {
                 // TODO dealing with function scopes
-                throw new IllegalArgumentException("node " + nodeId + " already declared in this scope");
+                throw new IllegalArgumentException("instance " + elementId + " already declared in this scope");
             }
-            instances.add(nodeId);
+            instances.add(elementId);
         }
 
         return "add " + StringUtils.join(instances, ", ") + " : " + visit(ctx.typeDef);
@@ -94,7 +94,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitAttach(AttachContext ctx) {
-
         final String groupId = ctx.groupId.getText();
         if(!setInstances.contains(groupId)) {
             throw  new IllegalArgumentException("instance " + groupId + " not found");
@@ -103,15 +102,44 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     }
 
     @Override
+    public String visitDetach(DetachContext ctx) {
+        final String groupId = ctx.groupId.getText();
+        if(!setInstances.contains(groupId)) {
+            throw  new IllegalArgumentException("instance " + groupId + " not found");
+        }
+        return "detach " + visit(ctx.nodes) + " " + groupId;
+    }
+
+    @Override
+    public String visitBind(BindContext ctx) {
+        final String groupId = ctx.chan.getText();
+        if(!setInstances.contains(groupId)) {
+            throw  new IllegalArgumentException("instance " + groupId + " not found");
+        }
+        return "bind " + visit(ctx.nodes) + " " + groupId;
+    }
+
+    @Override
+    public String visitUnbind(UnbindContext ctx) {
+        final String groupId = ctx.chan.getText();
+        if(!setInstances.contains(groupId)) {
+            throw  new IllegalArgumentException("instance " + groupId + " not found");
+        }
+        return "unbind " + visit(ctx.nodes) + " " + groupId;
+    }
+
+    @Override
     public String visitLong_identifiers(Long_identifiersContext ctx) {
         final List l = new ArrayList<>();
         for( Long_identifierContext x : ctx.long_identifier()) {
             final String textId = x.getText();
             if(!setInstances.contains(textId)) {
-                throw new IllegalArgumentException("instance " + textId + "not found");
+                throw new IllegalArgumentException("instance " + textId + " not found");
             }
             l.add(textId);
         }
         return StringUtils.join(l, ", ");
     }
+
+
 }

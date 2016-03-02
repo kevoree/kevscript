@@ -1,0 +1,3 @@
+add node0: JavaNode
+add group0: WSGroup
+detach group0 node0

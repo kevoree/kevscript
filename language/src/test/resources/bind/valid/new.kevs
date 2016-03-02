@@ -1,0 +1,4 @@
+add node0: JavaNode
+add node1: JSNode
+add chan0: WSChan
+bind chan0 node0 node1
