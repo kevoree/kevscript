@@ -24,8 +24,8 @@ add
     : ADD list_add_members=left_add_definitions KEYVAL_OP typeDef=type
     ;
 left_add_definitions
-    : (left_add_definition COMMA)* left_add_definition
-    | left_add_definition
+    : (members+=left_add_definition COMMA)* members+=left_add_definition
+    | members+=left_add_definition
     ;
 left_add_definition
     : (short_identifier|AT assignable) (DOT (short_identifier|AT assignable))?
@@ -46,7 +46,10 @@ set
     : SET key=long_identifier (SLASH frag=short_identifier)? ASSIGN_OP val=assignable
     ;
 attach
-    : ATTACH groupId=long_identifier nodes=long_identifier+
+    : ATTACH groupId=long_identifier nodes=long_identifiers
+    ;
+long_identifiers
+    : long_identifier+
     ;
 detach
     : DETACH groupId=long_identifier nodes=long_identifier+
@@ -104,8 +107,8 @@ assignables
     | assignable
     ;
 string
-    : SQ_STRING
-    | DQ_STRING
+    : sq_string
+    | dq_string
     ;
 short_identifier
     : ID
@@ -124,6 +127,13 @@ long_identifier
     ;
 type
     : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?
+    ;
+
+sq_string
+    : '\'' value=.*? '\''
+    ;
+dq_string
+    : '"' value=.*? '"'
     ;
 
 ASSIGN_OP : '=' ;
@@ -155,12 +165,7 @@ FUNCTION : 'function' ;
 NETINIT : 'net-init' ;
 NETMERGE : 'net-merge' ;
 NETREMOVE : 'net-remove' ;
-SQ_STRING
-    : '\'' .*? '\''
-    ;
-DQ_STRING
-    : '"' .*? '"'
-    ;
+
 COMMENT
     : '/*' .*? '*/' -> skip
     ;
