@@ -70,7 +70,7 @@ function_call
     : ID LBRACKET assignables? RBRACKET
     ;
 for_loop
-    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET assignables RSQUARE_BRACKET RBRACKET BLOCK_START basic_operation* BLOCK_END
+    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET iterator=assignables RSQUARE_BRACKET RBRACKET BLOCK_START body=basic_operation* BLOCK_END
     ;
 netinit
     : NETINIT short_identifier object

@@ -3,14 +3,15 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
-import org.kevoree.kevscript.KevScriptVisitor;
+import org.kevoree.kevscript.language.assignable.Assignable;
+import org.kevoree.kevscript.language.assignable.StringAssignable;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.context.LoopContext;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.CustomException;
-import org.kevoree.kevscript.language.assignable.Assignable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
 
@@ -183,7 +184,23 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitFor_loop(For_loopContext ctx) {
-        return super.visitFor_loop(ctx);
+        final StringBuilder sb = new StringBuilder();
+        int index = 0;
+        for(AssignableContext loopCurrentElement : ctx.iterator.assignable()) {
+            final LoopContext context = new LoopContext(rootContext);
+            if(ctx.index != null) {
+                final String indexVariableName = ctx.index.getText();
+                context.getMapIdentifiers().put(indexVariableName, new StringAssignable(String.valueOf(index)));
+            }
+
+            final String valueVariableName = ctx.val.getText();
+            context.getMapIdentifiers().put(valueVariableName, new AssignableVisitor().visit(loopCurrentElement));
+
+            sb.append(new ForLoopVisitor(context).visit(ctx.body));
+            sb.append('\n');
+            index++;
+        }
+        return sb.toString();
     }
 
     @Override
