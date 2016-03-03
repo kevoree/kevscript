@@ -1,7 +1,6 @@
 package org.kevoree.kevscript.language.visitors;
 
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.assignable.Assignable;
 import org.kevoree.kevscript.language.assignable.LongIdentifierAssignable;
 import org.kevoree.kevscript.language.assignable.ObjectAssignable;
@@ -13,6 +12,7 @@ import static org.kevoree.kevscript.KevScriptParser.*;
  * Created by mleduc on 02/03/16.
  */
 public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
+
     @Override
     public Assignable visitAssignable(AssignableContext ctx) {
         final Assignable ret;
@@ -49,7 +49,14 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
 
     @Override
     public Assignable visitLong_identifier(Long_identifierContext ctx) {
-        // TODO complete me
-        return new LongIdentifierAssignable();
+        final LongIdentifierAssignable ret = new LongIdentifierAssignable();
+        for(Long_identifier_chunkContext a : ctx.identifiers) {
+            if(a.AT() != null)  {
+                ret.add(LongIdentifierAssignable.at(a.assignable().getText()));
+            } else {
+                ret.add(LongIdentifierAssignable.identifier(a.short_identifier().getText()));
+            }
+        }
+        return ret;
     }
 }

@@ -13,10 +13,12 @@ import java.util.Set;
 public class LoopContext extends Context {
     private final Map<String, Assignable> identifiers = new HashMap<>();
     private final Set<String> instances = new HashSet<>();
+    private Set<String> functions = new HashSet<>();
 
     public LoopContext(Context rootContext) {
         identifiers.putAll(rootContext.getMapIdentifiers());
         instances.addAll(rootContext.getSetInstances());
+        functions.addAll(rootContext.getSetFunctions());
     }
 
     @Override
@@ -27,5 +29,10 @@ public class LoopContext extends Context {
     @Override
     public Set<String> getSetInstances() {
         return this.instances;
+    }
+
+    @Override
+    public Set<String> getSetFunctions() {
+        return this.functions;
     }
 }

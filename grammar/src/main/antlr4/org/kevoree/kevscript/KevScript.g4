@@ -70,8 +70,9 @@ function_call
     : ID LBRACKET assignables? RBRACKET
     ;
 for_loop
-    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET iterator=assignables RSQUARE_BRACKET RBRACKET BLOCK_START body=basic_operation* BLOCK_END
+    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET iterator=assignables RSQUARE_BRACKET RBRACKET BLOCK_START for_body BLOCK_END
     ;
+for_body : basic_operation* ;
 netinit
     : NETINIT short_identifier object
     ;
@@ -135,7 +136,11 @@ left_hand_identifiers
     | left_hand_identifier
     ;
 long_identifier
-    : (short_identifier|AT assignable) (DOT (short_identifier|AT assignable))*
+    : identifiers+=long_identifier_chunk (DOT identifiers+=long_identifier_chunk)*
+    ;
+long_identifier_chunk
+    : short_identifier
+    | AT assignable
     ;
 type
     : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?

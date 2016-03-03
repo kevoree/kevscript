@@ -13,12 +13,17 @@ import java.util.Set;
 public class RootContext extends Context {
     private final Map<String, Assignable> mapIdentifiers = new HashMap<>();
     private final Set<String> setInstances = new HashSet<>();
+    private Set<String> functions = new HashSet<>();
 
     public Map<String, Assignable> getMapIdentifiers() {
         return mapIdentifiers;
     }
-
     public Set<String> getSetInstances() {
         return setInstances;
+    }
+
+    @Override
+    public Set<String> getSetFunctions() {
+        return this.functions;
     }
 }

@@ -1,0 +1,4 @@
+for (index, element in [{n:"a"}, {n:"b"}, {n:"c"}]) {
+    add node: JavaNode/index
+    set node.conf = element.n
+}

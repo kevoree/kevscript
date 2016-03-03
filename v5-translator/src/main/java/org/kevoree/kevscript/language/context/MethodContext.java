@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.context;
 import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.language.assignable.Assignable;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,5 +19,10 @@ public class MethodContext extends Context {
     @Override
     public Set<String> getSetInstances() {
         throw new NotImplementedException("Not implemented");
+    }
+
+    @Override
+    public Set<String> getSetFunctions() {
+         throw new NotImplementedException("Not implemented");
     }
 }

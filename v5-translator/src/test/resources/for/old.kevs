@@ -1,0 +1,6 @@
+add node : JavaNode/0.0.0
+set node.conf = "a"
+add node : JavaNode/1.0.0
+set node.conf = "b"
+add node : JavaNode/2.0.0
+set node.conf = "c"

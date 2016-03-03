@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.assignable;
 
 import org.kevoree.kevscript.language.assignable.Assignable;
+import org.kevoree.kevscript.language.context.Context;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,5 +30,14 @@ public class ObjectAssignable extends Assignable {
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public String resolve(Context context) {
+        return toText();
+    }
+
+    public Assignable get(String chunk) {
+        return this.values.get(chunk);
     }
 }

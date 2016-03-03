@@ -34,6 +34,11 @@ public class TestCases {
         analyzeDirectory("real_world_0");
     }
 
+    @Test
+    public void testFor()  throws Exception {
+        analyzeDirectory("for");
+    }
+
     @Test()
     public void testAdd1Error1() throws Exception {
         exception.expect(CustomException.class);

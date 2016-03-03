@@ -20,10 +20,14 @@ import static org.kevoree.kevscript.KevScriptParser.*;
  */
 public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
-    private final Context rootContext;
+    private final Context context;
 
     public KevscriptVisitor() {
-        this.rootContext = new RootContext();
+        this.context = new RootContext();
+    }
+
+    public KevscriptVisitor(LoopContext context) {
+        this.context = context;
     }
 
     @Override
@@ -41,7 +45,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final List instances = new ArrayList();
         for (Left_add_definitionContext elem : ctx.list_add_members.members) {
             final String elementId = elem.getText();
-            boolean res = rootContext.getSetInstances().add(elementId);
+            boolean res = context.getSetInstances().add(elementId);
             if (!res) {
                 // TODO dealing with function scopes
                 throw new CustomException("instance " + elementId + " already declared in this scope");
@@ -81,15 +85,15 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitLet_operation(Let_operationContext ctx) {
         final String varName = ctx.varName.getText();
         final Assignable value = new AssignableVisitor().visit(ctx.val);
-        rootContext.getMapIdentifiers().put(varName, value);
+        context.getMapIdentifiers().put(varName, value);
         return "";
     }
 
     @Override
     public String visitLong_identifier(Long_identifierContext ctx) {
-        final String identifier = ctx.short_identifier(0).getText();
-        if (rootContext.getMapIdentifiers().containsKey(identifier)) {
-            return rootContext.getMapIdentifiers().get(identifier).toText();
+        final String identifier = ctx.identifiers.get(0).getText();
+        if (context.getMapIdentifiers().containsKey(identifier)) {
+            return context.getMapIdentifiers().get(identifier).toText();
         } else {
             throw new CustomException("Can't find " + identifier);
         }
@@ -108,7 +112,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitAttach(AttachContext ctx) {
         final String groupId = ctx.groupId.getText();
-        if (!rootContext.getSetInstances().contains(groupId)) {
+        if (!context.getSetInstances().contains(groupId)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "attach " + visit(ctx.nodes) + " " + groupId;
@@ -117,7 +121,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitDetach(DetachContext ctx) {
         final String groupId = ctx.groupId.getText();
-        if (!rootContext.getSetInstances().contains(groupId)) {
+        if (!context.getSetInstances().contains(groupId)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "detach " + visit(ctx.nodes) + " " + groupId;
@@ -126,7 +130,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitBind(BindContext ctx) {
         final String groupId = ctx.chan.getText();
-        if (!rootContext.getSetInstances().contains(groupId)) {
+        if (!context.getSetInstances().contains(groupId)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "bind " + visit(ctx.nodes) + " " + groupId;
@@ -135,7 +139,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitUnbind(UnbindContext ctx) {
         final String groupId = ctx.chan.getText();
-        if (!rootContext.getSetInstances().contains(groupId)) {
+        if (!context.getSetInstances().contains(groupId)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "unbind " + visit(ctx.nodes) + " " + groupId;
@@ -146,7 +150,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final List l = new ArrayList<>();
         for (Long_identifierContext x : ctx.long_identifier()) {
             final String textId = x.getText();
-            if (!rootContext.getSetInstances().contains(textId)) {
+            if (!context.getSetInstances().contains(textId)) {
                 throw new CustomException("instance " + textId + " not found");
             }
             l.add(textId);
@@ -162,7 +166,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitFunction_operation(Function_operationContext ctx) {
-        rootContext.getSetInstances().add(ctx.functionName.getText());
+        context.getSetInstances().add(ctx.functionName.getText());
         // TODO flatten function content
         return "";
     }
@@ -187,7 +191,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final StringBuilder sb = new StringBuilder();
         int index = 0;
         for(AssignableContext loopCurrentElement : ctx.iterator.assignable()) {
-            final LoopContext context = new LoopContext(rootContext);
+            final LoopContext context = new LoopContext(this.context);
             if(ctx.index != null) {
                 final String indexVariableName = ctx.index.getText();
                 context.getMapIdentifiers().put(indexVariableName, new StringAssignable(String.valueOf(index)));
@@ -196,8 +200,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             final String valueVariableName = ctx.val.getText();
             context.getMapIdentifiers().put(valueVariableName, new AssignableVisitor().visit(loopCurrentElement));
 
-            sb.append(new ForLoopVisitor(context).visit(ctx.body));
-            sb.append('\n');
+            sb.append(new KevscriptVisitor(context).visit(ctx.for_body()));
             index++;
         }
         return sb.toString();
@@ -284,7 +287,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         else {
             slash="";
         }
-        return "set " + ctx.key.getText() + slash + " = " + new AssignableVisitor().visit(ctx.val).toText();
+        return "set " + ctx.key.getText() + slash + " = \"" + new AssignableVisitor().visit(ctx.val).resolve(context) + "\"";
     }
 
     @Override
@@ -310,5 +313,15 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitString(StringContext ctx) {
         return super.visitString(ctx);
+    }
+
+    @Override
+    public String visitFor_body(For_bodyContext ctx) {
+        final StringBuilder sb = new StringBuilder();
+        for (ParseTree a : ctx.children) {
+            sb.append(this.visit(a));
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 }
