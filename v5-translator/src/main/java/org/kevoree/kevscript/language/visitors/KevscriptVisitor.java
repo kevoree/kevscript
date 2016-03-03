@@ -3,14 +3,15 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.assignable.Assignable;
 import org.kevoree.kevscript.language.assignable.StringAssignable;
 import org.kevoree.kevscript.language.context.Context;
-import org.kevoree.kevscript.language.context.LoopContext;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.CustomException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
@@ -26,7 +27,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         this.context = new RootContext();
     }
 
-    public KevscriptVisitor(LoopContext context) {
+    public KevscriptVisitor(Context context) {
         this.context = context;
     }
 
@@ -34,7 +35,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitScript(ScriptContext ctx) {
         StringBuilder sb = new StringBuilder();
         for (ParseTree a : ctx.children) {
-            sb.append(this.visit(a));
+            final String visit = this.visit(a);
+            sb.append(visit);
             sb.append('\n');
         }
         return sb.toString();
@@ -84,7 +86,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitLet_operation(Let_operationContext ctx) {
         final String varName = ctx.varName.getText();
-        final Assignable value = new AssignableVisitor().visit(ctx.val);
+        final Assignable value = new AssignableVisitor(context).visit(ctx.val);
         context.getMapIdentifiers().put(varName, value);
         return "";
     }
@@ -92,6 +94,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitLong_identifier(Long_identifierContext ctx) {
         final String identifier = ctx.identifiers.get(0).getText();
+        // TODO : looking for mainGroup in identifiers but is really an instance !
         if (context.getMapIdentifiers().containsKey(identifier)) {
             return context.getMapIdentifiers().get(identifier).toText();
         } else {
@@ -99,19 +102,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         }
     }
 
-    @Override
-    public String visitSq_string(Sq_stringContext ctx) {
-        return ctx.value.getText();
-    }
-
-    @Override
-    public String visitDq_string(Dq_stringContext ctx) {
-        return ctx.value.getText();
-    }
 
     @Override
     public String visitAttach(AttachContext ctx) {
         final String groupId = ctx.groupId.getText();
+
+        // TODO when calling a function, add the elements resolve to an instance in the instances context !
         if (!context.getSetInstances().contains(groupId)) {
             throw new CustomException("instance " + groupId + " not found");
         }
@@ -160,14 +156,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitAssignable(AssignableContext ctx) {
-        return super.visitAssignable(ctx);
+        return new AssignableVisitor(this.context).visit(ctx).toText();
     }
 
 
     @Override
     public String visitFunction_operation(Function_operationContext ctx) {
-        context.getSetInstances().add(ctx.functionName.getText());
-        // TODO flatten function content
+        // we do not offer scope to functions.
+        context.getSetFunctions().put(ctx.functionName.getText(), ctx);
         return "";
     }
 
@@ -190,25 +186,20 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitFor_loop(For_loopContext ctx) {
         final StringBuilder sb = new StringBuilder();
         int index = 0;
-        for(AssignableContext loopCurrentElement : ctx.iterator.assignable()) {
-            final LoopContext context = new LoopContext(this.context);
-            if(ctx.index != null) {
+        for (AssignableContext loopCurrentElement : ctx.iterator.assignable()) {
+            final RootContext context = new RootContext(this.context);
+            if (ctx.index != null) {
                 final String indexVariableName = ctx.index.getText();
                 context.getMapIdentifiers().put(indexVariableName, new StringAssignable(String.valueOf(index)));
             }
 
             final String valueVariableName = ctx.val.getText();
-            context.getMapIdentifiers().put(valueVariableName, new AssignableVisitor().visit(loopCurrentElement));
+            context.getMapIdentifiers().put(valueVariableName, new AssignableVisitor(context).visit(loopCurrentElement));
 
             sb.append(new KevscriptVisitor(context).visit(ctx.for_body()));
             index++;
         }
         return sb.toString();
-    }
-
-    @Override
-    public String visitFunction_call(Function_callContext ctx) {
-        return super.visitFunction_call(ctx);
     }
 
     @Override
@@ -281,13 +272,16 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
         // TODO : check that the key is a proper instance
         final String slash;
-        if(ctx.SLASH() != null) {
+        if (ctx.SLASH() != null) {
             slash = "/" + ctx.frag.getText();
+        } else {
+            slash = "";
         }
-        else {
-            slash="";
-        }
-        return "set " + ctx.key.getText() + slash + " = \"" + new AssignableVisitor().visit(ctx.val).resolve(context) + "\"";
+        final String instance = ctx.key.getText();
+        final Assignable visitAssignable = new AssignableVisitor(context).visit(ctx.val);
+        final Assignable resolveAssignable = visitAssignable.resolve(context);
+        final String assignableString = resolveAssignable.toText();
+        return "set " + instance + slash + " = \"" + assignableString + "\"";
     }
 
     @Override
@@ -319,9 +313,36 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitFor_body(For_bodyContext ctx) {
         final StringBuilder sb = new StringBuilder();
         for (ParseTree a : ctx.children) {
-            sb.append(this.visit(a));
+            final String visit = this.visit(a);
+            sb.append(visit);
             sb.append('\n');
         }
         return sb.toString();
+    }
+
+    @Override
+    public String visitLong_identifier_chunk(Long_identifier_chunkContext ctx) {
+        return super.visitLong_identifier_chunk(ctx);
+    }
+
+    @Override
+    public String visitDereference(DereferenceContext ctx) {
+        return super.visitDereference(ctx);
+    }
+
+    @Override
+    public String visitFunction_body(Function_bodyContext ctx) {
+        final StringBuilder sb = new StringBuilder();
+        for (ParseTree a : ctx.children) {
+            final String visit = this.visit(a);
+            sb.append(visit);
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String visitFunction_call(Function_callContext ctx) {
+        return new AssignableVisitor(this.context).visit(ctx).toText();
     }
 }

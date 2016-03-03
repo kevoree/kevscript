@@ -1,0 +1,11 @@
+function test(a,b,c) {
+    add node0 : JavascriptNode/a
+    set node0.a = b
+    set node0.c = c.d
+}
+
+
+test("1", "ok1", {d : "e1"})
+test("2", "ok2", {d : "e2"})
+test("3", "ok3", {d : "e3"})
+

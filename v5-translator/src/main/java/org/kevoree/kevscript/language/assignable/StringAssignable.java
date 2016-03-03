@@ -18,7 +18,12 @@ public class StringAssignable extends Assignable {
     }
 
     @Override
-    public String resolve(Context context) {
-        return toText();
+    public Assignable resolve(Context context) {
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

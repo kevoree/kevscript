@@ -9,6 +9,6 @@ for (k, l in [a]) {
 }
 
 /* simple loop with a few instructions */
-for (k, l in [{a:"3"}, {a:'4'}]) {
+for (k, l in [{a:"3"}, {a:"4"}]) {
     set n.a = l.a
 }

@@ -39,6 +39,11 @@ public class TestCases {
         analyzeDirectory("for");
     }
 
+    @Test
+    public void testFunction()  throws Exception {
+        analyzeDirectory("function");
+    }
+
     @Test()
     public void testAdd1Error1() throws Exception {
         exception.expect(CustomException.class);

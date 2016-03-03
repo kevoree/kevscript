@@ -5,5 +5,13 @@ let a = {
    a: "1"
 }
 
+let a = {
+   key1: {
+        va : []
+   },
+   key2 : {},
+   key3 : {}
+}
+
 let a = {a.b.c.d}
 let g = @random()

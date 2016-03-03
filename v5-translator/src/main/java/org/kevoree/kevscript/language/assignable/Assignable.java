@@ -7,5 +7,5 @@ import org.kevoree.kevscript.language.context.Context;
  */
 public abstract class Assignable {
     public abstract String toText();
-    public abstract String resolve(Context context);
+    public abstract Assignable resolve(Context context);
 }

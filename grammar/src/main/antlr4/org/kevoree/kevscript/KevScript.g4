@@ -31,7 +31,7 @@ left_add_definitions
     | members+=left_add_definition
     ;
 left_add_definition
-    : (short_identifier|AT assignable) (DOT (short_identifier|AT assignable))?
+    : long_identifier_chunk (DOT long_identifier_chunk)?
     ;
 special_internal_operation
     : AT short_identifier LBRACKET RBRACKET
@@ -67,7 +67,7 @@ let_operation
     : DEFINE_TOKEN varName=long_identifier ASSIGN_OP val=assignable
     ;
 function_call
-    : ID LBRACKET assignables? RBRACKET
+    : ID LBRACKET parameters=assignables? RBRACKET
     ;
 for_loop
     : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET iterator=assignables RSQUARE_BRACKET RBRACKET BLOCK_START for_body BLOCK_END
@@ -92,36 +92,37 @@ metaremove
     : METAREMOVE short_identifier long_identifiers
     ;
 object :
-    BLOCK_START ((keyAndValue COMMA)* keyAndValue)? BLOCK_END
+    BLOCK_START (values+=keyAndValue COMMA)* values+=keyAndValue BLOCK_END
+    | BLOCK_START BLOCK_END
     ;
+
 keyAndValue
-    : long_identifier KEYVAL_OP assignable
+    : key=short_identifier KEYVAL_OP value=assignable
     ;
 function_operation
-    : FUNCTION functionName=long_identifier LBRACKET assignables? RBRACKET BLOCK_START basic_operation* ('return' assignable)? BLOCK_END
+    : FUNCTION functionName=long_identifier LBRACKET parameters=assignables? RBRACKET BLOCK_START function_body (RETURN assignable)? BLOCK_END
     ;
+
+function_body : basic_operation* ;
 assignable
     : string
     | long_identifier
-    | AT assignable
+    | dereference
     | object
-    | BLOCK_START long_identifier BLOCK_END
-    | assignable CONCAT assignable
+    | context=BLOCK_START long_identifier BLOCK_END
+    | concat = assignable CONCAT assignable
     | special_internal_operation
     | function_call
     | array
     | assignable LSQUARE_BRACKET NUMERIC_VALUE RSQUARE_BRACKET (DOT assignable )?
     ;
+dereference : AT assignable ;
 array
-    : LSQUARE_BRACKET assignables? RSQUARE_BRACKET
+    : LSQUARE_BRACKET assignables RSQUARE_BRACKET
+    | LSQUARE_BRACKET RSQUARE_BRACKET
     ;
 assignables
     : (assignable COMMA)* assignable
-    | assignable
-    ;
-string
-    : sq_string
-    | dq_string
     ;
 short_identifier
     : ID
@@ -140,19 +141,16 @@ long_identifier
     ;
 long_identifier_chunk
     : short_identifier
-    | AT assignable
+    | dereference
     ;
 type
     : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?
     ;
-
-sq_string
-    : '\'' value=.*? '\''
-    ;
-dq_string
-    : '"' value=.*? '"'
+string
+    : value=STRING
     ;
 
+RETURN : 'return' ;
 ASSIGN_OP : '=' ;
 KEYVAL_OP : ':' ;
 COMMA : ',' ;
@@ -198,6 +196,7 @@ NUMERIC_VALUE
 ID
     : [a-zA-Z_][a-zA-Z0-9_-]*
     ;
+STRING : '"' ~["]* '"';
 WS
     : [ \t\r\n]+ -> skip
     ;

@@ -1,5 +1,5 @@
 add node0, node1 : JavaNode
-let a = '42'
+let a = "42"
 add node3 : JavaNode/a
 add group0 : WSGroup
 

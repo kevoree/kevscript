@@ -33,8 +33,8 @@ public class ObjectAssignable extends Assignable {
     }
 
     @Override
-    public String resolve(Context context) {
-        return toText();
+    public Assignable resolve(Context context) {
+        return this;
     }
 
     public Assignable get(String chunk) {

@@ -1,0 +1,11 @@
+add node0 : JavascriptNode/1.0.0
+set node0.a = "ok1"
+set node0.c = "e1"
+
+add node0 : JavascriptNode/2.0.0
+set node0.a = "ok2"
+set node0.c = "e2"
+
+add node0 : JavascriptNode/3.0.0
+set node0.a = "ok3"
+set node0.c = "e3"
