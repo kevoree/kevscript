@@ -11,6 +11,5 @@ import java.util.Set;
  */
 public abstract class Context {
     public abstract Map<String, Assignable> getMapIdentifiers();
-    public abstract Set<String> getSetInstances();
     public abstract Map<String, KevScriptParser.Function_operationContext> getSetFunctions();
 }

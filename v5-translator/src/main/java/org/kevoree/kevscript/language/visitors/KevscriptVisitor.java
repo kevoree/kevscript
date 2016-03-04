@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.assignable.Assignable;
+import org.kevoree.kevscript.language.assignable.InstanceAssignable;
 import org.kevoree.kevscript.language.assignable.StringAssignable;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
@@ -46,16 +47,29 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     public String visitAdd(AddContext ctx) {
         final List instances = new ArrayList();
         for (Left_add_definitionContext elem : ctx.list_add_members.members) {
-            final String elementId = elem.getText();
-            boolean res = context.getSetInstances().add(elementId);
-            if (!res) {
-                // TODO dealing with function scopes
+            final String elementId = resolveInstanceIdentifier(elem);
+            if (context.getMapIdentifiers().containsKey(elementId)) {
                 throw new CustomException("instance " + elementId + " already declared in this scope");
             }
+            context.getMapIdentifiers().put(elementId, new InstanceAssignable());
             instances.add(elementId);
         }
 
         return "add " + StringUtils.join(instances, ", ") + " : " + visit(ctx.typeDef);
+    }
+
+    private String resolveInstanceIdentifier(Left_add_definitionContext elem) {
+        final List<String> resolved = new ArrayList<>();
+        for(Long_identifier_chunkContext a : elem.long_identifier_chunk()) {
+            if(a.dereference() != null) {
+                final String atValue = a.dereference().assignable().getText();
+                final Assignable referenceVariable = context.getMapIdentifiers().get(atValue);
+                resolved.add(referenceVariable.toText());
+            } else {
+                resolved.add(a.getText());
+            }
+        }
+        return StringUtils.join(resolved, '.');
     }
 
     @Override
@@ -88,7 +102,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final String varName = ctx.varName.getText();
         final Assignable value = new AssignableVisitor(context).visit(ctx.val);
         context.getMapIdentifiers().put(varName, value);
-        return "";
+        return value.toText();
     }
 
     @Override
@@ -108,7 +122,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final String groupId = ctx.groupId.getText();
 
         // TODO when calling a function, add the elements resolve to an instance in the instances context !
-        if (!context.getSetInstances().contains(groupId)) {
+        if (!context.getMapIdentifiers().containsKey(groupId) || !(context.getMapIdentifiers().get(groupId) instanceof InstanceAssignable)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "attach " + visit(ctx.nodes) + " " + groupId;
@@ -117,7 +131,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitDetach(DetachContext ctx) {
         final String groupId = ctx.groupId.getText();
-        if (!context.getSetInstances().contains(groupId)) {
+        if (!context.getMapIdentifiers().containsKey(groupId) || !(context.getMapIdentifiers().get(groupId) instanceof InstanceAssignable)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "detach " + visit(ctx.nodes) + " " + groupId;
@@ -126,7 +140,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitBind(BindContext ctx) {
         final String groupId = ctx.chan.getText();
-        if (!context.getSetInstances().contains(groupId)) {
+        if (!context.getMapIdentifiers().containsKey(groupId) || !(context.getMapIdentifiers().get(groupId) instanceof InstanceAssignable)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "bind " + visit(ctx.nodes) + " " + groupId;
@@ -135,7 +149,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitUnbind(UnbindContext ctx) {
         final String groupId = ctx.chan.getText();
-        if (!context.getSetInstances().contains(groupId)) {
+        if (!context.getMapIdentifiers().containsKey(groupId) || !(context.getMapIdentifiers().get(groupId) instanceof InstanceAssignable)) {
             throw new CustomException("instance " + groupId + " not found");
         }
         return "unbind " + visit(ctx.nodes) + " " + groupId;
@@ -146,7 +160,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final List l = new ArrayList<>();
         for (Long_identifierContext x : ctx.long_identifier()) {
             final String textId = x.getText();
-            if (!context.getSetInstances().contains(textId)) {
+            if (!context.getMapIdentifiers().containsKey(textId) || !(context.getMapIdentifiers().get(textId) instanceof InstanceAssignable)) {
                 throw new CustomException("instance " + textId + " not found");
             }
             l.add(textId);
@@ -269,8 +283,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitSet(SetContext ctx) {
-
-        // TODO : check that the key is a proper instance
         final String slash;
         if (ctx.SLASH() != null) {
             slash = "/" + ctx.frag.getText();
@@ -278,6 +290,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             slash = "";
         }
         final String instance = ctx.key.getText();
+        // resolve instance :
+        // TODO : look for instance.key without the last parth (x.a in the case of x.a.b) and resolve it name;
+
+
         final Assignable visitAssignable = new AssignableVisitor(context).visit(ctx.val);
         final Assignable resolveAssignable = visitAssignable.resolve(context);
         final String assignableString = resolveAssignable.toText();

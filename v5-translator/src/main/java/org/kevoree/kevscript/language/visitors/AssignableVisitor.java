@@ -100,11 +100,11 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
                 final Assignable paramAssignable = assignableBeforeResolve.resolve(this.context);
                 if(paramAssignable == null) {
                     // if not found in identifiers, we look for a data in the instances
-                    if(context.getSetInstances().contains(paramValue.getText())) {
+                    /*if(context.getMapIdentifiers().containsKey(paramValue.getText()) && context.getMapIdentifiers().get(paramValue.getText()) instanceof ) {
                         context.getSetInstances().add(paramNameStr);
-                    } else {
-                        throw new CustomException("Unknow variable " + paramValue.getText());
-                    }
+                    } else {*/
+                    throw new CustomException("Unknow variable " + paramValue.getText());
+                    //}
                 } else {
                     context.getMapIdentifiers().put(paramNameStr, paramAssignable);
                 }

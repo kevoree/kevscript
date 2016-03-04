@@ -1,0 +1,9 @@
+function createNode(nodeName) {
+    add @nodeName : JavaNode
+    return @nodeName
+}
+
+for (val in ["node0", "node1", "node2"]) {
+    let inst = createNode(val)
+    set inst.dico = "1"
+}

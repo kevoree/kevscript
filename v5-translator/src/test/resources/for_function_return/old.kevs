@@ -1,0 +1,6 @@
+add node0 : JavaNode
+set node0.dico = "1"
+add node1 : JavaNode
+set node1.dico = "1"
+add node2 : JavaNode
+set node2.dico = "1"

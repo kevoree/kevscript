@@ -1,0 +1,2 @@
+add node0 : JavaNode
+set node0.a = "b"

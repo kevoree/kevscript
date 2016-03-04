@@ -40,6 +40,16 @@ public class TestCases {
     }
 
     @Test
+    public void testFunctionReturn()  throws Exception {
+        analyzeDirectory("function_return");
+    }
+
+    @Test
+    public void testForFunctionReturn()  throws Exception {
+        analyzeDirectory("for_function_return");
+    }
+
+    @Test
     public void testFunction()  throws Exception {
         analyzeDirectory("function");
     }

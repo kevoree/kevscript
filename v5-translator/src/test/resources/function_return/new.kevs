@@ -1,0 +1,7 @@
+function initInst(nodeName) {
+    add @nodeName: JavaNode
+    return @nodeName
+}
+
+let x = initInst("node0")
+set x.a = "b"

@@ -13,30 +13,22 @@ import java.util.Set;
  */
 public class RootContext extends Context {
     private final Map<String, Assignable> mapIdentifiers;
-    private final Set<String> setInstances;
     private final Map<String, KevScriptParser.Function_operationContext> functions;
 
     public RootContext() {
         mapIdentifiers = new HashMap<>();
-        setInstances = new HashSet<>();
         functions = new HashMap<>();
     }
 
     public RootContext(Context rootContext) {
         this();
         mapIdentifiers.putAll(rootContext.getMapIdentifiers());
-        setInstances.addAll(rootContext.getSetInstances());
         functions.putAll(rootContext.getSetFunctions());
     }
 
     @Override
     public Map<String, Assignable> getMapIdentifiers() {
         return mapIdentifiers;
-    }
-
-    @Override
-    public Set<String> getSetInstances() {
-        return setInstances;
     }
 
     @Override
