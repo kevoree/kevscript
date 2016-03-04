@@ -62,9 +62,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final List instances = new ArrayList();
         for (Left_add_definitionContext elem : ctx.list_add_members.members) {
             final String elementId = resolveInstanceIdentifier(elem);
-            if (context.getMapIdentifiers().containsKey(elementId)) {
+            /*if (context.getMapIdentifiers().containsKey(elementId)) {
                 throw new CustomException("instance " + elementId + " already declared in this scope");
-            }
+            }*/
             context.getMapIdentifiers().put(elementId, new InstanceAssignable());
             instances.add(elementId);
         }
@@ -387,12 +387,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitFunction_body(Function_bodyContext ctx) {
         final StringBuilder sb = new StringBuilder();
-        for (ParseTree a : ctx.children) {
-            final String visit = this.visit(a);
-            sb.append(visit);
-            sb.append('\n');
+        if(ctx.children != null) {
+            for (ParseTree a : ctx.children) {
+                final String visit = this.visit(a);
+                sb.append(visit);
+                sb.append('\n');
+            }
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     @Override

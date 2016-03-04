@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,7 +55,22 @@ public class TestCases {
         analyzeDirectory("function");
     }
 
-    @Test()
+    @Test
+    public void testFunctionError1() throws Exception {
+        exception.expect(CustomException.class);
+        exception.expectMessage("Wrong number of parameters");
+        interpret(pathToString("/function_error/function_err_1.kevs"));
+    }
+
+    @Test
+    public void testFunctionError2() throws Exception {
+        exception.expect(CustomException.class);
+        exception.expectMessage("Wrong number of parameters");
+        interpret(pathToString("/function_error/function_err_2.kevs"));
+    }
+
+    @Test
+    @Ignore
     public void testAdd1Error1() throws Exception {
         exception.expect(CustomException.class);
         exception.expectMessage("instance node0 already declared in this scope");

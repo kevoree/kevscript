@@ -100,7 +100,7 @@ keyAndValue
     : key=short_identifier KEYVAL_OP value=assignable
     ;
 function_operation
-    : FUNCTION functionName=long_identifier LBRACKET parameters=assignables? RBRACKET BLOCK_START function_body (RETURN assignable)? BLOCK_END
+    : FUNCTION functionName=long_identifier LBRACKET parametersNames=assignables? RBRACKET BLOCK_START function_body (RETURN assignable)? BLOCK_END
     ;
 
 function_body : basic_operation* ;

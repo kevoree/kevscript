@@ -33,7 +33,7 @@ public class IdentifierAssignable extends Assignable {
                     currentId = ((ObjectAssignable) currentId).get(currentElementName);
                 } else if (currentId instanceof FunctionAssignable) {
                     currentId = ((FunctionAssignable) currentId).getRetValue();
-                } else if (currentId instanceof StringAssignable) {
+                } else if (currentId instanceof StringAssignable || currentId instanceof InstanceAssignable) {
                     continue;
                 } else if (currentId instanceof IdentifierAssignable) {
                     currentId = new StringAssignable("TODO IdentifierAssignable");

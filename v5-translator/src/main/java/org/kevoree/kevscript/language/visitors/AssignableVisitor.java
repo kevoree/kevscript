@@ -88,13 +88,13 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
         final Function_operationContext functionContext = this.context.getSetFunctions().get(functionName);
         final Function_bodyContext functionBody = functionContext.function_body();
         final RootContext context = new RootContext(this.context);
-        if (functionContext.parameters != null) {
-            if ((functionCall.parameters != null || functionContext.parameters != null) &&
-                    functionCall.parameters.assignable().size() != functionContext.parameters.assignable().size()) {
+        if (functionContext.parametersNames != null && functionContext.parametersNames.assignable().size() > 0) {
+            if (functionCall.parameters == null ||
+                    functionCall.parameters.assignable().size() != functionContext.parametersNames.assignable().size()) {
                 throw new CustomException("Wrong number of parameters");
             }
-            final Iterator<AssignableContext> iteratorParams = functionCall.parameters.assignable().iterator();
-            for (AssignableContext paramName : functionContext.parameters.assignable()) {
+            Iterator<AssignableContext> iteratorParams = functionCall.parameters.assignable().iterator();
+            for (AssignableContext paramName : functionContext.parametersNames.assignable()) {
                 final AssignableContext paramValue = iteratorParams.next();
                 final String paramNameStr = paramName.getText();
                 final Assignable assignableBeforeResolve = new AssignableVisitor(context).visit(paramValue);
@@ -105,7 +105,10 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
                     context.getMapIdentifiers().put(paramNameStr, paramAssignable);
                 }
             }
-
+        } else {
+            if (functionCall.parameters != null || functionCall.parameters.assignable().size()>0) {
+                throw new CustomException("Wrong number of parameters");
+            }
         }
         final String bodyText = new KevscriptVisitor(context).visit(functionBody);
         final FunctionAssignable functionAssignable;
