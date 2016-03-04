@@ -4,24 +4,24 @@ script
     : (basic_operation | function_operation)*
     ;
 basic_operation
-    : add
-    | attach
-    | start
-    | detach
-    | stop
-    | set
-    | bind
-    | unbind
-    | let_operation
-    | function_call
-    | for_loop
-    | netinit
-    | netmerge
-    | netremove
-    | metainit
-    | metamerge
-    | metaremove
-    | remove
+    : add           // makes reference to instances
+    | remove        // makes reference to instances
+    | attach        // makes reference to nodes and groups
+    | detach        // makes reference to nodes and groupes
+    | start         // makes reference to instances
+    | stop          // makes reference to instances
+    | set           // makes reference to instances
+    | bind          // makes reference to instances and channels
+    | unbind        // makes reference to instances and channels
+    | netinit       // makes reference to a node
+    | netmerge      // makes reference to a node
+    | netremove     // makes reference to a node
+    | metainit      // makes reference to a node
+    | metamerge     // makes reference to a node
+    | metaremove    // makes reference to a node
+    | for_loop      // loop over an array of (objects, array, string, and instances)
+    | let_operation // defined values (objects/array/strings/functions)
+    | function_call // execute a function + might return a value (takes objects, arrays, string, functions and instances in parameters)
     ;
 add
     : ADD list_add_members=left_add_definitions KEYVAL_OP typeDef=type
@@ -105,16 +105,16 @@ function_operation
 
 function_body : basic_operation* ;
 assignable
-    : string
-    | long_identifier
-    | dereference
-    | object
-    | context=BLOCK_START long_identifier BLOCK_END
-    | concat = assignable CONCAT assignable
-    | special_internal_operation
-    | function_call
-    | array
-    | assignable LSQUARE_BRACKET NUMERIC_VALUE RSQUARE_BRACKET (DOT assignable )?
+    : string                                                                        // a raw string
+    | long_identifier                                                               // a reference to a ressource
+    | dereference                                                                   // a reference to the value of a ressource
+    | object                                                                        // a object declaration
+    | context=BLOCK_START long_identifier BLOCK_END                                 // an external context reference
+    | concat = assignable CONCAT assignable                                         // a concatenation of two assignables values
+    | special_internal_operation                                                    // a call to an internal special function
+    | array                                                                         // a list of values declaration
+    | assignable LSQUARE_BRACKET NUMERIC_VALUE RSQUARE_BRACKET (DOT assignable )?   // an array index resolution
+    | function_call                                                                 // a function call
     ;
 dereference : AT assignable ;
 array

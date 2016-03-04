@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.assignable.Assignable;
+import org.kevoree.kevscript.language.assignable.FunctionAssignable;
 import org.kevoree.kevscript.language.assignable.InstanceAssignable;
 import org.kevoree.kevscript.language.assignable.StringAssignable;
 import org.kevoree.kevscript.language.context.Context;
@@ -12,6 +13,7 @@ import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.CustomException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,13 +36,25 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
 
     @Override
     public String visitScript(ScriptContext ctx) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (ParseTree a : ctx.children) {
             final String visit = this.visit(a);
             sb.append(visit);
             sb.append('\n');
         }
-        return sb.toString();
+        final String res1 = sb.toString();
+        return cleanupBlankLines(res1);
+    }
+
+    private String cleanupBlankLines(String res1) {
+        final StringBuilder sb2 = new StringBuilder();
+        for(String a : res1.split("\n")) {
+            if(!StringUtils.isBlank(a)) {
+                sb2.append(a);
+                sb2.append('\n');
+            }
+        }
+        return sb2.toString();
     }
 
     @Override
@@ -102,7 +116,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final String varName = ctx.varName.getText();
         final Assignable value = new AssignableVisitor(context).visit(ctx.val);
         context.getMapIdentifiers().put(varName, value);
-        return value.toText();
+
+        final String ret;
+        if(value instanceof FunctionAssignable) {
+            ret = value.toText();
+        } else {
+            ret = "";
+        }
+        return ret;
     }
 
     @Override
@@ -289,7 +310,24 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         } else {
             slash = "";
         }
-        final String instance = ctx.key.getText();
+        final String text = ctx.key.getText();
+        final String[] split = text.split("\\.");
+        final List<String> splited = Arrays.asList(split);
+        final String subId = StringUtils.join(splited.subList(0, split.length-1), '.');
+        final String instance;
+        if(context.getMapIdentifiers().containsKey(subId)) {
+            final Assignable assignable = context.getMapIdentifiers().get(subId);
+            if(assignable instanceof FunctionAssignable) {
+                instance = ((FunctionAssignable)assignable).getRetValue().toText() + "." + splited.get(split.length-1);
+            } else if(assignable instanceof  InstanceAssignable) {
+                instance = text;
+            } else {
+                instance = assignable.toText();
+            }
+        } else {
+            instance = text;
+
+        }
         // resolve instance :
         // TODO : look for instance.key without the last parth (x.a in the case of x.a.b) and resolve it name;
 

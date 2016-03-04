@@ -1,0 +1,13 @@
+let a : {
+    b : {
+        c : "x"
+    },
+    x : "y",
+    z : { n : "b" }
+}
+
+add @a.b.c : JavaNode
+add @a.b.c.d = Ticker
+add @a.b.c.@a.x : JavaNode
+add @a.x.y : ConsolePrinter
+add y.@a.z.n : Test

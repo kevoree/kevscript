@@ -71,12 +71,19 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testSensorNetwork() throws Exception {
+        tester(getClass().getResourceAsStream("/sensor_network.kevs"));
+    }
+
+    @Test
     public void testSet() throws Exception {
         tester(getClass().getResourceAsStream("/set.kevs"));
     }
 
     @Test
-    public void testSensorNetwork() throws Exception {
-        tester(getClass().getResourceAsStream("/sensor_network.kevs"));
+    public void testStop() throws Exception {
+        tester(getClass().getResourceAsStream("/stop.kevs"));
     }
+
+
 }

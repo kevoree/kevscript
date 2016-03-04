@@ -9,6 +9,7 @@ import org.kevoree.kevscript.language.excpt.CustomException;
 import java.util.Iterator;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
+import static org.kevoree.kevscript.language.assignable.IdentifierAssignable.*;
 
 /**
  * Created by mleduc on 02/03/16.
@@ -59,13 +60,13 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
     public Assignable visitLong_identifier(Long_identifierContext ctx) {
         final IdentifierAssignable ret = new IdentifierAssignable();
         for(Long_identifier_chunkContext a : ctx.identifiers) {
-            final IdentifierAssignable.Chunk chunk;
+            final Chunk chunk;
             if(a.dereference() != null)  {
                 final String identifier = a.dereference().assignable().getText();
-                chunk = IdentifierAssignable.at(identifier);
+                chunk = at(identifier);
             } else {
                 final String identifier = a.short_identifier().getText();
-                chunk = IdentifierAssignable.identifier(identifier);
+                chunk = identifier(identifier);
             }
             ret.add(chunk);
         }
@@ -78,7 +79,7 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
      * @return
      */
     @Override
-    public Assignable visitFunction_call(Function_callContext functionCall) {
+    public FunctionAssignable visitFunction_call(Function_callContext functionCall) {
 
         final String functionName = functionCall.ID().getText();
         if (!this.context.getSetFunctions().containsKey(functionName)) {
@@ -99,12 +100,7 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
                 final Assignable assignableBeforeResolve = new AssignableVisitor(context).visit(paramValue);
                 final Assignable paramAssignable = assignableBeforeResolve.resolve(this.context);
                 if(paramAssignable == null) {
-                    // if not found in identifiers, we look for a data in the instances
-                    /*if(context.getMapIdentifiers().containsKey(paramValue.getText()) && context.getMapIdentifiers().get(paramValue.getText()) instanceof ) {
-                        context.getSetInstances().add(paramNameStr);
-                    } else {*/
                     throw new CustomException("Unknow variable " + paramValue.getText());
-                    //}
                 } else {
                     context.getMapIdentifiers().put(paramNameStr, paramAssignable);
                 }
@@ -116,7 +112,7 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
         if(functionContext.RETURN() != null) {
             final Assignable funcationVariableAssignable = this.visit(functionContext.assignable());
             final Assignable returnVariableAssignableResolved = funcationVariableAssignable.resolve(context);
-            functionAssignable = new FunctionAssignable(bodyText, context.getMapIdentifiers().get(returnVariableAssignableResolved));
+            functionAssignable = new FunctionAssignable(bodyText, returnVariableAssignableResolved);
         } else {
             functionAssignable = new FunctionAssignable(bodyText);
         }
