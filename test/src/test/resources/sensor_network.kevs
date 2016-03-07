@@ -1,9 +1,9 @@
 let confs = {
     chan: {
-        host: {adresses.braindead.ws}
+        host: $adresses.braindead.ws
     },
     group: {
-        host: {adresses.braindead.ws},
+        host: $adresses.braindead.ws,
         path: "/edisons"
     },
     nodes: {

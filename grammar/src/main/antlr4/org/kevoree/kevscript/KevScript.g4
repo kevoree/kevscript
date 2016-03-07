@@ -109,7 +109,7 @@ assignable
     | long_identifier                                                               // a reference to a ressource
     | dereference                                                                   // a reference to the value of a ressource
     | object                                                                        // a object declaration
-    | context=BLOCK_START long_identifier BLOCK_END                                 // an external context reference
+    | CTX long_identifier                                                           // an external context reference
     | concat = assignable CONCAT assignable                                         // a concatenation of two assignables values
     | special_internal_operation                                                    // a call to an internal special function
     | array                                                                         // a list of values declaration
@@ -147,7 +147,8 @@ type
     : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?
     ;
 string
-    : value=STRING
+    : value=SQ_STR
+    | value=DQ_STR
     ;
 
 RETURN : 'return' ;
@@ -157,6 +158,7 @@ COMMA : ',' ;
 DOT : '.' ;
 CONCAT : '+' ;
 AT : '@' ;
+CTX: '$';
 SLASH : '/' ;
 LSQUARE_BRACKET : '[' ;
 RSQUARE_BRACKET : ']' ;
@@ -196,7 +198,8 @@ NUMERIC_VALUE
 ID
     : [a-zA-Z_][a-zA-Z0-9_-]*
     ;
-STRING : '"' ~["]* '"';
+SQ_STR: '\'' (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* '\'';
+DQ_STR: '"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
 WS
     : [ \t\r\n]+ -> skip
     ;

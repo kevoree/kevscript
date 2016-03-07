@@ -13,5 +13,5 @@ let a = {
    key3 : {}
 }
 
-let a = {a.b.c.d}
+let a = $a.b.c.d
 let g = @random()
