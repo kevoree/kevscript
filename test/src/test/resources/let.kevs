@@ -15,3 +15,9 @@ let a = {
 
 let a = $a.b.c.d
 let g = @random()
+
+let a = "foo\\n"
+let a = 'yo'
+let a = '\\n'
+let a = ""
+let a = "\\\\t"
