@@ -26,29 +26,30 @@ statement
     | func_call
     ;
 instance
-    : INSTANCE varName=ID ASSIGN (instanceName=assignable?) type
+    : INSTANCE varName=ID ASSIGN (instanceName=expression?) type
     | INSTANCE varNames=var_identifier_list ASSIGN type
     ;
 add
-    : ADD identifier identifier_list
+    : ADD identifier instance_list
+    | ADD LS_BRACKET identifier_list RS_BRACKET
     ;
 remove
-    : REMOVE identifier_list
+    : REMOVE instance_list
     ;
 start
-    : START identifier_list
+    : START instance_list
     ;
 stop
-    : STOP identifier_list
+    : STOP instance_list
     ;
 set
-    : SET key=instance_path (SLASH frag=instance_path)? ASSIGN val=assignable
+    : SET key=instance_path (SLASH frag=instance_path)? ASSIGN val=expression
     ;
 attach
-    : ATTACH groupId=identifier nodes=identifier_list
+    : ATTACH groupId=identifier nodes=instance_list
     ;
 detach
-    : DETACH groupId=identifier nodes=identifier_list
+    : DETACH groupId=identifier nodes=instance_list
     ;
 bind
     : BIND chan=identifier nodes=instance_list
@@ -57,7 +58,7 @@ unbind
     : UNBIND chan=identifier nodes=instance_list
     ;
 let
-    : LET var_identifier_list ASSIGN val=assignable
+    : LET var_identifier_list ASSIGN val=expression
     ;
 netinit
     : NETINIT identifier (object_decl|identifier)
@@ -95,13 +96,13 @@ object_decl
     : LC_BRACKET (values+=key_and_value (COMMA values+=key_and_value)*)? RC_BRACKET
     ;
 key_and_value
-    : key=ID COLON value=assignable
+    : key=ID COLON value=expression
     ;
 array_decl
-    : LS_BRACKET assignables? RS_BRACKET
+    : LS_BRACKET expression_list? RS_BRACKET
     ;
 func_call
-    : ID L_BRACKET parameters=assignables? R_BRACKET
+    : ID L_BRACKET parameters=expression_list? R_BRACKET
     ;
 func_decl
     : FUNCTION functionName=ID L_BRACKET parameters=var_identifier_list? R_BRACKET LC_BRACKET func_body RC_BRACKET
@@ -110,17 +111,20 @@ func_body
     : (statement*) returnStatement?
     ;
 returnStatement
-    : RETURN assignable
+    : RETURN expression
     ;
-assignable
+expression
     : string                            // a raw string
     | object_decl                       // a object declaration
-    | context_identifier                       // a context reference
+    | context_identifier                // a context reference
     | concat = string (CONCAT string)+  // a concatenation of string values
     | array_decl                        // a list of values declaration
     | array_access
     | identifier
     | func_call
+    ;
+expression_list
+    : expression (COMMA expression)*
     ;
 array_access
     : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET
@@ -138,9 +142,6 @@ context_identifier
 context_ref
     : AMPERSAND context_identifier
     ;
-assignables
-    : assignable (COMMA assignable)*
-    ;
 identifier
     : ID
     | ID DOT identifier
@@ -157,7 +158,8 @@ instance_path
     : identifier (COLON identifier)*
     ;
 instance_list
-    : instances+=instance_path (COMMA instances+=instance_path)*
+    : instances+=instance_path
+    | LS_BRACKET instances+=instance_path (COMMA instances+=instance_path)* RS_BRACKET
     ;
 type
     : typeName version? duVersions?
