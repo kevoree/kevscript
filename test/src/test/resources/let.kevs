@@ -1,4 +1,5 @@
 let a = "1"
+let b = "wow"
 let a = b
 let a = {}
 let a = {
@@ -13,5 +14,11 @@ let a = {
    key3 : {}
 }
 
-let a = {a.b.c.d}
-let g = @random()
+let a = &a.b.c.d
+let g = random()
+
+let a = "foo\\n"
+let a = 'yo'
+let a = '\\n'
+let a = ""
+let a = "\\\\t"

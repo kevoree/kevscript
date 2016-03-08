@@ -1,171 +1,200 @@
 grammar KevScript;
 
 script
-    : (basic_operation | function_operation)*
+    : statement*
     ;
-basic_operation
-    : add           // makes reference to instances
-    | remove        // makes reference to instances
-    | attach        // makes reference to nodes and groups
-    | detach        // makes reference to nodes and groupes
-    | start         // makes reference to instances
-    | stop          // makes reference to instances
-    | set           // makes reference to instances
-    | bind          // makes reference to instances and channels
-    | unbind        // makes reference to instances and channels
-    | netinit       // makes reference to a node
-    | netmerge      // makes reference to a node
-    | netremove     // makes reference to a node
-    | metainit      // makes reference to a node
-    | metamerge     // makes reference to a node
-    | metaremove    // makes reference to a node
-    | for_loop      // loop over an array of (objects, array, string, and instances)
-    | let_operation // defined values (objects/array/strings/functions)
-    | function_call // execute a function + might return a value (takes objects, arrays, string, functions and instances in parameters)
+statement
+    : instance
+    | add
+    | remove
+    | attach
+    | detach
+    | start
+    | stop
+    | set
+    | bind
+    | unbind
+    | netinit
+    | netmerge
+    | netremove
+    | metainit
+    | metamerge
+    | metaremove
+    | let
+    | func_decl
+    | for_decl
+    | func_call
+    ;
+instance
+    : INSTANCE varName=ID ASSIGN (instanceName=assignable?) type
+    | INSTANCE varNames=var_identifier_list ASSIGN type
     ;
 add
-    : ADD list_add_members=left_add_definitions KEYVAL_OP typeDef=type
-    ;
-left_add_definitions
-    : (members+=left_add_definition COMMA)* members+=left_add_definition
-    | members+=left_add_definition
-    ;
-left_add_definition
-    : long_identifier_chunk (DOT long_identifier_chunk)?
-    ;
-special_internal_operation
-    : AT short_identifier LBRACKET RBRACKET
+    : ADD identifier identifier_list
     ;
 remove
-    : REMOVE left_hand_identifiers
+    : REMOVE identifier_list
     ;
 start
-    : START left_hand_identifiers
+    : START identifier_list
     ;
 stop
-    : STOP left_hand_identifiers
+    : STOP identifier_list
     ;
 set
-    : SET key=long_identifier (SLASH frag=short_identifier)? ASSIGN_OP val=assignable
+    : SET key=instance_path (SLASH frag=instance_path)? ASSIGN val=assignable
     ;
 attach
-    : ATTACH groupId=long_identifier nodes=long_identifiers
+    : ATTACH groupId=identifier nodes=identifier_list
     ;
 detach
-    : DETACH groupId=long_identifier nodes=long_identifiers
-    ;
-long_identifiers
-    : long_identifier+
+    : DETACH groupId=identifier nodes=identifier_list
     ;
 bind
-    : BIND chan=long_identifier nodes=long_identifiers
+    : BIND chan=identifier nodes=instance_list
     ;
 unbind
-    : UNBIND chan=long_identifier nodes=long_identifiers
+    : UNBIND chan=identifier nodes=instance_list
     ;
-let_operation
-    : DEFINE_TOKEN varName=long_identifier ASSIGN_OP val=assignable
+let
+    : LET var_identifier_list ASSIGN val=assignable
     ;
-function_call
-    : ID LBRACKET parameters=assignables? RBRACKET
-    ;
-for_loop
-    : FOR LBRACKET (index=short_identifier COMMA)? val=short_identifier IN LSQUARE_BRACKET iterator=assignables RSQUARE_BRACKET RBRACKET BLOCK_START for_body BLOCK_END
-    ;
-for_body : basic_operation* ;
 netinit
-    : NETINIT short_identifier object
+    : NETINIT identifier (object_decl|identifier)
     ;
 netmerge
-    : NETMERGE short_identifier object
+    : NETMERGE identifier (object_decl|identifier)
     ;
 netremove
-    : NETREMOVE short_identifier long_identifiers
+    : NETREMOVE identifier identifier_list
     ;
 metainit
-    : METAINIT short_identifier object
+    : METAINIT identifier (object_decl|identifier)
     ;
 metamerge
-    : METAMERGE short_identifier object
+    : METAMERGE identifier (object_decl|identifier)
     ;
 metaremove
-    : METAREMOVE short_identifier long_identifiers
+    : METAREMOVE identifier identifier_list
     ;
-object :
-    BLOCK_START (values+=keyAndValue COMMA)* values+=keyAndValue BLOCK_END
-    | BLOCK_START BLOCK_END
+var_identifier_list
+    : ID (COMMA ID)*
     ;
-
-keyAndValue
-    : key=short_identifier KEYVAL_OP value=assignable
+for_decl
+    : FOR L_BRACKET (index=ID COMMA)? val=ID IN iterable R_BRACKET LC_BRACKET for_body RC_BRACKET
     ;
-function_operation
-    : FUNCTION functionName=long_identifier LBRACKET parametersNames=assignables? RBRACKET BLOCK_START function_body (RETURN assignable)? BLOCK_END
+iterable
+    : array_decl
+    | identifier
+    | context_identifier
     ;
-
-function_body : basic_operation* ;
+for_body
+    : statement*
+    ;
+object_decl
+    : LC_BRACKET (values+=key_and_value (COMMA values+=key_and_value)*)? RC_BRACKET
+    ;
+key_and_value
+    : key=ID COLON value=assignable
+    ;
+array_decl
+    : LS_BRACKET assignables? RS_BRACKET
+    ;
+func_call
+    : ID L_BRACKET parameters=assignables? R_BRACKET
+    ;
+func_decl
+    : FUNCTION functionName=ID L_BRACKET parameters=var_identifier_list? R_BRACKET LC_BRACKET func_body RC_BRACKET
+    ;
+func_body
+    : (statement*) returnStatement?
+    ;
+returnStatement
+    : RETURN assignable
+    ;
 assignable
-    : string                                                                        // a raw string
-    | long_identifier                                                               // a reference to a ressource
-    | dereference                                                                   // a reference to the value of a ressource
-    | object                                                                        // a object declaration
-    | context=BLOCK_START long_identifier BLOCK_END                                 // an external context reference
-    | concat = assignable CONCAT assignable                                         // a concatenation of two assignables values
-    | special_internal_operation                                                    // a call to an internal special function
-    | array                                                                         // a list of values declaration
-    | assignable LSQUARE_BRACKET NUMERIC_VALUE RSQUARE_BRACKET (DOT assignable )?   // an array index resolution
-    | function_call                                                                 // a function call
+    : string                            // a raw string
+    | object_decl                       // a object declaration
+    | context_identifier                       // a context reference
+    | concat = string (CONCAT string)+  // a concatenation of string values
+    | array_decl                        // a list of values declaration
+    | array_access
+    | identifier
+    | func_call
     ;
-dereference : AT assignable ;
-array
-    : LSQUARE_BRACKET assignables RSQUARE_BRACKET
-    | LSQUARE_BRACKET RSQUARE_BRACKET
+array_access
+    : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET
+    ;
+context_identifier
+    : ID
+    | ID context_identifier
+    | ID DOT context_ref
+    | ID DOT context_identifier
+    | AMPERSAND context_identifier // we might regret this one for interpretation :D
+    | array_access
+    | array_access DOT context_identifier
+    | array_access DOT context_ref
+    ;
+context_ref
+    : AMPERSAND context_identifier
     ;
 assignables
-    : (assignable COMMA)* assignable
+    : assignable (COMMA assignable)*
     ;
-short_identifier
+identifier
     : ID
+    | ID DOT identifier
+    | context_ref
+    | func_call
+    | func_call DOT identifier
+    | array_access
+    | array_access DOT identifier
     ;
-left_hand_identifier
-    : short_identifier (DOT short_identifier) ?
-    | short_identifier (DOT BLOCK_START short_identifier BLOCK_END) ?
-    | BLOCK_START short_identifier BLOCK_END
+identifier_list
+    : identifiers+=identifier (COMMA identifiers+=identifier)*
     ;
-left_hand_identifiers
-    : (left_hand_identifier COMMA)* left_hand_identifier
-    | left_hand_identifier
+instance_path
+    : identifier (COLON identifier)*
     ;
-long_identifier
-    : identifiers+=long_identifier_chunk (DOT identifiers+=long_identifier_chunk)*
-    ;
-long_identifier_chunk
-    : short_identifier
-    | dereference
+instance_list
+    : instances+=instance_path (COMMA instances+=instance_path)*
     ;
 type
-    : (ID DOT)? ID (SLASH (NUMERIC_VALUE|long_identifier) (object|long_identifier)?)?
+    : typeName version? duVersions?
+    ;
+typeName
+    : (ID DOT)? ID
+    ;
+version
+    : NUMERIC_VALUE
+    | identifier
+    ;
+duVersions
+    : object_decl
+    | identifier
     ;
 string
-    : value=STRING
+    : value=SQ_STR
+    | value=DQ_STR
     ;
 
 RETURN : 'return' ;
-ASSIGN_OP : '=' ;
-KEYVAL_OP : ':' ;
+ASSIGN : '=' ;
+COLON : ':' ;
 COMMA : ',' ;
 DOT : '.' ;
 CONCAT : '+' ;
-AT : '@' ;
+AMPERSAND: '&';
 SLASH : '/' ;
-LSQUARE_BRACKET : '[' ;
-RSQUARE_BRACKET : ']' ;
-BLOCK_START : '{' ;
-BLOCK_END : '}' ;
-RBRACKET : ')' ;
-LBRACKET : '(' ;
+LS_BRACKET : '[' ;
+RS_BRACKET : ']' ;
+LC_BRACKET : '{' ;
+RC_BRACKET : '}' ;
+R_BRACKET : ')' ;
+L_BRACKET : '(' ;
 FOR : 'for' ;
 IN : 'in' ;
+INSTANCE: 'instance';
 ADD : 'add' ;
 REMOVE : 'remove' ;
 START : 'start' ;
@@ -175,7 +204,7 @@ DETACH : 'detach' ;
 ATTACH : 'attach' ;
 BIND : 'bind' ;
 UNBIND : 'unbind' ;
-DEFINE_TOKEN : 'let' ;
+LET : 'let' ;
 FUNCTION : 'function' ;
 NETINIT : 'net-init' ;
 NETMERGE : 'net-merge' ;
@@ -196,7 +225,12 @@ NUMERIC_VALUE
 ID
     : [a-zA-Z_][a-zA-Z0-9_-]*
     ;
-STRING : '"' ~["]* '"';
+SQ_STR
+    : '\'' (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* '\''
+    ;
+DQ_STR
+    : '"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"'
+    ;
 WS
     : [ \t\r\n]+ -> skip
     ;

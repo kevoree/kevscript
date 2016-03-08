@@ -15,3 +15,9 @@ net-merge node0 {
 
     }
 }
+
+let netConf = {
+  ip: { lo: '127.0.0.1' }
+}
+
+net-merge node0 netConf
