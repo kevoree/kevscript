@@ -1,7 +1,4 @@
-set node0:test = "ok"
-
-set node0:hello/a = "test"
-
-set node0:ticker:tick = "ok"
-
-set node0:comps[42]:tick = "ok"
+set node0#test = "ok"
+set node0#hello/a = "test"
+set node0:ticker#tick = "ok"
+set node0:comps[42]#tick = "ok"
