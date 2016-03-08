@@ -21,93 +21,93 @@ statement
     | metamerge
     | metaremove
     | let
-    | func_decl
-    | for_decl
-    | func_call
+    | funcDecl
+    | forDecl
+    | funcCall
     ;
 instance
     : INSTANCE varName=ID ASSIGN (instanceName=expression?) type
-    | INSTANCE varNames=var_identifier_list ASSIGN type
+    | INSTANCE varNames=varIdentifierList ASSIGN type
     ;
 add
-    : ADD identifier instance_list
-    | ADD LS_BRACKET identifier_list RS_BRACKET
+    : ADD identifier instanceList
+    | ADD LS_BRACKET identifierList RS_BRACKET
     ;
 remove
-    : REMOVE instance_list
+    : REMOVE instanceList
     ;
 start
-    : START instance_list
+    : START instanceList
     ;
 stop
-    : STOP instance_list
+    : STOP instanceList
     ;
 set
-    : SET key=instance_path (SLASH frag=instance_path)? ASSIGN val=expression
+    : SET key=instancePath (SLASH frag=instancePath)? ASSIGN val=expression
     ;
 attach
-    : ATTACH groupId=identifier nodes=instance_list
+    : ATTACH groupId=identifier nodes=instanceList
     ;
 detach
-    : DETACH groupId=identifier nodes=instance_list
+    : DETACH groupId=identifier nodes=instanceList
     ;
 bind
-    : BIND chan=identifier nodes=instance_list
+    : BIND chan=identifier nodes=instanceList
     ;
 unbind
-    : UNBIND chan=identifier nodes=instance_list
+    : UNBIND chan=identifier nodes=instanceList
     ;
 let
-    : LET var_identifier_list ASSIGN val=expression
+    : LET varIdentifierList ASSIGN val=expression
     ;
 netinit
-    : NETINIT identifier (object_decl|identifier)
+    : NETINIT identifier (objectDecl|identifier)
     ;
 netmerge
-    : NETMERGE identifier (object_decl|identifier)
+    : NETMERGE identifier (objectDecl|identifier)
     ;
 netremove
-    : NETREMOVE identifier identifier_list
+    : NETREMOVE identifier identifierList
     ;
 metainit
-    : METAINIT identifier (object_decl|identifier)
+    : METAINIT identifier (objectDecl|identifier)
     ;
 metamerge
-    : METAMERGE identifier (object_decl|identifier)
+    : METAMERGE identifier (objectDecl|identifier)
     ;
 metaremove
-    : METAREMOVE identifier identifier_list
+    : METAREMOVE identifier identifierList
     ;
-var_identifier_list
+varIdentifierList
     : ID (COMMA ID)*
     ;
-for_decl
-    : FOR L_BRACKET (index=ID COMMA)? val=ID IN iterable R_BRACKET LC_BRACKET for_body RC_BRACKET
+forDecl
+    : FOR L_BRACKET (index=ID COMMA)? val=ID IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
     ;
 iterable
-    : array_decl
+    : arrayDecl
     | identifier
-    | context_identifier
+    | contextIdentifier
     ;
-for_body
+forBody
     : statement*
     ;
-object_decl
-    : LC_BRACKET (values+=key_and_value (COMMA values+=key_and_value)*)? RC_BRACKET
+objectDecl
+    : LC_BRACKET (values+=keyAndValue (COMMA values+=keyAndValue)*)? RC_BRACKET
     ;
-key_and_value
+keyAndValue
     : key=ID COLON value=expression
     ;
-array_decl
-    : LS_BRACKET expression_list? RS_BRACKET
+arrayDecl
+    : LS_BRACKET expressionList? RS_BRACKET
     ;
-func_call
-    : ID L_BRACKET parameters=expression_list? R_BRACKET
+funcCall
+    : ID L_BRACKET parameters=expressionList? R_BRACKET
     ;
-func_decl
-    : FUNCTION functionName=ID L_BRACKET parameters=var_identifier_list? R_BRACKET LC_BRACKET func_body RC_BRACKET
+funcDecl
+    : FUNCTION functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
     ;
-func_body
+funcBody
     : (statement*) returnStatement?
     ;
 returnStatement
@@ -115,51 +115,51 @@ returnStatement
     ;
 expression
     : string                            // a raw string
-    | object_decl                       // a object declaration
-    | context_identifier                // a context reference
+    | objectDecl                       // a object declaration
+    | contextIdentifier                // a context reference
     | concat = string (CONCAT string)+  // a concatenation of string values
-    | array_decl                        // a list of values declaration
-    | array_access
+    | arrayDecl                        // a list of values declaration
+    | arrayAccess
     | identifier
-    | func_call
+    | funcCall
     ;
-expression_list
+expressionList
     : expression (COMMA expression)*
     ;
-array_access
+arrayAccess
     : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET
     ;
-context_identifier
+contextIdentifier
     : ID
-    | ID context_identifier
-    | ID DOT context_ref
-    | ID DOT context_identifier
-    | AMPERSAND context_identifier // we might regret this one for interpretation :D
-    | array_access
-    | array_access DOT context_identifier
-    | array_access DOT context_ref
+    | ID contextIdentifier
+    | ID DOT contextRef
+    | ID DOT contextIdentifier
+    | AMPERSAND contextIdentifier // we might regret this one for interpretation :D
+    | arrayAccess
+    | arrayAccess DOT contextIdentifier
+    | arrayAccess DOT contextRef
     ;
-context_ref
-    : AMPERSAND context_identifier
+contextRef
+    : AMPERSAND contextIdentifier
     ;
 identifier
     : ID
     | ID DOT identifier
-    | context_ref
-    | func_call
-    | func_call DOT identifier
-    | array_access
-    | array_access DOT identifier
+    | contextRef
+    | funcCall
+    | funcCall DOT identifier
+    | arrayAccess
+    | arrayAccess DOT identifier
     ;
-identifier_list
+identifierList
     : identifiers+=identifier (COMMA identifiers+=identifier)*
     ;
-instance_path
+instancePath
     : identifier (COLON identifier)*
     ;
-instance_list
-    : instances+=instance_path
-    | LS_BRACKET instances+=instance_path (COMMA instances+=instance_path)* RS_BRACKET
+instanceList
+    : instances+=instancePath
+    | LS_BRACKET instances+=instancePath (COMMA instances+=instancePath)* RS_BRACKET
     ;
 type
     : typeName version? duVersions?
@@ -172,7 +172,7 @@ version
     | identifier
     ;
 duVersions
-    : object_decl
+    : objectDecl
     | identifier
     ;
 string
