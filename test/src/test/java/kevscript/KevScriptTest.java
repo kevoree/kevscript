@@ -22,6 +22,11 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testInstance() throws Exception {
+        tester(getClass().getResourceAsStream("/instance.kevs"));
+    }
+
+    @Test
     public void testAdd() throws Exception {
         tester(getClass().getResourceAsStream("/add.kevs"));
     }

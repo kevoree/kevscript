@@ -1,5 +1,5 @@
 function hello() {
-    add node0: NodeJava
+    add node0 NodeJava
 }
 
 function test(test) {

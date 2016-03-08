@@ -1,14 +1,10 @@
 /* simple iterator only */
-for (itt in [{}]) {
-
-}
+for (value in [{}]) {}
 
 /* simple loop with index and iterator */
-for (k, l in [a]) {
-
-}
+for (index, value in ['node0', 'node1']) {}
 
 /* simple loop with a few instructions */
-for (k, l in [{a:"3"}, {a:"4"}]) {
-    set n.a = l.a
+for (index, value in [{node: 'node0', a:"3"}, {node: 'node1', a:"4"}]) {
+    set node.param = value.a
 }

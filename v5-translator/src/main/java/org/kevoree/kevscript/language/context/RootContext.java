@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class RootContext extends Context {
     private final Map<String, Assignable> mapIdentifiers;
-    private final Map<String, KevScriptParser.Function_operationContext> functions;
+    private final Map<String, KevScriptParser.Func_declContext> functions;
 
     public RootContext() {
         mapIdentifiers = new HashMap<>();
@@ -32,7 +32,7 @@ public class RootContext extends Context {
     }
 
     @Override
-    public Map<String, KevScriptParser.Function_operationContext> getSetFunctions() {
+    public Map<String, KevScriptParser.Func_declContext> getSetFunctions() {
         return this.functions;
     }
 }
