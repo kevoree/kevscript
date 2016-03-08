@@ -8,5 +8,5 @@ remove array[0]
 
 remove ctxVar
 remove &ctxVar, &ctxVar2
-remove &ctxArray[0], node0, var0
+remove [&ctxArray[0], node0, var0]
 remove &ctxObj.subProp
