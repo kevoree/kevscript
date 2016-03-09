@@ -1,4 +1,5 @@
 for (index, element in [{n:"a"}, {n:"b"}, {n:"c"}]) {
-    add node: JavaNode/index
-    set node.conf = element.n
+    instance node = JavaNode index
+    add node
+    set node#conf = element.n
 }

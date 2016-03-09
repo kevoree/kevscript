@@ -1,7 +1,8 @@
 function initInst(nodeName) {
-    add @nodeName: JavaNode
-    return @nodeName
+    instance x = nodeName JavaNode
+    add x
+    return x
 }
 
 let x = initInst("node0")
-set x.a = "b"
+set x#a = "b"

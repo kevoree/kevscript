@@ -1,7 +1,8 @@
 function test(a,b,c) {
-    add node0 : JavascriptNode/a
-    set node0.a = b
-    set node0.c = c.d
+    instance node0 = JavascriptNode a
+    add node0
+    set node0#a = b
+    set node0#c = c.d
 }
 
 

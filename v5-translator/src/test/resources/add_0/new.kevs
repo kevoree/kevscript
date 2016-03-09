@@ -1,1 +1,2 @@
-add node0: JavaNode/1
+instance node0 = JavaNode 1
+add node0

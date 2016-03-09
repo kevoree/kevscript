@@ -32,6 +32,7 @@ instance
 add
     : ADD identifier instanceList
     | ADD LS_BRACKET identifierList RS_BRACKET
+    | ADD instancePath
     ;
 remove
     : REMOVE instanceList
@@ -43,7 +44,7 @@ stop
     : STOP instanceList
     ;
 set
-    : SET key=instancePath (SLASH frag=instancePath)? ASSIGN val=expression
+    : SET dictionaryPath ASSIGN val=expression
     ;
 attach
     : ATTACH groupId=identifier nodes=instanceList
@@ -52,10 +53,10 @@ detach
     : DETACH groupId=identifier nodes=instanceList
     ;
 bind
-    : BIND chan=identifier nodes=instanceList
+    : BIND chan=identifier nodes=portList
     ;
 unbind
-    : UNBIND chan=identifier nodes=instanceList
+    : UNBIND chan=identifier nodes=portList
     ;
 let
     : LET varIdentifierList ASSIGN val=expression
@@ -122,6 +123,8 @@ expression
     | arrayAccess
     | identifier
     | funcCall
+    | instancePath
+    | portPath
     ;
 expressionList
     : expression (COMMA expression)*
@@ -157,9 +160,17 @@ identifierList
 instancePath
     : identifier (COLON identifier)*
     ;
+portPath
+    : instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW) identifier ;
+dictionaryPath
+    : key=instancePath '#' identifier (SLASH frag=identifier)? ;
 instanceList
     : instances+=instancePath
     | LS_BRACKET instances+=instancePath (COMMA instances+=instancePath)* RS_BRACKET
+    ;
+portList
+    : instances+=portPath
+    | LS_BRACKET instances+=portPath (COMMA instances+=portPath)* RS_BRACKET
     ;
 type
     : typeName version? duVersions?
@@ -194,6 +205,8 @@ LC_BRACKET : '{' ;
 RC_BRACKET : '}' ;
 R_BRACKET : ')' ;
 L_BRACKET : '(' ;
+RIGHT_LIGHT_ARROW : '<-' ;
+LEFT_LIGHT_ARROW : '->' ;
 FOR : 'for' ;
 IN : 'in' ;
 INSTANCE: 'instance';
@@ -225,7 +238,7 @@ NUMERIC_VALUE
     : [0-9]+
     ;
 ID
-    : [a-zA-Z_][a-zA-Z0-9_-]*
+    : [a-zA-Z_]([a-zA-Z0-9_-]*[a-zA-Z0-9_])?
     ;
 SQ_STR
     : '\'' (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* '\''

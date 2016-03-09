@@ -22,7 +22,7 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
         this.context = context;
     }
 
-    @Override
+    /*@Override
     public Assignable visitAssignable(AssignableContext ctx) {
         final Assignable ret = null;
 //        if(ctx.string() != null) {
@@ -39,7 +39,7 @@ public class AssignableVisitor extends KevScriptBaseVisitor<Assignable> {
 //            throw new IllegalStateException("Assignable type not implemented yet : " + ctx.getText());
 //        }
         return ret;
-    }
+    }*/
 
     @Override
     public Assignable visitString(StringContext ctx) {

@@ -6,5 +6,5 @@ for (index, value in ['node0', 'node1']) {}
 
 /* simple loop with a few instructions */
 for (index, value in [{node: 'node0', a:"3"}, {node: 'node1', a:"4"}]) {
-    set node.param = value.a
+    set node#param = value.a
 }

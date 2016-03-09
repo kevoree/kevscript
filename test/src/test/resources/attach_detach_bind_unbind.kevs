@@ -1,13 +1,15 @@
 attach group0 node0
-attach group0 node1, node2
+attach group0 [node1, node2]
 detach group0 node0
-detach group0 node1, node2
+detach group0 [node1, node2]
 
 bind chan0 node1.comp1<-input
-bind chan0 node0.comp1<-input, node1.comp2->output, node1.comp3->input
-unbind chan0 node0.comp1<-input, node1.comp2->output, node1.comp3<-input
+bind chan0 [node0.comp1<-input, node1comp2->output, node1.comp3->input]
+unbind chan0 [node0.comp1<-input, node1.comp2->output, node1.comp3<-input]
 
 
+bind chan0.a node0:ticker->output
+bind chan0 node0:ticker->a.b.c
 
 
 let x = "group0"

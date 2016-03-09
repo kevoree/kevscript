@@ -3,5 +3,9 @@ function hello() {
 }
 
 function test(test) {
-    set node0.a = test
+    set node0#a = test
+}
+
+function test(a) {
+    return "ok"
 }

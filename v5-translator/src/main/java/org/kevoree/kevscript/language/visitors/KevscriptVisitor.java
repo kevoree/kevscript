@@ -60,19 +60,19 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitAdd(AddContext ctx) {
         final List instances = new ArrayList();
-        for (Left_add_definitionContext elem : ctx.list_add_members.members) {
+        /*for (LeftAddDefinitionContext elem : ctx.listAddMembers.members) {
             final String elementId = resolveInstanceIdentifier(elem);
-            /*if (context.getMapIdentifiers().containsKey(elementId)) {
+            / *if (context.getMapIdentifiers().containsKey(elementId)) {
                 throw new CustomException("instance " + elementId + " already declared in this scope");
-            }*/
+            } * /
             context.getMapIdentifiers().put(elementId, new InstanceAssignable());
             instances.add(elementId);
-        }
+        }*/
 
-        return "add " + StringUtils.join(instances, ", ") + " : " + visit(ctx.typeDef);
+        return "add " ;//+ StringUtils.join(instances, ", ") + " : " + visit(ctx.typeDef);
     }
 
-    private String resolveInstanceIdentifier(Left_add_definitionContext elem) {
+    /*private String resolveInstanceIdentifier(Left_add_definitionContext elem) {
         final List<String> resolved = new ArrayList<>();
         for(Long_identifier_chunkContext a : elem.long_identifier_chunk()) {
             if(a.dereference() != null) {
@@ -84,17 +84,17 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             }
         }
         return StringUtils.join(resolved, '.');
-    }
+    }*/
 
     @Override
     public String visitType(TypeContext ctx) {
         final String version = buildVersion(ctx);
-        return StringUtils.join(ctx.ID(), ".") + version;
+        return "TODO"; //StringUtils.join(ctx.ID(), ".") + version;
     }
 
     private String buildVersion(TypeContext ctx) {
         final String version;
-        final boolean hasSlash = ctx.SLASH() != null;
+        /*final boolean hasSlash = ctx.SLASH() != null;
         if (hasSlash) {
             if (ctx.NUMERIC_VALUE() != null) {
                 version = "/" + convertVersion(ctx.NUMERIC_VALUE().getText());
@@ -103,15 +103,15 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             }
         } else {
             version = "";
-        }
-        return version;
+        }*/
+        return "TODO";
     }
 
     private String convertVersion(String text) {
         return StringUtils.join(StringUtils.rightPad(text, 3, "0").toCharArray(), '.');
     }
 
-    @Override
+   /* @Override
     public String visitLet_operation(Let_operationContext ctx) {
         final String varName = ctx.varName.getText();
         final Assignable value = new AssignableVisitor(context).visit(ctx.val);
@@ -124,9 +124,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             ret = "";
         }
         return ret;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitLong_identifier(Long_identifierContext ctx) {
         final String identifier = ctx.identifiers.get(0).getText();
         // TODO : looking for mainGroup in identifiers but is really an instance !
@@ -135,7 +135,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         } else {
             throw new CustomException("Can't find " + identifier);
         }
-    }
+    }*/
 
 
     @Override
@@ -176,7 +176,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         return "unbind " + visit(ctx.nodes) + " " + groupId;
     }
 
-    @Override
+    /*@Override
     public String visitLong_identifiers(Long_identifiersContext ctx) {
         final List l = new ArrayList<>();
         for (Long_identifierContext x : ctx.long_identifier()) {
@@ -187,37 +187,37 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             l.add(textId);
         }
         return StringUtils.join(l, ", ");
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitAssignable(AssignableContext ctx) {
         return new AssignableVisitor(this.context).visit(ctx).toText();
-    }
+    }*/
 
 
-    @Override
+   /* @Override
     public String visitFunction_operation(Function_operationContext ctx) {
         // we do not offer scope to functions.
         context.getSetFunctions().put(ctx.functionName.getText(), ctx);
         return "";
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitArray(ArrayContext ctx) {
         return super.visitArray(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitAssignables(AssignablesContext ctx) {
         return super.visitAssignables(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitBasic_operation(Basic_operationContext ctx) {
         return super.visitBasic_operation(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitFor_loop(For_loopContext ctx) {
         final StringBuilder sb = new StringBuilder();
         int index = 0;
@@ -235,32 +235,32 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             index++;
         }
         return sb.toString();
-    }
+    }*/
 
     @Override
     public String visitKeyAndValue(KeyAndValueContext ctx) {
         return super.visitKeyAndValue(ctx);
     }
 
-    @Override
+    /*@Override
     public String visitLeft_add_definition(Left_add_definitionContext ctx) {
         return super.visitLeft_add_definition(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitLeft_add_definitions(Left_add_definitionsContext ctx) {
         return super.visitLeft_add_definitions(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitLeft_hand_identifier(Left_hand_identifierContext ctx) {
         return super.visitLeft_hand_identifier(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitLeft_hand_identifiers(Left_hand_identifiersContext ctx) {
         return super.visitLeft_hand_identifiers(ctx);
-    }
+    }*/
 
     @Override
     public String visitMetainit(MetainitContext ctx) {
@@ -292,10 +292,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         return super.visitNetremove(ctx);
     }
 
-    @Override
+    /*@Override
     public String visitObject(ObjectContext ctx) {
         return super.visitObject(ctx);
-    }
+    }*/
 
     @Override
     public String visitRemove(RemoveContext ctx) {
@@ -305,7 +305,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
     @Override
     public String visitSet(SetContext ctx) {
         final String slash;
-        if (ctx.SLASH() != null) {
+        /*if (ctx.SLASH() != null) {
             slash = "/" + ctx.frag.getText();
         } else {
             slash = "";
@@ -336,17 +336,19 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         final Assignable resolveAssignable = visitAssignable.resolve(context);
         final String assignableString = resolveAssignable.toText();
         return "set " + instance + slash + " = \"" + assignableString + "\"";
+        */
+        return "TODO";
     }
 
-    @Override
+    /*@Override
     public String visitShort_identifier(Short_identifierContext ctx) {
         return super.visitShort_identifier(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitSpecial_internal_operation(Special_internal_operationContext ctx) {
         return super.visitSpecial_internal_operation(ctx);
-    }
+    }*/
 
     @Override
     public String visitStart(StartContext ctx) {
@@ -363,7 +365,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
         return super.visitString(ctx);
     }
 
-    @Override
+    /*@Override
     public String visitFor_body(For_bodyContext ctx) {
         final StringBuilder sb = new StringBuilder();
         for (ParseTree a : ctx.children) {
@@ -372,19 +374,19 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             sb.append('\n');
         }
         return sb.toString();
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitLong_identifier_chunk(Long_identifier_chunkContext ctx) {
         return super.visitLong_identifier_chunk(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitDereference(DereferenceContext ctx) {
         return super.visitDereference(ctx);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitFunction_body(Function_bodyContext ctx) {
         final StringBuilder sb = new StringBuilder();
         if(ctx.children != null) {
@@ -395,10 +397,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<String> {
             }
         }
         return sb.toString().trim();
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String visitFunction_call(Function_callContext ctx) {
         return new AssignableVisitor(this.context).visit(ctx).toText();
-    }
+    }*/
 }

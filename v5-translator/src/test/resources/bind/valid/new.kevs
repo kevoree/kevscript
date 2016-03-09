@@ -1,4 +1,5 @@
-add node0: JavaNode
-add node1: JSNode
-add chan0: WSChan
-bind chan0 node0 node1
+instance node0 = JavaNode
+instance node1 = JsNode
+instance chan0 = WSChan
+add [node0, node1, chan0]
+bind chan0 [node0:comp1<-input, node1:comp1<-input]

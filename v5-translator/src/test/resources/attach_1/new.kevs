@@ -1,6 +1,9 @@
-add node0, node1 : JavaNode
+instance node0, node1 = JavaNode
+add [node0, node1]
 let a = "42"
-add node3 : JavaNode/a
-add group0 : WSGroup
+instance node3 = JavaNode a
+add [node3]
+instance group0 =  WSGroup
+add [group0]
 
-attach group0 node3 node0 node1
+attach group0 [node3, node0, node1]

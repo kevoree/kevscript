@@ -8,12 +8,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.kevoree.kevscript.KevScriptParser.*;
+
 /**
  * Created by mleduc on 02/03/16.
  */
 public class RootContext extends Context {
     private final Map<String, Assignable> mapIdentifiers;
-    private final Map<String, KevScriptParser.Func_declContext> functions;
+    private final Map<String, KevScriptParser.FuncDeclContext> functions;
 
     public RootContext() {
         mapIdentifiers = new HashMap<>();
@@ -32,7 +34,7 @@ public class RootContext extends Context {
     }
 
     @Override
-    public Map<String, KevScriptParser.Func_declContext> getSetFunctions() {
+    public Map<String, KevScriptParser.FuncDeclContext> getSetFunctions() {
         return this.functions;
     }
 }

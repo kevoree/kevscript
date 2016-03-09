@@ -100,14 +100,14 @@ public class TestCases {
     public void testDetachError1() throws Exception {
         exception.expect(CustomException.class);
         exception.expectMessage("instance node1 not found");
-        interpret(pathToString("/attach_0/error1.kevs"));
+        interpret(pathToString("/detach/error1.kevs"));
     }
 
     @Test
     public void testDetachError2() throws Exception {
         exception.expect(CustomException.class);
         exception.expectMessage("instance group0 not found");
-        interpret(pathToString("/attach_0/error2.kevs"));
+        interpret(pathToString("/detach/error2.kevs"));
     }
 
     @Test

@@ -1,2 +1,3 @@
-add chan0: WSChan
-bind chan0 node1
+instance chan0 = WSChan
+add chan0
+bind chan0 node1:comp1->outpaut
