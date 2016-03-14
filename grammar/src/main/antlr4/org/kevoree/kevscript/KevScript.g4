@@ -20,7 +20,7 @@ statement
     | metainit
     | metamerge
     | metaremove
-    | let
+    | varDecl
     | funcDecl
     | forDecl
     | funcCall
@@ -58,7 +58,7 @@ bind
 unbind
     : UNBIND chan=identifier nodes=portList
     ;
-let
+varDecl
     : LET varIdentifierList ASSIGN val=expression
     ;
 netinit
@@ -161,7 +161,7 @@ instancePath
     : identifier (COLON identifier)*
     ;
 portPath
-    : instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW) identifier ;
+    : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier ;
 dictionaryPath
     : key=instancePath '#' identifier (SLASH frag=identifier)? ;
 instanceList
