@@ -68,7 +68,8 @@ netmerge
     : NETMERGE identifier (objectDecl|identifier)
     ;
 netremove
-    : NETREMOVE identifier identifierList
+    : NETREMOVE identifier identifier
+    | NETREMOVE identifier LS_BRACKET identifierList RS_BRACKET
     ;
 metainit
     : METAINIT identifier (objectDecl|identifier)
@@ -77,7 +78,8 @@ metamerge
     : METAMERGE identifier (objectDecl|identifier)
     ;
 metaremove
-    : METAREMOVE identifier identifierList
+    : METAREMOVE identifier identifier
+    | METAREMOVE identifier LS_BRACKET identifierList RS_BRACKET
     ;
 varIdentifierList
     : ID (COMMA ID)*
@@ -155,16 +157,17 @@ identifier
     | arrayAccess DOT identifier
     ;
 identifierList
-    : identifiers+=identifier
-    | LS_BRACKET identifiers+=identifier (COMMA identifiers+=identifier)* RS_BRACKET
+    : identifiers+=identifier (COMMA identifiers+=identifier)*
     ;
 instancePath
     : identifier (COLON identifier)*
     ;
 portPath
-    : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier ;
+    : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier
+    ;
 dictionaryPath
-    : key=instancePath '#' identifier (SLASH frag=identifier)? ;
+    : key=instancePath '#' identifier (SLASH frag=identifier)?
+    ;
 instanceList
     : instances+=instancePath
     | LS_BRACKET instances+=instancePath (COMMA instances+=instancePath)* RS_BRACKET
