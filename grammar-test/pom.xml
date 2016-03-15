@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>kevscript-test</artifactId>
-  <name>Kevoree :: KevScript :: Tests</name>
+	<artifactId>kevscript-grammar-test</artifactId>
+  	<name>Kevoree :: KevScript :: Tests</name>
 
   <parent>
 		<artifactId>kevscript</artifactId>

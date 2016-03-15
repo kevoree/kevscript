@@ -1,6 +1,0 @@
-let a = b
-let b = ''
-let c = {
-  a: "1"
-  b : e
-}

@@ -16,7 +16,7 @@
 
     <modules>
         <module>grammar</module>
-        <module>test</module>
+        <module>grammar-test</module>
         <module>interpreter</module>
         <module>v5-translator</module>
     </modules>
