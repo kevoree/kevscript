@@ -1,0 +1,3 @@
+meta-remove node0 [a.b.c, d.e.f]
+meta-remove a1 a
+meta-remove nodejava z.l0.ip

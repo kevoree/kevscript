@@ -155,7 +155,8 @@ identifier
     | arrayAccess DOT identifier
     ;
 identifierList
-    : identifiers+=identifier (COMMA identifiers+=identifier)*
+    : identifiers+=identifier
+    | LS_BRACKET identifiers+=identifier (COMMA identifiers+=identifier)* RS_BRACKET
     ;
 instancePath
     : identifier (COLON identifier)*

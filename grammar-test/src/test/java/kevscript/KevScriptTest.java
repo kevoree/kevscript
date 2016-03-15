@@ -55,18 +55,33 @@ public class KevScriptTest {
     public void testLet() throws Exception {
         tester(getClass().getResourceAsStream("/let.kevs"));
     }
+
+    @Test
+    public void testMetaInit() throws Exception {
+        tester(getClass().getResourceAsStream("/meta-init.kevs"));
+    }
+
+    @Test
+    public void testMetaMerge() throws Exception {
+        tester(getClass().getResourceAsStream("/meta-merge.kevs"));
+    }
+
+    @Test
+    public void testMetaRemove() throws Exception {
+        tester(getClass().getResourceAsStream("/meta-remove.kevs"));
+    }
     @Test
     public void testNetInit() throws Exception {
         tester(getClass().getResourceAsStream("/net-init.kevs"));
     }
 
     @Test
-    public void testNetmerge() throws Exception {
+    public void testNetMerge() throws Exception {
         tester(getClass().getResourceAsStream("/net-merge.kevs"));
     }
 
     @Test
-    public void testNetremove() throws Exception {
+    public void testNetRemove() throws Exception {
         tester(getClass().getResourceAsStream("/net-remove.kevs"));
     }
 
