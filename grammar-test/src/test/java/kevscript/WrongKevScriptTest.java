@@ -80,4 +80,9 @@ public class WrongKevScriptTest {
     public void testFuncDeclInObjectDecl() throws IllegalStateException {
         tester("let wrong = { func: function () {} }");
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testArrayInArrayNetRemove() throws IllegalStateException {
+        tester("net-remove wrong [[a]]");
+    }
 }

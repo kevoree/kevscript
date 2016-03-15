@@ -22,3 +22,6 @@ let a = 'yo'
 let a = '\\n'
 let a = ""
 let a = "\\\\t"
+
+let concat = "aaa" + fct()
+fct(a + "1", "_" + c)

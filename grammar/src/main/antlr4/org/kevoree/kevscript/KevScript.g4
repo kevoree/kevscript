@@ -117,11 +117,11 @@ returnStatement
     : RETURN expression
     ;
 expression
-    : string                            // a raw string
-    | objectDecl                       // a object declaration
-    | contextIdentifier                // a context reference
-    | concat = string (CONCAT string)+  // a concatenation of string values
-    | arrayDecl                        // a list of values declaration
+    : string                        // a raw string
+    | objectDecl                    // a object declaration
+    | contextIdentifier             // a context reference
+    | expression CONCAT expression  // a concatenation of expressions
+    | arrayDecl                     // a list of values declaration
     | arrayAccess
     | identifier
     | funcCall
