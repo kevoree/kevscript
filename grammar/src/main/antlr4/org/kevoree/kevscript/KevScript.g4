@@ -103,7 +103,7 @@ arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : ID L_BRACKET parameters=expressionList? R_BRACKET
+    : AT? ID L_BRACKET parameters=expressionList? R_BRACKET
     ;
 funcDecl
     : FUNCTION functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
@@ -191,6 +191,7 @@ string
     | value=DQ_STR
     ;
 
+AT : '@' ;
 RETURN : 'return' ;
 ASSIGN : '=' ;
 COLON : ':' ;
