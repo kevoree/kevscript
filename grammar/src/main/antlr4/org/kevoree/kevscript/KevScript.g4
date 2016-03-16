@@ -27,12 +27,12 @@ statement
     ;
 instance
     : INSTANCE varName=ID ASSIGN (instanceName=expression?) type
-    | INSTANCE varNames=varIdentifierList ASSIGN type
+    | INSTANCE varNames+=varIdentifierList ASSIGN type
     ;
 add
-    : ADD identifier instanceList
-    | ADD LS_BRACKET identifierList RS_BRACKET
-    | ADD instancePath
+    : ADD identifier (LS_BRACKET identifierList RS_BRACKET | identifier)? // attach a list of components to a node. if the list is empty the node is added to the model
+    | ADD LS_BRACKET identifierList RS_BRACKET                            // add a list of instances at the root of the model
+    | ADD instanceList                                                    // add a list of instances path (add a:b = add component b to node a)
     ;
 remove
     : REMOVE instanceList

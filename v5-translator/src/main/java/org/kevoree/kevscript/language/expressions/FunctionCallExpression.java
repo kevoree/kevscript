@@ -1,8 +1,5 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.kevoree.kevscript.language.context.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +23,9 @@ public class FunctionCallExpression extends Expression {
     }
 
     @Override
-    public Expression resolve(Context context) {
-        throw new NotImplementedException("function resolution not working");
+    public boolean match(Expression identifier) {
+        return false;
     }
-
 
     public void add(final Expression expression) {
         expressions.add(expression);

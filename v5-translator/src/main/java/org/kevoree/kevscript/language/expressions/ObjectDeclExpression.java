@@ -1,7 +1,5 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.kevoree.kevscript.language.context.Context;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +30,10 @@ public class ObjectDeclExpression extends Expression {
     }
 
     @Override
-    public Expression resolve(Context context) {
-        return this;
+    public boolean match(Expression identifier) {
+        return false;
     }
+
 
     public Expression get(String chunk) {
         return this.values.get(chunk);

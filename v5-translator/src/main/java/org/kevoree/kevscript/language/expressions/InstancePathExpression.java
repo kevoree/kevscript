@@ -1,7 +1,6 @@
 package org.kevoree.kevscript.language.expressions;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.kevoree.kevscript.language.context.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +18,10 @@ public class InstancePathExpression extends Expression {
     }
 
     @Override
-    public Expression resolve(Context context) {
-        throw new NotImplementedException("TODO");
+    public boolean match(Expression identifier) {
+        return false;
     }
+
 
     public void add(Expression expression) {
         this.expressions.add(expression);

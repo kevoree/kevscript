@@ -1,15 +1,13 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.kevoree.kevscript.language.context.Context;
-
 /**
  * Created by mleduc on 02/03/16.
  */
 public class StringExpression extends Expression {
-    private final String text;
+    public final String text;
 
     public StringExpression(final String text) {
-        this.text = text;
+        this.text = text.replaceAll("\"", "");
     }
 
     @Override
@@ -18,8 +16,8 @@ public class StringExpression extends Expression {
     }
 
     @Override
-    public Expression resolve(Context context) {
-        return this;
+    public boolean match(Expression identifier) {
+        return false;
     }
 
     @Override

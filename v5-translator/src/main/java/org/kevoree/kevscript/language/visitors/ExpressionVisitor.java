@@ -2,7 +2,6 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.expressions.*;
 
@@ -151,6 +150,17 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
         final Expression ret;
         if(ctx.instancePath() != null) {
             ret = new PortPathExpression(this.visit(ctx.instancePath()), ctx.LEFT_LIGHT_ARROW() != null, this.visit(ctx.identifier()));
+        } else {
+            ret = this.visit(ctx.identifier());
+        }
+        return ret;
+    }
+
+    @Override
+    public Expression visitVersion(VersionContext ctx) {
+        final Expression ret;
+        if(ctx.NUMERIC_VALUE() != null) {
+            ret = new VersionExpression(Long.parseLong(ctx.NUMERIC_VALUE().getText()));
         } else {
             ret = this.visit(ctx.identifier());
         }

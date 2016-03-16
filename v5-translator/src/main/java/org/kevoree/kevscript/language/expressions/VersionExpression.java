@@ -1,11 +1,13 @@
 package org.kevoree.kevscript.language.expressions;
 
 /**
- * Created by mleduc on 15/03/16.
+ * Created by mleduc on 16/03/16.
  */
-public class ContextRefExpression extends Expression {
-    public ContextRefExpression(Expression visit) {
-        // TODO
+public class VersionExpression extends Expression {
+    public final long version;
+
+    public VersionExpression(long version) {
+        this.version = version;
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.kevoree.kevscript.KevScriptLexer;
 import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.CommandsToString;
 import org.kevoree.kevscript.language.excpt.CustomException;
 import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
@@ -172,6 +173,6 @@ public class TestCases {
         parser.removeErrorListeners();
         parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
         final ParseTree tree = parser.script();
-        return new KevscriptVisitor().visit(tree).toString();
+        return new CommandsToString().proceed(new KevscriptVisitor().visit(tree));
     }
 }

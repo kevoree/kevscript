@@ -85,4 +85,9 @@ public class WrongKevScriptTest {
     public void testArrayInArrayNetRemove() throws IllegalStateException {
         tester("net-remove wrong [[a]]");
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testAddInstancesPathToIdentifier() throws IllegalStateException {
+        tester("add a [a:b, b:c]");
+    }
 }

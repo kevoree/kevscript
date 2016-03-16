@@ -1,40 +1,22 @@
 package org.kevoree.kevscript.language.commands;
 
+import org.kevoree.kevscript.language.commands.element.InstanceElement;
+
 /**
  * Created by mleduc on 15/03/16.
  */
 public class AddCommand extends AbstractCommand {
 
-    private final String instanceName;
-    private final String typeDefinition;
-    private final String version;
+    public final InstanceElement parent;
+    public final InstanceElement child;
 
-    public AddCommand(String instanceName, String typeDefinition, String version) {
-        this.instanceName = instanceName;
-        this.typeDefinition = typeDefinition;
-        this.version = version;
+    public AddCommand(final InstanceElement parent, final InstanceElement child) {
+        this.parent = parent;
+        this.child = child;
     }
 
-    public AddCommand(String instanceName, String typeDefinition) {
-        this.instanceName = instanceName;
-        this.typeDefinition = typeDefinition;
-        this.version = null;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("add");
-        sb.append(' ');
-        sb.append(instanceName);
-        sb.append(' ');
-        sb.append(':');
-        sb.append(' ');
-        sb.append(typeDefinition);
-        if(version != null) {
-            sb.append('/');
-            sb.append(version);
-        }
-        return sb.toString();
+    public AddCommand(final InstanceElement child) {
+        this.parent = null;
+        this.child = child;
     }
 }

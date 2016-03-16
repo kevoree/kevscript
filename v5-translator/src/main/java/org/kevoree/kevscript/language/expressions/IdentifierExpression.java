@@ -1,14 +1,12 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.kevoree.kevscript.language.context.Context;
-
 /**
  * Created by mleduc on 15/03/16.
  */
 public class IdentifierExpression extends Expression {
 
-    private final Expression left;
-    private final Expression right;
+    public final Expression left;
+    public final Expression right;
 
     public IdentifierExpression(final Expression left) {
         this.left = left;
@@ -26,7 +24,9 @@ public class IdentifierExpression extends Expression {
     }
 
     @Override
-    public Expression resolve(Context context) {
-        return null;
+    public boolean match(Expression identifier) {
+        return false;
     }
+
+
 }

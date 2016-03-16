@@ -1,2 +1,5 @@
-instance node0 = JavaNode 1
-add node0
+instance node1 = "node0" JavaNode 1
+add node1
+
+instance node2 = "node1" JavaNode
+add node2
