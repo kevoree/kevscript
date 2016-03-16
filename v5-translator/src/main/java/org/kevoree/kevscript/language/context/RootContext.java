@@ -1,40 +1,38 @@
 package org.kevoree.kevscript.language.context;
 
 import org.kevoree.kevscript.KevScriptParser;
-import org.kevoree.kevscript.language.assignable.Assignable;
+import org.kevoree.kevscript.language.expressions.Expression;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static org.kevoree.kevscript.KevScriptParser.*;
 
 /**
  * Created by mleduc on 02/03/16.
  */
 public class RootContext extends Context {
-    private final Map<String, Assignable> mapIdentifiers;
+    private final List<Expression> mapIdentifiers;
     private final Map<String, KevScriptParser.FuncDeclContext> functions;
 
     public RootContext() {
-        mapIdentifiers = new HashMap<>();
+        mapIdentifiers = new ArrayList<>();
         functions = new HashMap<>();
     }
 
     public RootContext(Context rootContext) {
         this();
-        mapIdentifiers.putAll(rootContext.getMapIdentifiers());
-        functions.putAll(rootContext.getSetFunctions());
+        mapIdentifiers.addAll(rootContext.getIdentifiers());
+        functions.putAll(rootContext.getFunctions());
     }
 
     @Override
-    public Map<String, Assignable> getMapIdentifiers() {
+    public List<Expression> getIdentifiers() {
         return mapIdentifiers;
     }
 
     @Override
-    public Map<String, KevScriptParser.FuncDeclContext> getSetFunctions() {
+    public Map<String, KevScriptParser.FuncDeclContext> getFunctions() {
         return this.functions;
     }
 }

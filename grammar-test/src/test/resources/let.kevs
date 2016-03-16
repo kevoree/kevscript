@@ -25,3 +25,5 @@ let a = "\\\\t"
 
 let concat = "aaa" + fct()
 fct(a + "1", "_" + c)
+
+let u = a.b.c[2]

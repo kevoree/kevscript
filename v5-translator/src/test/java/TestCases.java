@@ -172,6 +172,6 @@ public class TestCases {
         parser.removeErrorListeners();
         parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
         final ParseTree tree = parser.script();
-        return new KevscriptVisitor().visit(tree);
+        return new KevscriptVisitor().visit(tree).toString();
     }
 }

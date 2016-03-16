@@ -20,7 +20,7 @@ statement
     | metainit
     | metamerge
     | metaremove
-    | varDecl
+    | letDecl
     | funcDecl
     | forDecl
     | funcCall
@@ -58,7 +58,7 @@ bind
 unbind
     : UNBIND chan=identifier nodes=portList
     ;
-varDecl
+letDecl
     : LET varIdentifierList ASSIGN val=expression
     ;
 netinit
@@ -132,29 +132,22 @@ expressionList
     : expression (COMMA expression)*
     ;
 arrayAccess
-    : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET
+    : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET // IMPLEM : can numeric value be replaced by a variable ?
     ;
 contextIdentifier
     : ID
-    | ID contextIdentifier
-    | ID DOT contextRef
-    | ID DOT contextIdentifier
-    | AMPERSAND contextIdentifier // we might regret this one for interpretation :D
+    | contextRef
     | arrayAccess
-    | arrayAccess DOT contextIdentifier
-    | arrayAccess DOT contextRef
+    | contextIdentifier DOT contextIdentifier
     ;
 contextRef
     : AMPERSAND contextIdentifier
     ;
 identifier
-    : ID
-    | ID DOT identifier
+    : ID (DOT identifier) ?
     | contextRef
-    | funcCall
-    | funcCall DOT identifier
-    | arrayAccess
-    | arrayAccess DOT identifier
+    | funcCall (DOT identifier) ?
+    | arrayAccess (DOT identifier) ?
     ;
 identifierList
     : identifiers+=identifier (COMMA identifiers+=identifier)*
@@ -166,8 +159,9 @@ portPath
     : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier
     ;
 dictionaryPath
-    : key=instancePath '#' identifier (SLASH frag=identifier)?
+    : key=instancePath SHARP identifier (SLASH frag=identifier)?
     ;
+
 instanceList
     : instances+=instancePath
     | LS_BRACKET instances+=instancePath (COMMA instances+=instancePath)* RS_BRACKET
@@ -196,6 +190,7 @@ string
     ;
 
 AT : '@' ;
+SHARP : '#' ;
 RETURN : 'return' ;
 ASSIGN : '=' ;
 COLON : ':' ;

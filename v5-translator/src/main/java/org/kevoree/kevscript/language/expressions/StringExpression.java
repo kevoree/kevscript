@@ -1,14 +1,14 @@
-package org.kevoree.kevscript.language.assignable;
+package org.kevoree.kevscript.language.expressions;
 
 import org.kevoree.kevscript.language.context.Context;
 
 /**
  * Created by mleduc on 02/03/16.
  */
-public class StringAssignable extends Assignable {
+public class StringExpression extends Expression {
     private final String text;
 
-    public StringAssignable(final String text) {
+    public StringExpression(final String text) {
         this.text = text;
     }
 
@@ -18,7 +18,7 @@ public class StringAssignable extends Assignable {
     }
 
     @Override
-    public Assignable resolve(Context context) {
+    public Expression resolve(Context context) {
         return this;
     }
 
