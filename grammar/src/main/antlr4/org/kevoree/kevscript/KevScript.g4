@@ -9,6 +9,7 @@ statement
     | remove
     | attach
     | detach
+    | move
     | start
     | stop
     | set
@@ -52,6 +53,11 @@ attach
 detach
     : DETACH groupId=identifier nodes=instanceList
     ;
+move
+    : MOVE identifier (LS_BRACKET identifierList RS_BRACKET | identifier | instanceList)            // move a list of instances to a targeted node ; if instanceList is a single element, this element is renamed)
+    | MOVE instancePath instancePath        // move an instance path to another instance path
+    ;
+
 bind
     : BIND chan=identifier nodes=portList
     ;
@@ -216,6 +222,7 @@ START : 'start' ;
 STOP : 'stop' ;
 SET : 'set' ;
 DETACH : 'detach' ;
+MOVE : 'move' ;
 ATTACH : 'attach' ;
 BIND : 'bind' ;
 UNBIND : 'unbind' ;

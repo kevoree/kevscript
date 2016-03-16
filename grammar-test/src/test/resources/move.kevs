@@ -1,0 +1,6 @@
+move a [e:d, c:f]  // move two components d and f respectively from nodes e and c to node a
+move a [a.d,b.g,c] // from components referenced by a.d, b.g and c into node a
+move a b           // move the instance references by instance b into a or rename node b into node a if b is a node.
+move a b:c         // move component n from c to a
+move a:b c:d       // move d from c to a and rename it b
+move a:d.e x.y:g.h // test if reference instances by variable path is accepted
