@@ -1,4 +1,4 @@
-package org.kevoree.kevscript.language;
+package org.kevoree.kevscript.language.processor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.language.commands.AbstractCommand;
