@@ -48,10 +48,10 @@ set
     : SET dictionaryPath ASSIGN val=expression
     ;
 attach
-    : ATTACH groupId=identifier nodes=instanceList
+    : ATTACH connectorId=identifier nodeId=identifier
     ;
 detach
-    : DETACH groupId=identifier nodes=instanceList
+    : DETACH connectorId=identifier nodeId=identifier
     ;
 move
     : MOVE identifier (LS_BRACKET identifierList RS_BRACKET | identifier | instanceList)            // move a list of instances to a targeted node ; if instanceList is a single element, this element is renamed)
