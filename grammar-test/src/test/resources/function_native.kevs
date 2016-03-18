@@ -1,0 +1,3 @@
+function native a() {{{ 
+    return (function () { return "a"; })();
+}}}

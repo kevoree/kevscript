@@ -52,6 +52,16 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testFunctionNative() throws Exception {
+        tester(getClass().getResourceAsStream("/function_native.kevs"));
+    }
+
+    @Test
+    public void testImport() throws Exception {
+        tester(getClass().getResourceAsStream("/import.kevs"));
+    }
+
+    @Test
     public void testLet() throws Exception {
         tester(getClass().getResourceAsStream("/let.kevs"));
     }

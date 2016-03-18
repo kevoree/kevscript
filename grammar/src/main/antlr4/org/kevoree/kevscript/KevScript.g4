@@ -25,6 +25,7 @@ statement
     | funcDecl
     | forDecl
     | funcCall
+    | importDecl
     ;
 instance
     : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
@@ -111,11 +112,15 @@ arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : AT? ID L_BRACKET parameters=expressionList? R_BRACKET
+    : ID L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
     ;
 funcDecl
     : FUNCTION functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
+    | FUNCTION NATIVE functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
     ;
+
+importDecl : 'import' (qualifier=ID 'from')? ressource=string;
+
 funcBody
     : (statement*) returnStatement?
     ;
@@ -197,7 +202,6 @@ string
 
 basic_identifier : ID ;
 
-AT : '@' ;
 SHARP : '#' ;
 RETURN : 'return' ;
 ASSIGN : '=' ;
@@ -230,6 +234,7 @@ BIND : 'bind' ;
 UNBIND : 'unbind' ;
 LET : 'let' ;
 FUNCTION : 'function' ;
+NATIVE : 'native' ;
 NETINIT : 'net-init' ;
 NETMERGE : 'net-merge' ;
 NETREMOVE : 'net-remove' ;
@@ -237,6 +242,7 @@ METAINIT : 'meta-init' ;
 METAMERGE : 'meta-merge' ;
 METAREMOVE : 'meta-remove' ;
 
+SOURCE_CODE : '{{{' .*? '}}}';
 COMMENT
     : '/*' .*? '*/' -> skip
     ;

@@ -1,0 +1,3 @@
+import a from "http://b/c.kevs"
+import "//x.y.z/u.kevs"
+import abd from "./relative_path/file.kevs"
