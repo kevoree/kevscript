@@ -1,5 +1,5 @@
 function test(a,b,c) {
-    instance node0 = JavascriptNode a
+    instance node0 = JavascriptNode/a
     add node0
     set node0#a = b
     set node0#c = c.d

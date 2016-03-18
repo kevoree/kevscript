@@ -1,10 +1,10 @@
 instance node0, node1 = JavaNode
 add [node0, node1]
 let a = "42"
-instance node3 = JavaNode a
+instance node3 = JavaNode/a
 add [node3]
 instance connector0 = WSConnector
-instance connector1, connector2 = RestConnector 2 {}
+instance connector1, connector2 = RestConnector/2 {}
 add [connector0, connector1, connector2]
 
 attach connector0 node0
