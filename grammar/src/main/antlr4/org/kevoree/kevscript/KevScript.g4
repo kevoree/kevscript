@@ -177,11 +177,10 @@ portList
     | LS_BRACKET instances+=portPath (COMMA instances+=portPath)* RS_BRACKET
     ;
 type
-    : typeName version? duVersions?
+    : typeName (SLASH version duVersions?)?
     ;
 typeName
-    : TYPENAME
-    | LOWERCASES DOT TYPENAME
+    : (ID DOT)? ID
     ;
 version
     : NUMERIC_VALUE
@@ -248,10 +247,8 @@ NUMERIC_VALUE
     : [0-9]+
     ;
 ID
-    : [a-z_]([a-zA-Z0-9_-]*[a-zA-Z0-9_])?
+    : [a-zA-Z_]([a-zA-Z0-9_-]*[a-zA-Z0-9_])?
     ;
-LOWERCASES : [a-z][a-z_]+ ;
-TYPENAME : [A-Z]([a-zA-Z0-9_-]*[a-zA-Z0-9_])? ;
 SQ_STR
     : '\'' (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* '\''
     ;

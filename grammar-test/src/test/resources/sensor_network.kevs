@@ -14,18 +14,18 @@ let confs = {
 }
 
 function initWebNode(nodeName, group, nodeVersion) {
-    instance web = nodeName JavascriptNode nodeVersion
-    instance chart1, chart2, chart3 = Chart 2
+    instance web = nodeName JavascriptNode/nodeVersion
+    instance chart1, chart2, chart3 = Chart/2
     add web [chart1, chart2, chart3]
     attach group web
     return web
 }
 
 function initEdison(nodeName, group, nodeVersion) {
-    instance edison = nodeName JavascriptNode nodeVersion
-    instance lcd = eu_heads.HeadsLCDDisplayComp 2
-    instance led = eu_heads.HeadsDigitalWriteComp 2
-    instance noise, light = eu_heads.HeadsAnalogSensorComp 2
+    instance edison = nodeName JavascriptNode/nodeVersion
+    instance lcd = eu_heads.HeadsLCDDisplayComp/2
+    instance led = eu_heads.HeadsDigitalWriteComp/2
+    instance noise, light = eu_heads.HeadsAnalogSensorComp/2
     add editor [lcd, led, noise, light]
     set edison.lcd#test = "false"
     set edison.led#pin = "7"
@@ -39,7 +39,7 @@ function initEdison(nodeName, group, nodeVersion) {
 }
 
 function bindByChan(port0, port1, chanName, host, uuid) {
-    instance chan = chanName RemoteWSChan 5
+    instance chan = chanName RemoteWSChan/5
     set chan#host = host
     set chan#uuid = uuid
     bind chanName [port0, port1]
