@@ -1,5 +1,6 @@
 function hello() {
-    add node0 NodeJava
+    instance node0 = NodeJava
+    add node0
 }
 
 function test(test) {

@@ -27,8 +27,8 @@ statement
     | funcCall
     ;
 instance
-    : INSTANCE varName=ID ASSIGN (instanceName=expression?) type
-    | INSTANCE varNames+=varIdentifierList ASSIGN type
+    : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
+    | INSTANCE varIdentifierList ASSIGN type
     ;
 add
     : ADD identifier (LS_BRACKET identifierList RS_BRACKET | identifier)? // attach a list of components to a node. if the list is empty the node is added to the model
@@ -48,7 +48,7 @@ set
     : SET dictionaryPath ASSIGN val=expression
     ;
 attach
-    : ATTACH connectorId=identifier nodeId=identifier
+    : ATTACH identifier identifier
     ;
 detach
     : DETACH connectorId=identifier nodeId=identifier
@@ -88,7 +88,7 @@ metaremove
     | METAREMOVE identifier LS_BRACKET identifierList RS_BRACKET
     ;
 varIdentifierList
-    : ID (COMMA ID)*
+    : basic_identifier (COMMA basic_identifier)*
     ;
 forDecl
     : FOR L_BRACKET (index=ID COMMA)? val=ID IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
@@ -180,7 +180,8 @@ type
     : typeName version? duVersions?
     ;
 typeName
-    : (ID DOT)? ID
+    : TYPENAME
+    | LOWERCASES DOT TYPENAME
     ;
 version
     : NUMERIC_VALUE
@@ -194,6 +195,8 @@ string
     : value=SQ_STR
     | value=DQ_STR
     ;
+
+basic_identifier : ID ;
 
 AT : '@' ;
 SHARP : '#' ;
@@ -245,8 +248,10 @@ NUMERIC_VALUE
     : [0-9]+
     ;
 ID
-    : [a-zA-Z_]([a-zA-Z0-9_-]*[a-zA-Z0-9_])?
+    : [a-z_]([a-zA-Z0-9_-]*[a-zA-Z0-9_])?
     ;
+LOWERCASES : [a-z][a-z_]+ ;
+TYPENAME : [A-Z]([a-zA-Z0-9_-]*[a-zA-Z0-9_])? ;
 SQ_STR
     : '\'' (~('\'' | '\\' | '\r' | '\n') | '\\' ('\'' | '\\'))* '\''
     ;

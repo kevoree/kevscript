@@ -20,7 +20,13 @@ public class IdentifierExpression extends Expression {
 
     @Override
     public String toText() {
-        return null;
+        final String ret;
+        if(right != null) {
+            ret = left.toText() + "." + right.toText();
+        } else {
+            ret = left.toText();
+        }
+        return ret;
     }
 
     @Override

@@ -2,15 +2,16 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.kevoree.kevscript.KevScriptLexer;
 import org.kevoree.kevscript.KevScriptParser;
-import org.kevoree.kevscript.language.CommandsToString;
 import org.kevoree.kevscript.language.excpt.CustomException;
+import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
+import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
+import org.kevoree.kevscript.language.processor.CommandsToString;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
 
 import java.io.IOException;
@@ -29,6 +30,13 @@ public class TestCases {
     @Test
     public void testAdd0()  throws Exception {
         analyzeDirectory("add_0");
+    }
+
+    @Test
+    public void testInstance1Error1() throws Exception {
+        exception.expect(NameCollisionException.class);
+        exception.expectMessage("node0 already declared in this scope");
+        interpret(pathToString("/instance_1/error1.kevs"));
     }
 
     @Test
@@ -71,16 +79,8 @@ public class TestCases {
     }
 
     @Test
-    @Ignore
-    public void testAdd1Error1() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance node0 already declared in this scope");
-        interpret(pathToString("/add_1/error1.kevs"));
-    }
-
-    @Test
     public void testAttach0Error1() throws Exception {
-        exception.expect(CustomException.class);
+        exception.expect(InstanceNameNotFound.class);
         exception.expectMessage("instance node1 not found");
         interpret(pathToString("/attach_0/error1.kevs"));
     }
