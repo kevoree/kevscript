@@ -9,6 +9,7 @@ import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
 
 import javax.management.ValueExp;
@@ -65,9 +66,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         } else if (ctx.LS_BRACKET() != null) {
             for (IdentifierContext identifier : ctx.identifierList().identifier()) {
                 final InstanceExpression parent = context.lookup(new ExpressionVisitor(context).visitIdentifier(identifier).toText(), InstanceExpression.class);
-                final StringExpression instanceName = context.lookup(parent.instanceName.toText(), StringExpression.class);
+                final String instanceName = parent.instanceName.toText();
                 final Long versionValue = convertVersionToLong(parent.instanceTypeDefVersion);
-                final InstanceElement root = new InstanceElement(instanceName.toText(), parent.instanceTypeDefName, versionValue);
+                final InstanceElement root = new InstanceElement(instanceName, parent.instanceTypeDefName, versionValue);
                 ret.add(new AddCommand(root));
             }
         } else {
@@ -82,8 +83,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         if (expression instanceof VersionExpression) {
             versionValue = ((VersionExpression) expression).version;
         } else if (expression != null) {
-            final VersionExpression version = context.lookup(expression.toText(), VersionExpression.class);
-            versionValue = version.version;
+            final Expression version = context.lookup(expression.toText(), Expression.class);
+            if(version instanceof  VersionExpression) {
+                versionValue = ((VersionExpression)version).version;
+            } else if(version instanceof StringExpression) {
+                versionValue = Long.parseLong(((StringExpression) version).text);
+            } else {
+                throw new WrongTypeException(expression.toText(), VersionExpression.class);
+            }
         } else {
             versionValue = null;
         }

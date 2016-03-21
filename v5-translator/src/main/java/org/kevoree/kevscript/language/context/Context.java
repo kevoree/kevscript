@@ -44,7 +44,8 @@ public class Context {
     public <T extends Expression> T lookup(final String identifier, Class<T> clazz, boolean throwException) {
         if(this.mapIdentifiers.containsKey(identifier)) {
             final Expression expression = this.mapIdentifiers.get(identifier);
-            if(clazz != null && !expression.getClass().isAssignableFrom(clazz)) {
+            //if(clazz != null && !expression.getClass().isAssignableFrom(clazz)) {
+            if(clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
                 throw new WrongTypeException(identifier, clazz);
             }
             return (T) expression;

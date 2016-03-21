@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
  *   - local variable names collision
  *   - does not throw error on missing instance names (this will be check on a next phase)
  */
-public class Phase1TestCases {
+public class Phase1Test {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
