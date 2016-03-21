@@ -2,14 +2,12 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.AddCommand;
 import org.kevoree.kevscript.language.commands.AttachCommand;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
-import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.InstanceExpression;
 import org.kevoree.kevscript.language.expressions.StringExpression;
@@ -44,9 +42,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitAdd(final AddContext ctx) {
         final Commands ret = new Commands();
         if(ctx.identifier(0) != null) {
-            final InstanceExpression parent = context.lookupInstance(new ExpressionVisitor(context).visitIdentifier(ctx.identifier(0)));
+            final InstanceExpression parent = context.lookup(new ExpressionVisitor(context).visitIdentifier(ctx.identifier(0)), InstanceExpression.class);
             if(ctx.identifier(1) != null) {
-                final InstanceExpression child = context.lookupInstance(new ExpressionVisitor(context).visitIdentifier(ctx.identifier(1)));
+                final InstanceExpression child = context.lookup(new ExpressionVisitor(context).visitIdentifier(ctx.identifier(1)), InstanceExpression.class);
                 final StringExpression parentInstanceName = context.lookupString(parent.instanceName);
                 final StringExpression childInstanceName = context.lookupString(child.instanceName);
                 final InstanceElement parentElement = new InstanceElement(parentInstanceName.text, parent.instanceTypeDefName);
@@ -66,7 +64,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
         } else if (ctx.LS_BRACKET() != null) {
             for(IdentifierContext identifier : ctx.identifierList().identifier()) {
-                final InstanceExpression parent = context.lookupInstance(new ExpressionVisitor(context).visitIdentifier(identifier));
+                final InstanceExpression parent = context.lookup(new ExpressionVisitor(context).visitIdentifier(identifier), InstanceExpression.class);
                 final StringExpression instanceName = context.lookupString(parent.instanceName);
                 final Long versionValue = convertVersionToLong(parent.instanceTypeDefVersion);
                 final InstanceElement root = new InstanceElement(instanceName.text, parent.instanceTypeDefName, versionValue);
@@ -113,12 +111,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             } else {
                 instanceName = new StringExpression(instanceVarName);
             }
-            this.context.addInstance(new InstanceExpression(instanceVarName, instanceName, instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit));
+            this.context.addExpression(new InstanceExpression(instanceVarName, instanceName, instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit));
         } else {
             for(Basic_identifierContext varName : ctx.varIdentifierList().basic_identifier()) {
                 final String instanceVarName = varName.getText();
                 final Expression instanceName = new StringExpression(varName.getText());
-                this.context.addInstance(new InstanceExpression(instanceVarName, instanceName, instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit));
+                this.context.addExpression(new InstanceExpression(instanceVarName, instanceName, instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit));
             }
         }
         return super.visitInstance(ctx);
@@ -130,7 +128,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
         // connector conversion from expression to command element
         final Expression connectorExpression = expressionVisitor.visit(ctx.identifier());
-        final InstanceExpression connectorInstance = context.lookupInstance(connectorExpression);
+        final InstanceExpression connectorInstance = context.lookup(connectorExpression, InstanceExpression.class);
         if(connectorInstance == null) {
             throw new InstanceNameNotFound(connectorExpression);
         }
@@ -142,7 +140,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands ret = new Commands();
         for(final IdentifierContext node : ctx.nodesId.identifier()) {
             final Expression nodeExpression = expressionVisitor.visit(node);
-            final InstanceExpression nodeInstance = context.lookupInstance(nodeExpression);
+            final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class);
             if (nodeInstance == null) {
                 throw new InstanceNameNotFound(nodeExpression);
             }
@@ -155,5 +153,13 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             ret.addCommand(command);
         }
         return ret;
+    }
+
+    @Override
+    public Commands visitLetDecl(final LetDeclContext ctx) {
+        final Expression res = new ExpressionVisitor(context).visit(ctx.val);
+        res.setName(ctx.basic_identifier().getText());
+        this.context.addExpression(res);
+        return super.visitLetDecl(ctx);
     }
 }

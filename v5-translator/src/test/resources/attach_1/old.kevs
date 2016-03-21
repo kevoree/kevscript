@@ -1,4 +1,9 @@
-add node0, node1 : JavaNode
+add node0 : JavaNode
+add node1 : JavaNode
 add node3 : JavaNode/4.2.0
 add group0 : WSGroup
-attach node3, node0, node1 group0
+add group1 : WSGroup/2.0.0
+add group2 : WSGroup/2.0.0
+attach node0 group0
+attach node1 group1
+attach node3 group2

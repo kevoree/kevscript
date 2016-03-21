@@ -65,7 +65,7 @@ unbind
     : UNBIND chan=identifier nodes=portList
     ;
 letDecl
-    : LET varIdentifierList ASSIGN val=expression
+    : LET basic_identifier ASSIGN val=expression
     ;
 netinit
     : NETINIT identifier (objectDecl|identifier)

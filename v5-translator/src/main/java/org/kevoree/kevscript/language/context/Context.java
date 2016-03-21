@@ -42,13 +42,17 @@ public class Context {
         return this.functions;
     }
 
-    public InstanceExpression lookupInstance(final Expression identifier) {
+    public Expression lookup(final Expression identifier) {
+        return lookup(identifier, null);
+    }
+
+    public <T extends Expression> T lookup(final Expression identifier, final Class<T> expectedClass) {
         for(final Expression expression: this.getIdentifiers()) {
             if(expression.match(identifier)) {
-                if(!(expression instanceof InstanceExpression)) {
-                    continue;
+                if(expectedClass != null && !expression.getClass().isAssignableFrom(expectedClass)) {
+                    throw new WrongTypeException(identifier.getName(), expression);
                 }
-                return (InstanceExpression) expression;
+                return (T) expression;
             }
         }
         return null;
@@ -88,10 +92,11 @@ public class Context {
         throw new VersionNotFound(identifier);
     }
 
-    public void addInstance(InstanceExpression instanceExpression) {
-        if(this.lookupInstance(new StringExpression(instanceExpression.instanceVarName)) != null) {
-            throw new NameCollisionException(instanceExpression.instanceVarName);
+    public void addExpression(Expression instanceExpression) {
+        if(this.lookup(new StringExpression(instanceExpression.getName())) != null) {
+            throw new NameCollisionException(instanceExpression.getName());
         }
         this.mapIdentifiers.add(instanceExpression);
     }
+
 }

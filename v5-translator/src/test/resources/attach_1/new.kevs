@@ -3,8 +3,8 @@ add [node0, node1]
 let a = "42"
 instance node3 = JavaNode/a
 add [node3]
-instance group0 = WSConnector
-instance group1, group2 = RestConnector/2 {}
+instance group0 = WSGroup
+instance group1, group2 = WSGroup/2 {}
 add [group0, group1, group2]
 
 attach group0 node0

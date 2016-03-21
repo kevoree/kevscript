@@ -8,11 +8,10 @@ import org.apache.commons.lang3.NotImplementedException;
 public class ArrayAccessExpression extends Expression {
 
 
-    private final String id;
     private final long index;
 
     public ArrayAccessExpression(final String id, final long index) {
-        this.id = id;
+        this.name = id;
         this.index = index;
     }
 

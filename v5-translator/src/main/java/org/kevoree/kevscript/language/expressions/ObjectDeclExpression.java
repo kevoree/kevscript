@@ -29,6 +29,7 @@ public class ObjectDeclExpression extends Expression {
         return sb.toString();
     }
 
+
     @Override
     public boolean match(Expression identifier) {
         return false;

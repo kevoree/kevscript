@@ -17,6 +17,7 @@ public class InstancePathExpression extends Expression {
         throw new NotImplementedException("TODO");
     }
 
+
     @Override
     public boolean match(Expression identifier) {
         return false;
