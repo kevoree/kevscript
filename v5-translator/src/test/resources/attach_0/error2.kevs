@@ -1,3 +1,0 @@
-add node1 : JavaNode
-
-attach group0 node1 // should fail because group0 is not declared

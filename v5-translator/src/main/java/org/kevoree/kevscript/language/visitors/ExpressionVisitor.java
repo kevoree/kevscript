@@ -63,8 +63,8 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public ContextIdentifierExpression visitContextIdentifier(ContextIdentifierContext ctx) {
         final ContextIdentifierExpression ret = new ContextIdentifierExpression();
-        if (ctx.ID() != null) {
-            ret.add(new StringExpression(ctx.ID().getText()));
+        if (ctx.basic_identifier() != null) {
+            ret.add(new BasicIdentifierExpression(ctx.basic_identifier().getText()));
         } else if (ctx.contextRef() != null) {
             ret.add(this.visit(ctx.contextRef()));
         } else if (ctx.arrayAccess() != null) {
@@ -90,14 +90,14 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
 
     @Override
     public ArrayAccessExpression visitArrayAccess(ArrayAccessContext ctx) {
-        return new ArrayAccessExpression(ctx.ID().getText(), Long.parseLong(ctx.NUMERIC_VALUE().getText()));
+        return new ArrayAccessExpression(ctx.basic_identifier().getText(), Long.parseLong(ctx.NUMERIC_VALUE().getText()));
     }
 
     @Override
     public Expression visitIdentifier(IdentifierContext ctx) {
         final Expression ret;
-        if(ctx.ID() != null) {
-            final StringExpression left = new StringExpression(ctx.ID().getText());
+        if(ctx.basic_identifier() != null) {
+            final StringExpression left = new StringExpression(ctx.basic_identifier().getText());
             if(ctx.DOT() == null) {
                 ret = new IdentifierExpression(left);
             } else {
@@ -127,7 +127,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
 
     @Override
     public FunctionCallExpression visitFuncCall(FuncCallContext ctx) {
-        final FunctionCallExpression ret = new FunctionCallExpression(ctx.ID().getText());
+        final FunctionCallExpression ret = new FunctionCallExpression(ctx.basic_identifier().getText());
         if(ctx.parameters != null && ctx.parameters.expression() != null) {
             for (final ExpressionContext param : ctx.parameters.expression()) {
                 ret.add(this.visit(param));

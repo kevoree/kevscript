@@ -20,6 +20,10 @@ public class IdentifierExpression extends Expression {
 
     @Override
     public String toText() {
+        return serial();
+    }
+
+    private String serial() {
         final String ret;
         if(right != null) {
             ret = left.toText() + "." + right.toText();
@@ -30,10 +34,10 @@ public class IdentifierExpression extends Expression {
     }
 
 
-    @Override
+    /*@Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 
 
 }

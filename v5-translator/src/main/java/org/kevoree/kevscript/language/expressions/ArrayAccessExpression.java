@@ -9,9 +9,10 @@ public class ArrayAccessExpression extends Expression {
 
 
     private final long index;
+    private final String id;
 
     public ArrayAccessExpression(final String id, final long index) {
-        this.name = id;
+        this.id = id; // probably useless ?
         this.index = index;
     }
 
@@ -20,9 +21,9 @@ public class ArrayAccessExpression extends Expression {
         throw new NotImplementedException("TODO");
     }
 
-    @Override
+    /*@Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 }
 

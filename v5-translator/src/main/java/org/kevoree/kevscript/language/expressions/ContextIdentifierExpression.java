@@ -22,10 +22,6 @@ public class ContextIdentifierExpression extends Expression {
         return StringUtils.join(strElemens, ".");
     }
 
-    @Override
-    public boolean match(Expression identifier) {
-        return false;
-    }
     public void add(Expression a) {
         elems.add(a);
     }

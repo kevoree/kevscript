@@ -15,9 +15,9 @@ public class StringExpression extends Expression {
         return text;
     }
 
-    @Override
-    public boolean match(Expression identifier) {
-        final boolean ret;
+    /*@Override
+    public boolean match(Expression identifier) {*/
+        /*final boolean ret;
         if(identifier instanceof IdentifierExpression) {
             final IdentifierExpression identifier1 = (IdentifierExpression) identifier;
             if(identifier1.right != null) {
@@ -29,9 +29,9 @@ public class StringExpression extends Expression {
             ret = ((StringExpression) identifier).text.equals(name);
         }else {
             ret = false;
-        }
-        return ret;
-    }
+        }*/
+        /*return false;
+    }*/
 
     @Override
     public String toString() {

@@ -1,4 +1,0 @@
-instance group0 = WSGroup
-add group0
-
-attach group0 node1 // should fail because node1 is not declared (even in the CDN)

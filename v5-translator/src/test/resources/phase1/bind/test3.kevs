@@ -1,0 +1,2 @@
+let x = node2:comp2<-input
+bind chan0 x

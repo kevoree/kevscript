@@ -19,9 +19,9 @@ public class ConcatExpression extends Expression {
         throw new NotImplementedException("TODO");
     }
 
-    @Override
+   /* @Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 
 }

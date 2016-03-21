@@ -30,10 +30,10 @@ public class ObjectDeclExpression extends Expression {
     }
 
 
-    @Override
+    /*@Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 
 
     public Expression get(String chunk) {

@@ -91,7 +91,7 @@ varIdentifierList
     : basic_identifier (COMMA basic_identifier)*
     ;
 forDecl
-    : FOR L_BRACKET (index=ID COMMA)? val=ID IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
+    : FOR L_BRACKET (index=basic_identifier COMMA)? val=basic_identifier IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
     ;
 iterable
     : arrayDecl
@@ -105,20 +105,21 @@ objectDecl
     : LC_BRACKET (values+=keyAndValue (COMMA values+=keyAndValue)*)? RC_BRACKET
     ;
 keyAndValue
-    : key=ID COLON value=expression
+    : key=basic_identifier COLON value=expression
     ;
 arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : ID L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
+    : basic_identifier L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
     ;
 funcDecl
-    : FUNCTION functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
-    | FUNCTION NATIVE functionName=ID L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
+    : FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
+    | FUNCTION NATIVE functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
     ;
 
-importDecl : 'import' (qualifier=ID 'from')? ressource=string;
+importDecl : IMPORT (qualifier=basic_identifier FROM)? ressource=string;
+
 
 funcBody
     : (statement*) returnStatement?
@@ -142,10 +143,10 @@ expressionList
     : expression (COMMA expression)*
     ;
 arrayAccess
-    : ID LS_BRACKET NUMERIC_VALUE RS_BRACKET // IMPLEM : can numeric value be replaced by a variable ?
+    : basic_identifier LS_BRACKET NUMERIC_VALUE RS_BRACKET // IMPLEM : can numeric value be replaced by a variable ?
     ;
 contextIdentifier
-    : ID
+    : basic_identifier
     | contextRef
     | arrayAccess
     | contextIdentifier DOT contextIdentifier
@@ -154,7 +155,7 @@ contextRef
     : AMPERSAND contextIdentifier
     ;
 identifier
-    : ID (DOT identifier) ?
+    : basic_identifier (DOT identifier) ?
     | contextRef
     | funcCall (DOT identifier) ?
     | arrayAccess (DOT identifier) ?
@@ -163,7 +164,7 @@ identifierList
     : identifiers+=identifier (COMMA identifiers+=identifier)*
     ;
 instancePath
-    : identifier (COLON identifier)*
+    : identifier (COLON identifier)?
     ;
 portPath
     : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier
@@ -184,7 +185,7 @@ type
     : typeName (SLASH version duVersions?)?
     ;
 typeName
-    : (ID DOT)? ID
+    : (basic_identifier DOT)? basic_identifier
     ;
 version
     : NUMERIC_VALUE
@@ -201,6 +202,8 @@ string
 
 basic_identifier : ID ;
 
+FROM : 'from' ;
+IMPORT : 'import' ;
 SHARP : '#' ;
 RETURN : 'return' ;
 ASSIGN : '=' ;

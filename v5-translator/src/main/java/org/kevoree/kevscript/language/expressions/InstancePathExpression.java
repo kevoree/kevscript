@@ -18,10 +18,10 @@ public class InstancePathExpression extends Expression {
     }
 
 
-    @Override
+    /*@Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 
 
     public void add(Expression expression) {

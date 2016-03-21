@@ -1,10 +1,7 @@
 package org.kevoree.kevscript.language.processor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.kevoree.kevscript.language.commands.AbstractCommand;
-import org.kevoree.kevscript.language.commands.AddCommand;
-import org.kevoree.kevscript.language.commands.AttachCommand;
-import org.kevoree.kevscript.language.commands.Commands;
+import org.kevoree.kevscript.language.commands.*;
 
 /**
  * Created by mleduc on 16/03/16.
@@ -25,11 +22,28 @@ public class CommandsToString {
             ret = this.proceedAddCommand((AddCommand) command);
         } else if(command instanceof AttachCommand) {
             ret = this.proceedAttachCommand((AttachCommand) command);
+        } else if(command instanceof BindCommand) {
+            ret = this.proceedBindCommand((BindCommand) command);
         }
         else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedBindCommand(BindCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("bind ");
+        sb.append(command.chan.instanceName);
+        sb.append(" ");
+        if(command.port.node != null) {
+            sb.append(command.port.node.instanceName);
+            sb.append('.');
+        }
+        sb.append(command.port.component.instanceName);
+        sb.append('.');
+        sb.append(command.port.name);
+        return sb.toString();
     }
 
     private String proceedAttachCommand(final AttachCommand command) {

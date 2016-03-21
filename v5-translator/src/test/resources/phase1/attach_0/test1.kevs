@@ -1,0 +1,4 @@
+instance group0 = WSGroup
+add group0
+
+attach group0 node1 // we expect node1 to be found on the CDN

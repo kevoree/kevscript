@@ -12,13 +12,13 @@ public class VersionExpression extends Expression {
 
     @Override
     public String toText() {
-        return null;
+        return String.valueOf(version);
     }
 
-    @Override
+    /*@Override
     public boolean match(Expression identifier) {
         return false;
-    }
+    }*/
 
 
 }

@@ -1,0 +1,1 @@
+bind chan0 y // should fail because 'y' can only be a reference to an instance holding a reference of type PortPath. Which in this case is not defined.

@@ -9,8 +9,7 @@ public class InstanceExpression extends Expression {
     public final Expression instanceTypeDefVersion;
     public final Expression instanceDeployUnits;
 
-    public InstanceExpression(final String instanceVarName, final Expression instanceName, final String instanceTypeDefName, final Expression instanceTypeDefVersion, final Expression instanceDeployUnits) {
-        this.name = instanceVarName;
+    public InstanceExpression(final Expression instanceName, final String instanceTypeDefName, final Expression instanceTypeDefVersion, final Expression instanceDeployUnits) {
         this.instanceName = instanceName;
         this.instanceTypeDefName =instanceTypeDefName;
         this.instanceTypeDefVersion = instanceTypeDefVersion;
@@ -19,10 +18,10 @@ public class InstanceExpression extends Expression {
 
     @Override
     public String toText() {
-        return null;
+        return instanceName.toText();
     }
 
-    @Override
+/*    @Override
     public boolean match(Expression identifier) {
         final boolean ret;
         if(identifier instanceof IdentifierExpression) {
@@ -33,10 +32,10 @@ public class InstanceExpression extends Expression {
                 ret = this.match(identifier1.left);
             }
         } else if (identifier instanceof StringExpression) {
-            ret = ((StringExpression) identifier).text.equals(name);
+            ret = true;
         }else {
             ret = false;
         }
         return ret;
-    }
+    }*/
 }

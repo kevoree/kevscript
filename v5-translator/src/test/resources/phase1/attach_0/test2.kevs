@@ -1,0 +1,4 @@
+instance node1 = JavaNode
+add node1
+
+attach group0 node1 // we expect group0 to be found on the cdn

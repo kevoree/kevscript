@@ -1,4 +1,5 @@
 add node0 : JavaNode
 add node1 : JsNode
 add chan0 : WSChan
-bind chan0 node0.comp1.input, node1.comp1.input
+bind chan0 node0.comp1.input
+bind chan0 node1.comp1.input
