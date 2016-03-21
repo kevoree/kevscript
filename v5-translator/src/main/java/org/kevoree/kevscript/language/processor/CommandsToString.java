@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.processor;
 import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.language.commands.AbstractCommand;
 import org.kevoree.kevscript.language.commands.AddCommand;
+import org.kevoree.kevscript.language.commands.AttachCommand;
 import org.kevoree.kevscript.language.commands.Commands;
 
 /**
@@ -22,13 +23,25 @@ public class CommandsToString {
         final String ret;
         if(command instanceof AddCommand) {
             ret = this.proceedAddCommand((AddCommand) command);
-        } else {
+        } else if(command instanceof AttachCommand) {
+            ret = this.proceedAttachCommand((AttachCommand) command);
+        }
+        else {
             ret = "";
         }
         return ret;
     }
 
-    private String proceedAddCommand(AddCommand command) {
+    private String proceedAttachCommand(final AttachCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("attach ");
+        sb.append(command.node.instanceName);
+        sb.append(' ');
+        sb.append(command.group.instanceName);
+        return sb.toString();
+    }
+
+    private String proceedAddCommand(final AddCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("add ");
         if(command.parent == null) {

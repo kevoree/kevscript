@@ -126,7 +126,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitAttach(final AttachContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
 
-        // connector conversion from expression to command element
+        // group conversion from expression to command element
         final Expression connectorExpression = expressionVisitor.visit(ctx.identifier());
         final InstanceExpression connectorInstance = context.lookup(connectorExpression, InstanceExpression.class);
         if(connectorInstance == null) {
@@ -162,4 +162,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         this.context.addExpression(res);
         return super.visitLetDecl(ctx);
     }
+
+
 }
