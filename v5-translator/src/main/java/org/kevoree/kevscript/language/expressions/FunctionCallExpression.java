@@ -8,12 +8,10 @@ import java.util.List;
  */
 public class FunctionCallExpression extends Expression {
 
-    private final boolean isSpecial;
     private final String name;
     private final List<Expression> expressions = new ArrayList<>();
 
-    public FunctionCallExpression(final boolean b, final String name) {
-        this.isSpecial = b;
+    public FunctionCallExpression(final String name) {
         this.name = name;
     }
 

@@ -1,2 +1,2 @@
 add node1: JavaNode
-detach connector0 node1
+detach group0 node1

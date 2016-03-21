@@ -127,7 +127,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
 
     @Override
     public FunctionCallExpression visitFuncCall(FuncCallContext ctx) {
-        final FunctionCallExpression ret = new FunctionCallExpression(ctx.AT() != null, ctx.ID().getText());
+        final FunctionCallExpression ret = new FunctionCallExpression(ctx.ID().getText());
         if(ctx.parameters != null && ctx.parameters.expression() != null) {
             for (final ExpressionContext param : ctx.parameters.expression()) {
                 ret.add(this.visit(param));

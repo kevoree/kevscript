@@ -129,7 +129,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
 
         // connector conversion from expression to command element
-        final Expression connectorExpression = expressionVisitor.visit(ctx.identifier(0));
+        final Expression connectorExpression = expressionVisitor.visit(ctx.identifier());
         final InstanceExpression connectorInstance = context.lookupInstance(connectorExpression);
         if(connectorInstance == null) {
             throw new InstanceNameNotFound(connectorExpression);
@@ -139,17 +139,21 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final InstanceElement connector = new InstanceElement(connectorName.text, connectorInstance.instanceTypeDefName, connectorVersion);
 
         // node conversion from expression to command element
-        final Expression nodeExpression = expressionVisitor.visit(ctx.identifier(1));
-        final InstanceExpression nodeInstance = context.lookupInstance(nodeExpression);
-        if(nodeInstance == null) {
-            throw new InstanceNameNotFound(nodeExpression);
-        }
-        final StringExpression nodeName = context.lookupString(nodeInstance.instanceName);
-        final Long nodeVersion = convertVersionToLong(nodeInstance.instanceTypeDefVersion);
-        final InstanceElement node = new InstanceElement(nodeName.text, nodeInstance.instanceTypeDefName, nodeVersion);
+        final Commands ret = new Commands();
+        for(final IdentifierContext node : ctx.nodesId.identifier()) {
+            final Expression nodeExpression = expressionVisitor.visit(node);
+            final InstanceExpression nodeInstance = context.lookupInstance(nodeExpression);
+            if (nodeInstance == null) {
+                throw new InstanceNameNotFound(nodeExpression);
+            }
+            final StringExpression nodeName = context.lookupString(nodeInstance.instanceName);
+            final Long nodeVersion = convertVersionToLong(nodeInstance.instanceTypeDefVersion);
+            final InstanceElement nodeInstanceElement = new InstanceElement(nodeName.text, nodeInstance.instanceTypeDefName, nodeVersion);
 
-        // command instanciation
-        final AttachCommand command = new AttachCommand(connector, node);
-        return new Commands().addCommand(command);
+            // command instanciation
+            final AttachCommand command = new AttachCommand(connector, nodeInstanceElement);
+            ret.addCommand(command);
+        }
+        return ret;
     }
 }

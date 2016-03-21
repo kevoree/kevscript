@@ -87,8 +87,8 @@ public class TestCases {
 
     @Test
     public void testAttach0Error2() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance connector0 not found");
+        exception.expect(InstanceNameNotFound.class);
+        exception.expectMessage("instance group0 not found");
         interpret(pathToString("/attach_0/error2.kevs"));
     }
 
