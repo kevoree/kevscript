@@ -121,6 +121,13 @@ public class Phase1Test {
     }
 
     @Test
+    public void testBindError2() throws Exception {
+        exception.expect(PortPathNotFound.class);
+        exception.expectMessage("portPath node1 not found");
+        interpretPhase1(pathToString("/phase1/bind/error2.kevs"));
+    }
+
+    @Test
     public void testBindTest1() throws Exception {
         interpretPhase1(pathToString("/phase1/bind/test1.kevs"));
     }
@@ -136,6 +143,11 @@ public class Phase1Test {
     }
 
     @Test
+    public void testBindTest4() throws Exception {
+        interpretPhase1(pathToString("/phase1/bind/test4.kevs"));
+    }
+
+    @Test
     public void testDetach()  throws Exception {
         analyzeDirectory("phase1/detach/valid");
     }
@@ -147,16 +159,21 @@ public class Phase1Test {
 
     @Test
     public void testUnbindError1() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance node1 not found");
+        exception.expect(PortPathNotFound.class);
+        exception.expectMessage("portPath node1 not found");
         interpretPhase1(pathToString("/phase1/unbind/error1.kevs"));
     }
 
     @Test
     public void testUnbindError2() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance chan0 not found");
+        exception.expect(PortPathNotFound.class);
+        exception.expectMessage("portPath node1 not found");
         interpretPhase1(pathToString("/phase1/unbind/error2.kevs"));
+    }
+
+    @Test
+    public void testUnbindTest1() throws Exception {
+        interpretPhase1(pathToString("/phase1/unbind/test1.kevs"));
     }
 
     private void analyzeDirectory(String add_0) throws IOException {

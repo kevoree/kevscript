@@ -26,11 +26,28 @@ public class CommandsToString {
             ret = this.proceedBindCommand((BindCommand) command);
         } else if(command instanceof  DetachCommand) {
             ret = this.proceedDetachCommand((DetachCommand) command);
+        } else if(command instanceof UnbindCommand) {
+            ret = this.proceedUnbindCommand((UnbindCommand) command);
         }
         else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedUnbindCommand(UnbindCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("unbind ");
+        sb.append(command.chan.instanceName);
+        sb.append(" ");
+        if(command.port.node != null) {
+            sb.append(command.port.node.instanceName);
+            sb.append('.');
+        }
+        sb.append(command.port.component.instanceName);
+        sb.append('.');
+        sb.append(command.port.name);
+        return sb.toString();
     }
 
     private String proceedDetachCommand(DetachCommand command) {

@@ -2,4 +2,6 @@ instance node0 = JavaNode
 instance node1 = JsNode
 instance chan0 = WSChan
 add [node0, node1, chan0]
-bind chan0 [node0:comp1<-input, node1:comp1<-input]
+
+let z = "input"
+bind chan0 [node0:comp1<-z, node1:comp1<-input]

@@ -1,2 +1,3 @@
-add chan0: WSChan
-unbind chan0 node1
+instance chan0 = WSChan
+add chan0
+unbind chan0 node1 // node1 must be a reference to a port, which is not defined in the context

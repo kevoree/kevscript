@@ -1,0 +1,3 @@
+instance node1 = JavaNode
+add node1
+bind chan0 node1 // must fail, node1 exist in the context but is not a port

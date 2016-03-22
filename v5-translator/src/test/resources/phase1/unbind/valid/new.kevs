@@ -1,4 +1,6 @@
-add node0: JavaNode
-add node1: JSNode
-add chan0: WSChan
-unbind chan0 node0 node1
+instance node0 = JavaNode
+instance node1 = JSNode
+instance chan0 = WSChan
+add [node0, node1, chan0]
+let z = "port0"
+unbind chan0 [node0<-z, node1->port1]

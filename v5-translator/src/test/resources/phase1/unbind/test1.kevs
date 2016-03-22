@@ -1,0 +1,3 @@
+instance refInstance = Ticker/3
+add refInstance
+unbind chan0 [cdnNode0:cdnComponent1<-out, refInstance->exit]

@@ -198,10 +198,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
                 try {
                     final Expression instanceB = this.context.lookup(result.toText(), Expression.class);
-                    if(instanceB instanceof InstanceExpression) {
-                        final InstanceExpression instance = (InstanceExpression) instanceB;
-                        ret.addCommand(new BindCommand(chan, new PortElement(null, null, new InstanceElement(instance.instanceName.toText(), instance.instanceTypeDefName, convertVersionToLong(instance.instanceTypeDefVersion)), null)));
-                    } else if(instanceB instanceof PortPathExpression) {
+                    if(instanceB instanceof PortPathExpression) {
                         final PortPathExpression instance = (PortPathExpression) instanceB;
                         final String name = instance.portName.toText();
                         if(instance.instancePath.node == null) {
@@ -248,19 +245,97 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     // reference to a component via its node, might be found in the context or later in the CDN
                     final InstanceElement nodeInstance = getInstanceFromContext(instancePathContext.identifier(0));
                     final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(1));
-
                     final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
-                    StringExpression portNameStr = this.context.lookup(portNameIdentifier.toText(), StringExpression.class, false);
-                    if(portNameStr == null) {
-                        portNameStr = new StringExpression(portNameIdentifier.toText());
-                    }
-
-                    final PortElement port = new PortElement(portNameStr.toText(), nodeInstance, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
+                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final PortElement port = new PortElement(portName, nodeInstance, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
                     ret.addCommand(new BindCommand(chan, port));
                 }
             }
         }
 
         return ret;
+    }
+
+    @Override
+    public Commands visitUnbind(UnbindContext ctx) {
+        final InstanceElement chan = getInstanceFromContext(ctx.chan);
+
+        final Commands ret = new Commands();
+        for (final PortPathContext portPath : ctx.nodes.instances) {
+            final InstancePathContext instancePathContext = portPath.instancePath();
+            if (instancePathContext == null) {
+                // instance path is empty so identifier must be a reference to an instance path declared previously.
+                final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
+                try {
+                    final Expression instanceB = this.context.lookup(result.toText(), Expression.class);
+                    if(instanceB instanceof PortPathExpression) {
+                        final PortPathExpression instance = (PortPathExpression) instanceB;
+                        final String name = instance.portName.toText();
+                        if(instance.instancePath.node == null) {
+                            final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class);
+                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            final Boolean isInput = instance.isInput;
+                            final PortElement portElement = new PortElement(name, null, component, isInput);
+                            ret.addCommand(new UnbindCommand(chan, portElement));
+                        } else {
+                            final InstanceExpression nodeExpression = context.lookup(instance.instancePath.node.toText(), InstanceExpression.class, false);
+                            final InstanceElement node;
+                            if(nodeExpression != null) {
+                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, convertVersionToLong(nodeExpression.instanceTypeDefVersion));
+                            } else {
+                                node = new InstanceElement(instance.instancePath.node.toText());
+                            }
+                            final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class, false);
+                            final InstanceElement component;
+                            if(componentExpression != null) {
+                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            } else {
+                                component = new InstanceElement(instance.instancePath.node.toText());
+                            }
+                            final Boolean isInput = instance.isInput;
+                            final PortElement portElement = new PortElement(name, node, component, isInput);
+                            ret.addCommand(new UnbindCommand(chan, portElement));
+                        }
+                    } else {
+                        throw new PortPathNotFound(instanceB);
+                    }
+                } catch (InstanceNameNotFound e) {
+                    throw new PortPathNotFound(result);
+                }
+            } else {
+                if (instancePathContext.identifier().size() == 1) {
+                    // direct reference to a component, must be in the current scope
+                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(0));
+                    final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
+                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final PortElement port = new PortElement(portName, null, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
+                    ret.addCommand(new UnbindCommand(chan, port));
+                } else {
+                    // reference to a component via its node, might be found in the context or later in the CDN
+                    final InstanceElement nodeInstance = getInstanceFromContext(instancePathContext.identifier(0));
+                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(1));
+                    final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
+                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final PortElement port = new PortElement(portName, nodeInstance, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
+                    ret.addCommand(new UnbindCommand(chan, port));
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /*
+    TODO : to externalize
+     */
+    private String getPortNameFromIdentifier(final Expression portNameIdentifier) {
+        final StringExpression portNameExpr = this.context.lookup(portNameIdentifier.toText(), StringExpression.class, false);
+        final String portName;
+        if(portNameExpr != null) {
+            portName = portNameExpr.text;
+        } else {
+            portName = portNameIdentifier.toText();
+        }
+        return portName;
     }
 }
