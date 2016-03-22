@@ -1,13 +1,12 @@
 package org.kevoree.kevscript.language.context;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.kevoree.kevscript.KevScriptParser;
-import org.kevoree.kevscript.language.excpt.*;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
+import org.kevoree.kevscript.language.excpt.NameCollisionException;
+import org.kevoree.kevscript.language.excpt.WrongTypeException;
+import org.kevoree.kevscript.language.expressions.Expression;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,10 +41,10 @@ public class Context {
     }
 
     public <T extends Expression> T lookup(final String identifier, Class<T> clazz, boolean throwException) {
-        if(this.mapIdentifiers.containsKey(identifier)) {
+        if (this.mapIdentifiers.containsKey(identifier)) {
             final Expression expression = this.mapIdentifiers.get(identifier);
             //if(clazz != null && !expression.getClass().isAssignableFrom(clazz)) {
-            if(clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
+            if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
                 throw new WrongTypeException(identifier, clazz);
             }
             return (T) expression;
@@ -56,11 +55,10 @@ public class Context {
     }
 
 
-
     public void addExpression(final String identifier, final Expression instanceExpression) {
 
         // TODO flatten object to be able to find every entry by on lookup
-        if(this.mapIdentifiers.containsKey(identifier)) {
+        if (this.mapIdentifiers.containsKey(identifier)) {
             throw new NameCollisionException(identifier);
         }
         this.mapIdentifiers.put(identifier, instanceExpression);

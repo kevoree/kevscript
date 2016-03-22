@@ -11,7 +11,7 @@ public class InstanceExpression extends Expression {
 
     public InstanceExpression(final Expression instanceName, final String instanceTypeDefName, final Expression instanceTypeDefVersion, final Expression instanceDeployUnits) {
         this.instanceName = instanceName;
-        this.instanceTypeDefName =instanceTypeDefName;
+        this.instanceTypeDefName = instanceTypeDefName;
         this.instanceTypeDefVersion = instanceTypeDefVersion;
         this.instanceDeployUnits = instanceDeployUnits;
     }

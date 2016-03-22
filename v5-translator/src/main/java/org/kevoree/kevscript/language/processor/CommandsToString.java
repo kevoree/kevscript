@@ -9,7 +9,7 @@ import org.kevoree.kevscript.language.commands.*;
 public class CommandsToString {
     public String proceed(Commands visit) {
         final StringBuilder sb = new StringBuilder();
-        for(AbstractCommand a : visit) {
+        for (AbstractCommand a : visit) {
             sb.append(this.proceed(a));
             sb.append('\n');
         }
@@ -18,18 +18,17 @@ public class CommandsToString {
 
     private String proceed(final AbstractCommand command) {
         final String ret;
-        if(command instanceof AddCommand) {
+        if (command instanceof AddCommand) {
             ret = this.proceedAddCommand((AddCommand) command);
-        } else if(command instanceof AttachCommand) {
+        } else if (command instanceof AttachCommand) {
             ret = this.proceedAttachCommand((AttachCommand) command);
-        } else if(command instanceof BindCommand) {
+        } else if (command instanceof BindCommand) {
             ret = this.proceedBindCommand((BindCommand) command);
-        } else if(command instanceof  DetachCommand) {
+        } else if (command instanceof DetachCommand) {
             ret = this.proceedDetachCommand((DetachCommand) command);
-        } else if(command instanceof UnbindCommand) {
+        } else if (command instanceof UnbindCommand) {
             ret = this.proceedUnbindCommand((UnbindCommand) command);
-        }
-        else {
+        } else {
             ret = "";
         }
         return ret;
@@ -40,7 +39,7 @@ public class CommandsToString {
         sb.append("unbind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        if(command.port.node != null) {
+        if (command.port.node != null) {
             sb.append(command.port.node.instanceName);
             sb.append('.');
         }
@@ -64,7 +63,7 @@ public class CommandsToString {
         sb.append("bind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        if(command.port.node != null) {
+        if (command.port.node != null) {
             sb.append(command.port.node.instanceName);
             sb.append('.');
         }
@@ -86,11 +85,11 @@ public class CommandsToString {
     private String proceedAddCommand(final AddCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("add ");
-        if(command.parent == null) {
+        if (command.parent == null) {
             sb.append(command.child.instanceName);
             sb.append(" : ");
             sb.append(command.child.typeName);
-            if(command.child.version != null) {
+            if (command.child.version != null) {
                 sb.append('/');
                 sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(command.child.version), 3, '0').toCharArray(), '.'));
             }

@@ -21,11 +21,11 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Preconditions :
- *   - grammatically valid script
- *
+ * - grammatically valid script
+ * <p>
  * Controls :
- *   - local variable names collision
- *   - does not throw error on missing instance names (this will be check on a next phase)
+ * - local variable names collision
+ * - does not throw error on missing instance names (this will be check on a next phase)
  */
 public class Phase1Test {
 
@@ -33,7 +33,7 @@ public class Phase1Test {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testAdd0()  throws Exception {
+    public void testAdd0() throws Exception {
         analyzeDirectory("phase1/add_0");
     }
 
@@ -45,27 +45,27 @@ public class Phase1Test {
     }
 
     @Test
-    public void testRealWorld0()  throws Exception {
+    public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
     }
 
     @Test
-    public void testFor()  throws Exception {
+    public void testFor() throws Exception {
         analyzeDirectory("phase1/for");
     }
 
     @Test
-    public void testFunctionReturn()  throws Exception {
+    public void testFunctionReturn() throws Exception {
         analyzeDirectory("phase1/function_return");
     }
 
     @Test
-    public void testForFunctionReturn()  throws Exception {
+    public void testForFunctionReturn() throws Exception {
         analyzeDirectory("phase1/for_function_return");
     }
 
     @Test
-    public void testFunction()  throws Exception {
+    public void testFunction() throws Exception {
         analyzeDirectory("phase1/function");
     }
 
@@ -94,7 +94,7 @@ public class Phase1Test {
     }
 
     @Test
-    public void testAttach1()  throws Exception {
+    public void testAttach1() throws Exception {
         analyzeDirectory("phase1/attach_1");
     }
 
@@ -109,7 +109,7 @@ public class Phase1Test {
     }
 
     @Test
-    public void testBind()  throws Exception {
+    public void testBind() throws Exception {
         analyzeDirectory("phase1/bind/valid");
     }
 
@@ -148,12 +148,12 @@ public class Phase1Test {
     }
 
     @Test
-    public void testDetach()  throws Exception {
+    public void testDetach() throws Exception {
         analyzeDirectory("phase1/detach/valid");
     }
 
     @Test
-    public void testUnbind()  throws Exception {
+    public void testUnbind() throws Exception {
         analyzeDirectory("phase1/unbind/valid");
     }
 
@@ -183,7 +183,7 @@ public class Phase1Test {
     }
 
     private String pathToString(String name1) throws IOException {
-        final InputStream newKev =  getClass().getResourceAsStream(name1);
+        final InputStream newKev = getClass().getResourceAsStream(name1);
         return IOUtils.toString(newKev);
     }
 

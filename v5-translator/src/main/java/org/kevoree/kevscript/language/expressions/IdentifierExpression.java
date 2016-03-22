@@ -25,7 +25,7 @@ public class IdentifierExpression extends Expression {
 
     private String serial() {
         final String ret;
-        if(right != null) {
+        if (right != null) {
             ret = left.toText() + "." + right.toText();
         } else {
             ret = left.toText();

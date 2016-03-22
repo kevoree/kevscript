@@ -80,7 +80,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public ArrayDeclExpression visitArrayDecl(ArrayDeclContext ctx) {
         final ArrayDeclExpression ret = new ArrayDeclExpression();
-        if(ctx.expressionList() != null) {
+        if (ctx.expressionList() != null) {
             for (ExpressionContext expression : ctx.expressionList().expression()) {
                 ret.add(this.visit(expression));
             }
@@ -96,31 +96,31 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public Expression visitIdentifier(IdentifierContext ctx) {
         final Expression ret;
-        if(ctx.basic_identifier() != null) {
+        if (ctx.basic_identifier() != null) {
             final BasicIdentifierExpression left = new BasicIdentifierExpression(ctx.basic_identifier().getText());
-            if(ctx.DOT() == null) {
+            if (ctx.DOT() == null) {
                 ret = new IdentifierExpression(left);
             } else {
                 ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
             }
-        } else if(ctx.contextRef() != null) {
+        } else if (ctx.contextRef() != null) {
             ret = this.visit(ctx.contextRef());
-        } else if(ctx.funcCall() != null) {
+        } else if (ctx.funcCall() != null) {
             final Expression left = this.visit(ctx.funcCall());
-            if(ctx.DOT() == null) {
+            if (ctx.DOT() == null) {
                 ret = new IdentifierExpression(left);
             } else {
                 ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
             }
         } else if (ctx.arrayAccess() != null) {
             final Expression left = this.visit(ctx.arrayAccess());
-            if(ctx.DOT() == null) {
+            if (ctx.DOT() == null) {
                 ret = new IdentifierExpression(left);
             } else {
                 ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
             }
         } else {
-            throw  new NotImplementedException(ctx + "identifier unknow.");
+            throw new NotImplementedException(ctx + "identifier unknow.");
         }
         return ret;
     }
@@ -128,7 +128,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public FunctionCallExpression visitFuncCall(FuncCallContext ctx) {
         final FunctionCallExpression ret = new FunctionCallExpression(ctx.basic_identifier().getText());
-        if(ctx.parameters != null && ctx.parameters.expression() != null) {
+        if (ctx.parameters != null && ctx.parameters.expression() != null) {
             for (final ExpressionContext param : ctx.parameters.expression()) {
                 ret.add(this.visit(param));
             }
@@ -139,7 +139,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public InstancePathExpression visitInstancePath(InstancePathContext ctx) {
         final InstancePathExpression ret;
-        if(ctx.identifier().size() == 1) {
+        if (ctx.identifier().size() == 1) {
             ret = new InstancePathExpression(this.visit(ctx.identifier(0)));
         } else {
             ret = new InstancePathExpression(this.visit(ctx.identifier(0)), this.visit(ctx.identifier(1)));
@@ -151,7 +151,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public Expression visitPortPath(PortPathContext ctx) {
         final Expression ret;
-        if(ctx.instancePath() != null) {
+        if (ctx.instancePath() != null) {
             ret = new PortPathExpression(this.visitInstancePath(ctx.instancePath()), ctx.LEFT_LIGHT_ARROW() != null, this.visit(ctx.identifier()));
         } else {
             ret = this.visit(ctx.identifier());
@@ -162,7 +162,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     @Override
     public Expression visitVersion(VersionContext ctx) {
         final Expression ret;
-        if(ctx.NUMERIC_VALUE() != null) {
+        if (ctx.NUMERIC_VALUE() != null) {
             ret = new VersionExpression(Long.parseLong(ctx.NUMERIC_VALUE().getText()));
         } else {
             ret = this.visit(ctx.identifier());

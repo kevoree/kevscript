@@ -19,7 +19,7 @@ public class ObjectDeclExpression extends Expression {
         final StringBuilder sb = new StringBuilder();
         sb.append('{');
         sb.append('\n');
-        for(Map.Entry<String, Expression> aa: values.entrySet()) {
+        for (Map.Entry<String, Expression> aa : values.entrySet()) {
             sb.append(aa.getKey());
             sb.append(" : ");
             sb.append(aa.getValue().toText());

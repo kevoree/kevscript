@@ -5,7 +5,6 @@ package org.kevoree.kevscript.language.expressions;
  */
 public abstract class Expression {
     /**
-     *
      * @return a text representation of the expression
      */
     public abstract String toText();

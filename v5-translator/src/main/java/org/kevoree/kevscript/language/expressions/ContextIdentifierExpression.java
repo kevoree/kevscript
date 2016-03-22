@@ -1,7 +1,6 @@
 package org.kevoree.kevscript.language.expressions;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ public class ContextIdentifierExpression extends Expression {
     @Override
     public String toText() {
         final List<String> strElemens = new ArrayList<>();
-        for(Expression e: elems) {
+        for (Expression e : elems) {
             strElemens.add(e.toText());
         }
         return StringUtils.join(strElemens, ".");

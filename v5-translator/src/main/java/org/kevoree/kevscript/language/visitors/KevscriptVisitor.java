@@ -2,15 +2,17 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
-import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.Expression;
+import org.kevoree.kevscript.language.expressions.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.PortPathExpression;
+import org.kevoree.kevscript.language.expressions.StringExpression;
+import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
 
@@ -21,8 +23,11 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     private final Context context;
 
+    private final KevscriptHelper helper;
+
     public KevscriptVisitor() {
         this.context = new Context();
+        this.helper = new KevscriptHelper();
     }
 
     @Override
@@ -56,7 +61,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 }
             } else {
 //                final StringExpression instanceName = context.lookup(parent.instanceName.toText(), StringExpression.class);
-                final Long versionValue = convertVersionToLong(parent.instanceTypeDefVersion);
+                final Long versionValue = helper.convertVersionToLong(this.context, parent.instanceTypeDefVersion);
                 final InstanceElement root = new InstanceElement(parent.toText(), parent.instanceTypeDefName, versionValue);
                 ret.add(new AddCommand(root));
             }
@@ -65,7 +70,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             for (IdentifierContext identifier : ctx.identifierList().identifier()) {
                 final InstanceExpression parent = context.lookup(new ExpressionVisitor(context).visitIdentifier(identifier).toText(), InstanceExpression.class);
                 final String instanceName = parent.instanceName.toText();
-                final Long versionValue = convertVersionToLong(parent.instanceTypeDefVersion);
+                final Long versionValue = helper.convertVersionToLong(this.context, parent.instanceTypeDefVersion);
                 final InstanceElement root = new InstanceElement(instanceName, parent.instanceTypeDefName, versionValue);
                 ret.add(new AddCommand(root));
             }
@@ -74,27 +79,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         }
         return ret;
     }
-
-    private Long convertVersionToLong(final Expression expression) {
-
-        final Long versionValue;
-        if (expression instanceof VersionExpression) {
-            versionValue = ((VersionExpression) expression).version;
-        } else if (expression != null) {
-            final Expression version = context.lookup(expression.toText(), Expression.class);
-            if(version instanceof  VersionExpression) {
-                versionValue = ((VersionExpression)version).version;
-            } else if(version instanceof StringExpression) {
-                versionValue = Long.parseLong(((StringExpression) version).text);
-            } else {
-                throw new WrongTypeException(expression.toText(), VersionExpression.class);
-            }
-        } else {
-            versionValue = null;
-        }
-        return versionValue;
-    }
-
 
     @Override
     public Commands visitInstance(final InstanceContext ctx) {
@@ -132,12 +116,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitAttach(final AttachContext ctx) {
-        final InstanceElement group = getInstanceFromContext(ctx.identifier());
+        final InstanceElement group = this.helper.getInstanceFromContext(context, ctx.identifier());
 
         // node conversion from expression to command element
         final Commands ret = new Commands();
         for (final IdentifierContext node : ctx.nodesId.identifier()) {
-            final InstanceElement nodeInstanceElement = getInstanceFromContext(node);
+            final InstanceElement nodeInstanceElement = this.helper.getInstanceFromContext(context, node);
 
             // command instanciation
             ret.addCommand(new AttachCommand(group, nodeInstanceElement));
@@ -147,12 +131,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitDetach(DetachContext ctx) {
-        final InstanceElement group = getInstanceFromContext(ctx.identifier());
+        final InstanceElement group = this.helper.getInstanceFromContext(context, ctx.identifier());
 
         // node conversion from expression to command element
         final Commands ret = new Commands();
         for (final IdentifierContext node : ctx.nodesId.identifier()) {
-            final InstanceElement nodeInstanceElement = getInstanceFromContext(node);
+            final InstanceElement nodeInstanceElement = this.helper.getInstanceFromContext(context, node);
 
             // command instanciation
             ret.addCommand(new DetachCommand(group, nodeInstanceElement));
@@ -160,24 +144,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return ret;
     }
 
-    /*
-        TODO : Extract this method in a dedicated lookup class
-         */
-    private InstanceElement getInstanceFromContext(IdentifierContext node) {
-        final Expression nodeExpression = new ExpressionVisitor(context).visit(node);
-        final InstanceExpression nodeInstance = context.lookup(nodeExpression.toText(), InstanceExpression.class, false);
-        final InstanceElement nodeInstanceElement;
-
-        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
-            nodeInstanceElement = new InstanceElement(node.basic_identifier().getText(), null, null);
-        } else {
-            final String nodeName = nodeInstance.instanceName.toText();
-            final Long nodeVersion = convertVersionToLong(nodeInstance.instanceTypeDefVersion);
-            final String instanceTypeDefName = nodeInstance.instanceTypeDefName;
-            nodeInstanceElement = new InstanceElement(nodeName, instanceTypeDefName, nodeVersion);
-        }
-        return nodeInstanceElement;
-    }
 
     @Override
     public Commands visitLetDecl(final LetDeclContext ctx) {
@@ -188,7 +154,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitBind(BindContext ctx) {
-        final InstanceElement chan = getInstanceFromContext(ctx.chan);
+        final InstanceElement chan = this.helper.getInstanceFromContext(context, ctx.chan);
 
         final Commands ret = new Commands();
         for (final PortPathContext portPath : ctx.nodes.instances) {
@@ -198,27 +164,27 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
                 try {
                     final Expression instanceB = this.context.lookup(result.toText(), Expression.class);
-                    if(instanceB instanceof PortPathExpression) {
+                    if (instanceB instanceof PortPathExpression) {
                         final PortPathExpression instance = (PortPathExpression) instanceB;
                         final String name = instance.portName.toText();
-                        if(instance.instancePath.node == null) {
+                        if (instance.instancePath.node == null) {
                             final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class);
-                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, componentExpression.instanceTypeDefVersion));
                             final Boolean isInput = instance.isInput;
                             final PortElement portElement = new PortElement(name, null, component, isInput);
                             ret.addCommand(new BindCommand(chan, portElement));
                         } else {
                             final InstanceExpression nodeExpression = context.lookup(instance.instancePath.node.toText(), InstanceExpression.class, false);
                             final InstanceElement node;
-                            if(nodeExpression != null) {
-                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, convertVersionToLong(nodeExpression.instanceTypeDefVersion));
+                            if (nodeExpression != null) {
+                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, nodeExpression.instanceTypeDefVersion));
                             } else {
                                 node = new InstanceElement(instance.instancePath.node.toText());
                             }
                             final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class, false);
                             final InstanceElement component;
-                            if(componentExpression != null) {
-                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            if (componentExpression != null) {
+                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, componentExpression.instanceTypeDefVersion));
                             } else {
                                 component = new InstanceElement(instance.instancePath.node.toText());
                             }
@@ -235,7 +201,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             } else {
                 if (instancePathContext.identifier().size() == 1) {
                     // direct reference to a component, must be in the current scope
-                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(0));
+                    final InstanceElement componentInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(0));
 
                     final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
                     final StringExpression portNameStr = this.context.lookup(portNameIdentifier.toText(), StringExpression.class);
@@ -243,10 +209,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     ret.addCommand(new BindCommand(chan, port));
                 } else {
                     // reference to a component via its node, might be found in the context or later in the CDN
-                    final InstanceElement nodeInstance = getInstanceFromContext(instancePathContext.identifier(0));
-                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(1));
+                    final InstanceElement nodeInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(0));
+                    final InstanceElement componentInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(1));
                     final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
-                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final String portName = this.helper.getPortNameFromIdentifier(context, portNameIdentifier);
                     final PortElement port = new PortElement(portName, nodeInstance, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
                     ret.addCommand(new BindCommand(chan, port));
                 }
@@ -258,7 +224,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitUnbind(UnbindContext ctx) {
-        final InstanceElement chan = getInstanceFromContext(ctx.chan);
+        final InstanceElement chan = this.helper.getInstanceFromContext(context, ctx.chan);
 
         final Commands ret = new Commands();
         for (final PortPathContext portPath : ctx.nodes.instances) {
@@ -268,27 +234,27 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
                 try {
                     final Expression instanceB = this.context.lookup(result.toText(), Expression.class);
-                    if(instanceB instanceof PortPathExpression) {
+                    if (instanceB instanceof PortPathExpression) {
                         final PortPathExpression instance = (PortPathExpression) instanceB;
                         final String name = instance.portName.toText();
-                        if(instance.instancePath.node == null) {
+                        if (instance.instancePath.node == null) {
                             final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class);
-                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, componentExpression.instanceTypeDefVersion));
                             final Boolean isInput = instance.isInput;
                             final PortElement portElement = new PortElement(name, null, component, isInput);
                             ret.addCommand(new UnbindCommand(chan, portElement));
                         } else {
                             final InstanceExpression nodeExpression = context.lookup(instance.instancePath.node.toText(), InstanceExpression.class, false);
                             final InstanceElement node;
-                            if(nodeExpression != null) {
-                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, convertVersionToLong(nodeExpression.instanceTypeDefVersion));
+                            if (nodeExpression != null) {
+                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, nodeExpression.instanceTypeDefVersion));
                             } else {
                                 node = new InstanceElement(instance.instancePath.node.toText());
                             }
                             final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class, false);
                             final InstanceElement component;
-                            if(componentExpression != null) {
-                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            if (componentExpression != null) {
+                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, componentExpression.instanceTypeDefVersion));
                             } else {
                                 component = new InstanceElement(instance.instancePath.node.toText());
                             }
@@ -305,17 +271,17 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             } else {
                 if (instancePathContext.identifier().size() == 1) {
                     // direct reference to a component, must be in the current scope
-                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(0));
+                    final InstanceElement componentInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(0));
                     final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
-                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final String portName = this.helper.getPortNameFromIdentifier(context, portNameIdentifier);
                     final PortElement port = new PortElement(portName, null, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
                     ret.addCommand(new UnbindCommand(chan, port));
                 } else {
                     // reference to a component via its node, might be found in the context or later in the CDN
-                    final InstanceElement nodeInstance = getInstanceFromContext(instancePathContext.identifier(0));
-                    final InstanceElement componentInstance = getInstanceFromContext(instancePathContext.identifier(1));
+                    final InstanceElement nodeInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(0));
+                    final InstanceElement componentInstance = this.helper.getInstanceFromContext(context, instancePathContext.identifier(1));
                     final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
-                    final String portName = getPortNameFromIdentifier(portNameIdentifier);
+                    final String portName = this.helper.getPortNameFromIdentifier(context, portNameIdentifier);
                     final PortElement port = new PortElement(portName, nodeInstance, componentInstance, portPath.LEFT_LIGHT_ARROW() != null);
                     ret.addCommand(new UnbindCommand(chan, port));
                 }
@@ -325,17 +291,5 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return ret;
     }
 
-    /*
-    TODO : to externalize
-     */
-    private String getPortNameFromIdentifier(final Expression portNameIdentifier) {
-        final StringExpression portNameExpr = this.context.lookup(portNameIdentifier.toText(), StringExpression.class, false);
-        final String portName;
-        if(portNameExpr != null) {
-            portName = portNameExpr.text;
-        } else {
-            portName = portNameIdentifier.toText();
-        }
-        return portName;
-    }
+
 }
