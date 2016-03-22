@@ -1,0 +1,3 @@
+instance group0 = WSGroup
+add group0
+detach group0 node1 // node1 is expected to be found in the CDN

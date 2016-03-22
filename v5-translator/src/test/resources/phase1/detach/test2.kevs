@@ -1,0 +1,3 @@
+instance node1 = JavaNode
+add node1
+detach group0 node1 // group0 is expected to be found in the CDN

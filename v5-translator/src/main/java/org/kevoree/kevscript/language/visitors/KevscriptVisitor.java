@@ -2,10 +2,8 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.language.commands.AddCommand;
-import org.kevoree.kevscript.language.commands.AttachCommand;
-import org.kevoree.kevscript.language.commands.BindCommand;
-import org.kevoree.kevscript.language.commands.Commands;
+import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.context.Context;
@@ -147,9 +145,24 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return ret;
     }
 
+    @Override
+    public Commands visitDetach(DetachContext ctx) {
+        final InstanceElement group = getInstanceFromContext(ctx.identifier());
+
+        // node conversion from expression to command element
+        final Commands ret = new Commands();
+        for (final IdentifierContext node : ctx.nodesId.identifier()) {
+            final InstanceElement nodeInstanceElement = getInstanceFromContext(node);
+
+            // command instanciation
+            ret.addCommand(new DetachCommand(group, nodeInstanceElement));
+        }
+        return ret;
+    }
+
     /*
-    TODO : Extract this method in a dedicated lookup class
-     */
+        TODO : Extract this method in a dedicated lookup class
+         */
     private InstanceElement getInstanceFromContext(IdentifierContext node) {
         final Expression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance = context.lookup(nodeExpression.toText(), InstanceExpression.class, false);

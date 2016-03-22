@@ -99,17 +99,13 @@ public class Phase1Test {
     }
 
     @Test
-    public void testDetachError1() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance node1 not found");
-        interpretPhase1(pathToString("/phase1/detach/error1.kevs"));
+    public void testDetachTest1() throws Exception {
+        interpretPhase1(pathToString("/phase1/detach/test1.kevs"));
     }
 
     @Test
-    public void testDetachError2() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("instance connector0 not found");
-        interpretPhase1(pathToString("/phase1/detach/error2.kevs"));
+    public void testDetachTest2() throws Exception {
+        interpretPhase1(pathToString("/phase1/detach/test2.kevs"));
     }
 
     @Test

@@ -24,11 +24,22 @@ public class CommandsToString {
             ret = this.proceedAttachCommand((AttachCommand) command);
         } else if(command instanceof BindCommand) {
             ret = this.proceedBindCommand((BindCommand) command);
+        } else if(command instanceof  DetachCommand) {
+            ret = this.proceedDetachCommand((DetachCommand) command);
         }
         else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedDetachCommand(DetachCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("detach ");
+        sb.append(command.node.instanceName);
+        sb.append(' ');
+        sb.append(command.group.instanceName);
+        return sb.toString();
     }
 
     private String proceedBindCommand(BindCommand command) {

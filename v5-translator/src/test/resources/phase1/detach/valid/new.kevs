@@ -1,3 +1,5 @@
-add node0: JavaNode
-add group0: WSGroup
+instance node0 = JavaNode
+instance group0 = WSGroup
+
+add [node0, group0]
 detach group0 node0
