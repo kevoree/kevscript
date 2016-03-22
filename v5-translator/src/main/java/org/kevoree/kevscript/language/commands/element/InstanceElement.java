@@ -8,6 +8,12 @@ public class InstanceElement {
     public final String typeName;
     public final Long version;
 
+    public InstanceElement(final String instanceName) {
+        this.instanceName = instanceName;
+        this.typeName = null;
+        this.version = null;
+    }
+
     public InstanceElement(final String instanceName, final String typeName) {
         this.instanceName = instanceName;
         this.typeName = typeName;

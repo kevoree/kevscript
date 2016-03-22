@@ -9,10 +9,10 @@ import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
+import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
-
-import javax.management.ValueExp;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
 
@@ -183,9 +183,45 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             if (instancePathContext == null) {
                 // instance path is empty so identifier must be a reference to an instance path declared previously.
                 final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
-                //this.context.lookup(result);
-
-                // TODO WIP
+                try {
+                    final Expression instanceB = this.context.lookup(result.toText(), Expression.class);
+                    if(instanceB instanceof InstanceExpression) {
+                        final InstanceExpression instance = (InstanceExpression) instanceB;
+                        ret.addCommand(new BindCommand(chan, new PortElement(null, null, new InstanceElement(instance.instanceName.toText(), instance.instanceTypeDefName, convertVersionToLong(instance.instanceTypeDefVersion)), null)));
+                    } else if(instanceB instanceof PortPathExpression) {
+                        final PortPathExpression instance = (PortPathExpression) instanceB;
+                        final String name = instance.portName.toText();
+                        if(instance.instancePath.node == null) {
+                            final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class);
+                            final InstanceElement component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            final Boolean isInput = instance.isInput;
+                            final PortElement portElement = new PortElement(name, null, component, isInput);
+                            ret.addCommand(new BindCommand(chan, portElement));
+                        } else {
+                            final InstanceExpression nodeExpression = context.lookup(instance.instancePath.node.toText(), InstanceExpression.class, false);
+                            final InstanceElement node;
+                            if(nodeExpression != null) {
+                                node = new InstanceElement(nodeExpression.instanceName.toText(), nodeExpression.instanceTypeDefName, convertVersionToLong(nodeExpression.instanceTypeDefVersion));
+                            } else {
+                                node = new InstanceElement(instance.instancePath.node.toText());
+                            }
+                            final InstanceExpression componentExpression = context.lookup(instance.instancePath.component.toText(), InstanceExpression.class, false);
+                            final InstanceElement component;
+                            if(componentExpression != null) {
+                                component = new InstanceElement(componentExpression.instanceName.toText(), componentExpression.instanceTypeDefName, convertVersionToLong(componentExpression.instanceTypeDefVersion));
+                            } else {
+                                component = new InstanceElement(instance.instancePath.node.toText());
+                            }
+                            final Boolean isInput = instance.isInput;
+                            final PortElement portElement = new PortElement(name, node, component, isInput);
+                            ret.addCommand(new BindCommand(chan, portElement));
+                        }
+                    } else {
+                        throw new PortPathNotFound(instanceB);
+                    }
+                } catch (InstanceNameNotFound e) {
+                    throw new PortPathNotFound(result);
+                }
             } else {
                 if (instancePathContext.identifier().size() == 1) {
                     // direct reference to a component, must be in the current scope

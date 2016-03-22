@@ -14,6 +14,6 @@ public class PortPathNotFound extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return identifier + " portPath not found.";
+        return "portPath " + identifier.toText() + " not found.";
     }
 }

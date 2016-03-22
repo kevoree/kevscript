@@ -7,12 +7,12 @@ public class PortElement {
     public final String name;
     public final InstanceElement node;
     public final InstanceElement component;
-    public final boolean isLeft;
+    public final Boolean isInput;
 
-    public PortElement(final String name, final InstanceElement node, InstanceElement component, final boolean isLeft) {
+    public PortElement(final String name, final InstanceElement node, InstanceElement component, final Boolean isInput) {
         this.name = name;
         this.node = node;
         this.component = component;
-        this.isLeft = isLeft;
+        this.isInput = isInput;
     }
 }

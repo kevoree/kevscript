@@ -6,13 +6,13 @@ import org.apache.commons.lang3.NotImplementedException;
  * Created by mleduc on 15/03/16.
  */
 public class PortPathExpression extends Expression {
-    private final Expression leftExpression;
-    private final boolean isLeft;
-    private final Expression portName;
+    public final InstancePathExpression instancePath;
+    public final boolean isInput;
+    public final Expression portName;
 
-    public PortPathExpression(final Expression leftExpression, final boolean isLeft, final Expression portName) {
-        this.leftExpression = leftExpression;
-        this.isLeft = isLeft;
+    public PortPathExpression(final InstancePathExpression instancePath, final boolean isInput, final Expression portName) {
+        this.instancePath = instancePath;
+        this.isInput = isInput;
         this.portName = portName;
     }
 
@@ -20,12 +20,6 @@ public class PortPathExpression extends Expression {
     public String toText() {
         throw new NotImplementedException("TODO");
     }
-
-
-    /*@Override
-    public boolean match(Expression identifier) {
-        return this.name.equals(identifier.name);
-    }*/
 
 }
 

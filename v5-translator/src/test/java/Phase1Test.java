@@ -120,7 +120,7 @@ public class Phase1Test {
     @Test
     public void testBindError1() throws Exception {
         exception.expect(PortPathNotFound.class);
-        exception.expectMessage("instance connector0 not found");
+        exception.expectMessage("portPath y not found");
         interpretPhase1(pathToString("/phase1/bind/error1.kevs"));
     }
 

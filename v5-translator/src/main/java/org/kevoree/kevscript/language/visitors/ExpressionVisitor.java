@@ -97,7 +97,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     public Expression visitIdentifier(IdentifierContext ctx) {
         final Expression ret;
         if(ctx.basic_identifier() != null) {
-            final StringExpression left = new StringExpression(ctx.basic_identifier().getText());
+            final BasicIdentifierExpression left = new BasicIdentifierExpression(ctx.basic_identifier().getText());
             if(ctx.DOT() == null) {
                 ret = new IdentifierExpression(left);
             } else {
@@ -137,11 +137,14 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     }
 
     @Override
-    public Expression visitInstancePath(InstancePathContext ctx) {
-        final InstancePathExpression ret = new InstancePathExpression();
-        for(IdentifierContext identifier : ctx.identifier()) {
-            ret.add(this.visit(identifier));
+    public InstancePathExpression visitInstancePath(InstancePathContext ctx) {
+        final InstancePathExpression ret;
+        if(ctx.identifier().size() == 1) {
+            ret = new InstancePathExpression(this.visit(ctx.identifier(0)));
+        } else {
+            ret = new InstancePathExpression(this.visit(ctx.identifier(0)), this.visit(ctx.identifier(1)));
         }
+
         return ret;
     }
 
@@ -149,7 +152,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<Expression> {
     public Expression visitPortPath(PortPathContext ctx) {
         final Expression ret;
         if(ctx.instancePath() != null) {
-            ret = new PortPathExpression(this.visit(ctx.instancePath()), ctx.LEFT_LIGHT_ARROW() != null, this.visit(ctx.identifier()));
+            ret = new PortPathExpression(this.visitInstancePath(ctx.instancePath()), ctx.LEFT_LIGHT_ARROW() != null, this.visit(ctx.identifier()));
         } else {
             ret = this.visit(ctx.identifier());
         }
