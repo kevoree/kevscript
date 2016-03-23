@@ -41,7 +41,9 @@ public class KevscriptHelper {
         final InstanceExpression nodeInstance;
         if(nodeExpression instanceof  IdentifierExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
-        } else if(nodeExpression == null) {
+        } else if (nodeExpression instanceof  InstanceExpression) {
+            nodeInstance = (InstanceExpression) nodeExpression;
+        }else if(nodeExpression == null) {
             nodeInstance = new InstanceExpression(node.getText(), null, null, null);
         } else
         {

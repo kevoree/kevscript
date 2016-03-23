@@ -244,8 +244,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final InstanceElement node;
         if (nodeExpression != null) {
             node = new InstanceElement(nodeExpression.instanceName, nodeExpression.instanceTypeDefName, helper.convertVersionToLong(this.context, nodeExpression.instanceTypeDefVersion));
-        } else {
+        } else if(instancePath.node != null){
             node = new InstanceElement(this.context.lookup(instancePath.node, FinalExpression.class).toText());
+        } else {
+            node = null;
         }
         return node;
     }

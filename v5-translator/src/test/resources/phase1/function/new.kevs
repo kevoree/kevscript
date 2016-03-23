@@ -1,12 +1,11 @@
 function test(a,b,c) {
     instance node0 = JavascriptNode/a
     add node0
-    set node0#a = b
-    set node0#c = c.d
+    set node0#y = b
+    //set node0#c = c.d
 }
 
 
 test("1", "ok1", {d : "e1"})
 test("2", "ok2", {d : "e2"})
 test("3", "ok3", {d : "e3"})
-
