@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ArrayDeclExpression implements FinalExpression {
 
-    private List<FinalExpression> expressionList = new ArrayList<>();
+    public List<FinalExpression> expressionList = new ArrayList<>();
 
     @Override
     public String toText() {

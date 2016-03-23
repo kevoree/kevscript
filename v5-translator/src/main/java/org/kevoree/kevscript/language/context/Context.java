@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
+import org.kevoree.kevscript.language.expressions.ArrayDeclExpression;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.FinalExpression;
 import org.kevoree.kevscript.language.expressions.NonFinalExpression;
@@ -68,7 +69,19 @@ public class Context {
 
     public void addExpression(final String identifier, final FinalExpression expression) {
 
-        // TODO flatten object to be able to find every entry by on lookup
+        if(expression instanceof ArrayDeclExpression) {
+            final ArrayDeclExpression arr = (ArrayDeclExpression) expression;
+            int i=0;
+            for(final FinalExpression nx : arr.expressionList) {
+                addExpression(identifier+"["+(i++)+"]", nx);
+            }
+        } else {
+            // TODO flatten object to be able to find every entry by on lookup
+            basicAddExpression(identifier, expression);
+        }
+    }
+
+    private void basicAddExpression(String identifier, FinalExpression expression) {
         if (this.mapIdentifiers.containsKey(identifier)) {
             throw new NameCollisionException(identifier);
         }

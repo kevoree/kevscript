@@ -1,0 +1,2 @@
+let myArr = ["a", "b", "c"]
+set x:y#d = myArr[1]

@@ -62,6 +62,11 @@ public class Phase1Test {
     }
 
     @Test
+    public void testLetArray() throws Exception {
+        analyzeDirectory("phase1/let/array");
+    }
+
+    @Test
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
     }
