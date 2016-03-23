@@ -15,7 +15,6 @@ public class InstancePathExpression implements FinalExpression {
     }
 
     public InstancePathExpression(FinalExpression node, FinalExpression component) {
-        assert node != null;
         assert component != null;
         this.node = node;
         this.component = component;

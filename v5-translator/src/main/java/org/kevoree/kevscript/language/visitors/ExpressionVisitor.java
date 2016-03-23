@@ -12,6 +12,7 @@ import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sun.corba.se.spi.activation.IIOP_CLEAR_TEXT.value;
 import static org.kevoree.kevscript.KevScriptParser.*;
 
 /**
@@ -128,7 +129,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         Expression ret;
         final FinalExpression left = this.visit(ctx.arrayAccess());
         if (ctx.DOT() == null) {
-            ret = new InstanceExpression(new StringExpression(left.toText()), null, null, null);
+            ret = new InstanceExpression(left.toText(), null, null, null);
         } else {
             ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
         }
@@ -139,7 +140,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         Expression ret;
         final FinalExpression left = this.visit(ctx.funcCall());
         if (ctx.DOT() == null) {
-            ret = new InstanceExpression(new StringExpression(left.toText()), null, null, null);
+            ret = new InstanceExpression(left.toText(), null, null, null);
         } else {
             ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
         }
@@ -261,6 +262,27 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
         return ret;
+    }
+
+
+    @Override
+    public DictionaryPathExpression visitDictionaryPath(DictionaryPathContext ctx) {
+        final FinalExpression visit = this.visit(ctx.identifier(0));
+        final String dicoName;
+        if (visit != null) {
+            dicoName = visit.toText();
+        } else {
+            dicoName = ctx.identifier(0).getText();
+        }
+
+        final String frag;
+        if(ctx.identifier(1) != null) {
+            frag = this.visit(ctx.identifier(1)).toText();
+        } else {
+            frag = null;
+        }
+
+        return new DictionaryPathExpression(this.visitInstancePath(ctx.key), dicoName, frag);
     }
 
     public Context getContext() {

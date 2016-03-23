@@ -7,10 +7,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.kevoree.kevscript.KevScriptLexer;
 import org.kevoree.kevscript.KevScriptParser;
-import org.kevoree.kevscript.language.excpt.CustomException;
-import org.kevoree.kevscript.language.excpt.NameCollisionException;
-import org.kevoree.kevscript.language.excpt.PortPathNotFound;
-import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
+import org.kevoree.kevscript.language.excpt.*;
 import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
 import org.kevoree.kevscript.language.processor.CommandsToString;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
@@ -43,6 +40,32 @@ public class Phase1Test {
         exception.expect(NameCollisionException.class);
         exception.expectMessage("node0 already declared in this scope");
         interpretPhase1(pathToString("/phase1/instance_1/error1.kevs"));
+    }
+
+    @Test
+    public void testLetRec1() throws Exception {
+        analyzeDirectory("phase1/let/rec1");
+    }
+
+    @Test
+    public void testLetError1() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("a is expected to be of type InstanceExpression");
+        interpretPhase1(pathToString("/phase1/let/rec_error/error1.kevs"));
+    }
+
+    @Test
+    public void testLetError2() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("b is expected to be of type InstanceExpression");
+        interpretPhase1(pathToString("/phase1/let/rec_error/error2.kevs"));
+    }
+
+    @Test
+    public void testLetError3() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("a is expected to be of type InstanceExpression");
+        interpretPhase1(pathToString("/phase1/let/rec_error/error3.kevs"));
     }
 
     @Test

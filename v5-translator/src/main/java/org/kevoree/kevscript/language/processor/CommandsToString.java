@@ -2,6 +2,7 @@ package org.kevoree.kevscript.language.processor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kevoree.kevscript.language.commands.*;
+import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 
 /**
  * Created by mleduc on 16/03/16.
@@ -28,10 +29,37 @@ public class CommandsToString {
             ret = this.proceedDetachCommand((DetachCommand) command);
         } else if (command instanceof UnbindCommand) {
             ret = this.proceedUnbindCommand((UnbindCommand) command);
-        } else {
+        } else if (command instanceof  SetCommand) {
+            ret = this.proceedSetCommand((SetCommand) command);
+        }else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedSetCommand(SetCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("set ");
+        final DictionaryElement dictionaryElement = command.dictionaryElement;
+        if(dictionaryElement.node != null) {
+            sb.append(dictionaryElement.node.instanceName);
+            sb.append(".");
+        }
+
+        sb.append(dictionaryElement.component.instanceName);
+        sb.append(".");
+        sb.append(dictionaryElement.dicoName);
+
+        if(dictionaryElement.frag != null) {
+            sb.append('/');
+            sb.append(dictionaryElement.frag);
+        }
+
+        sb.append(" = ");
+        sb.append('"');
+        sb.append(command.value);
+        sb.append('"');
+        return sb.toString();
     }
 
     private String proceedUnbindCommand(UnbindCommand command) {

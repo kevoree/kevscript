@@ -38,11 +38,19 @@ public class KevscriptHelper {
 
     public InstanceExpression getInstanceExpressionFromContext(final Context context, KevScriptParser.IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
-        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
+        final InstanceExpression nodeInstance;
+        if(nodeExpression instanceof  IdentifierExpression) {
+            nodeInstance = (InstanceExpression) nodeExpression;
+        } else if(nodeExpression == null) {
+            nodeInstance = new InstanceExpression(node.getText(), null, null, null);
+        } else
+        {
+            throw new WrongTypeException(node.getText(), InstanceExpression.class);
+        }
         final InstanceExpression nodeInstanceExpression;
 
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
-            nodeInstanceExpression = new InstanceExpression(new StringExpression(node.basic_identifier().getText()), null, null, null);
+            nodeInstanceExpression = new InstanceExpression(node.basic_identifier().getText(), null, null, null);
         } else {
             nodeInstanceExpression = nodeInstance;
         }
@@ -57,7 +65,7 @@ public class KevscriptHelper {
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
             nodeInstanceElement = new InstanceElement(node.basic_identifier().getText(), null, null);
         } else {
-            final String nodeName = nodeInstance.instanceName.toText();
+            final String nodeName = nodeInstance.instanceName;
             final Long nodeVersion = this.convertVersionToLong(context, nodeInstance.instanceTypeDefVersion);
             final String instanceTypeDefName = nodeInstance.instanceTypeDefName;
             nodeInstanceElement = new InstanceElement(nodeName, instanceTypeDefName, nodeVersion);
