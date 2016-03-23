@@ -3,10 +3,7 @@ package org.kevoree.kevscript.language.context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.ArrayDeclExpression;
-import org.kevoree.kevscript.language.expressions.Expression;
-import org.kevoree.kevscript.language.expressions.FinalExpression;
-import org.kevoree.kevscript.language.expressions.NonFinalExpression;
+import org.kevoree.kevscript.language.expressions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,17 +41,17 @@ public class Context {
 
     public <T extends FinalExpression> T lookup(final Expression identifier, Class<T> clazz, boolean throwException) {
         final T ret;
-        if(identifier instanceof FinalExpression) {
+        if (identifier instanceof FinalExpression) {
             ret = (T) identifier;
-        } else if(identifier != null){
-            ret = lookupByStrKey(((NonFinalExpression)identifier).toPath(), clazz, throwException);
+        } else if (identifier != null) {
+            ret = lookupByStrKey(((NonFinalExpression) identifier).toPath(), clazz, throwException);
         } else {
             ret = null;
         }
         return ret;
     }
 
-    private <T extends FinalExpression> T lookupByStrKey(String key, Class<T> clazz,  boolean throwException) {
+    private <T extends FinalExpression> T lookupByStrKey(String key, Class<T> clazz, boolean throwException) {
         if (this.mapIdentifiers.containsKey(key)) {
             final FinalExpression expression = this.mapIdentifiers.get(key);
             if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
@@ -69,16 +66,19 @@ public class Context {
 
     public void addExpression(final String identifier, final FinalExpression expression) {
 
-        if(expression instanceof ArrayDeclExpression) {
+        if (expression instanceof ArrayDeclExpression) {
             final ArrayDeclExpression arr = (ArrayDeclExpression) expression;
-            int i=0;
-            for(final FinalExpression nx : arr.expressionList) {
-                addExpression(identifier+"["+(i++)+"]", nx);
+            int i = 0;
+            for (final FinalExpression nx : arr.expressionList) {
+                addExpression(identifier + "[" + (i++) + "]", nx);
             }
-        } else {
-            // TODO flatten object to be able to find every entry by on lookup
-            basicAddExpression(identifier, expression);
+        } else if (expression instanceof ObjectDeclExpression) {
+            final ObjectDeclExpression obj = (ObjectDeclExpression) expression;
+            for (Map.Entry<String, FinalExpression> x : obj.values.entrySet()) {
+                addExpression(identifier + "." + x.getKey(), x.getValue());
+            }
         }
+        basicAddExpression(identifier, expression);
     }
 
     private void basicAddExpression(String identifier, FinalExpression expression) {

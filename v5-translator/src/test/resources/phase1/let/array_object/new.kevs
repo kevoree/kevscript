@@ -1,0 +1,12 @@
+let myObj = {
+    a : "1",
+    b: "2",
+    c: "3",
+    d: {
+        c: ["a", "b", "c"]
+    },
+    e: [{a:"1"}]
+}
+set x:y#d = myObj.b
+set x:y#e = myObj.d.c[0]
+set x:y#f = myObj.e[0].a

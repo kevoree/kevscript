@@ -2,6 +2,7 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
@@ -75,17 +76,24 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public ContextIdentifierExpression visitContextIdentifier(ContextIdentifierContext ctx) {
+    public FinalExpression visitContextIdentifier(ContextIdentifierContext ctx) {
+        final ContextIdentifierExpression ret = getContextIdentifierExpression(ctx);
+        return this.context.lookup(ret);
+    }
+
+    private ContextIdentifierExpression getContextIdentifierExpression(ContextIdentifierContext ctx) {
         final ContextIdentifierExpression ret = new ContextIdentifierExpression();
         if (ctx.basic_identifier() != null) {
-            ret.add(this.context.lookup(new BasicIdentifierExpression(ctx.basic_identifier().getText())));
+            ret.add(ctx.basic_identifier().getText());
         } else if (ctx.contextRef() != null) {
-            ret.add(this.visit(ctx.contextRef()));
+            ret.add(this.visit(ctx.contextRef()).toText());
         } else if (ctx.arrayAccess() != null) {
-            ret.add(this.visit(ctx.arrayAccess()));
+            ret.add(this.visit(ctx.arrayAccess()).toText());
         } else if (ctx.DOT() != null) {
-            ret.add(this.visit(ctx.contextIdentifier(0)));
-            ret.add(this.visit(ctx.contextIdentifier(1)));
+            final ContextIdentifierExpression left = this.getContextIdentifierExpression(ctx.contextIdentifier(0));
+            final ContextIdentifierExpression right = this.getContextIdentifierExpression(ctx.contextIdentifier(1));
+            ret.addAll(left);
+            ret.addAll(right);
         }
         return ret;
     }
@@ -104,8 +112,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public FinalExpression visitArrayAccess(ArrayAccessContext ctx) {
-        final ArrayAccessExpression arrayAccessExpression = new ArrayAccessExpression(ctx.basic_identifier().getText(), Long.parseLong(ctx.NUMERIC_VALUE().getText()));
-        return this.context.lookup(arrayAccessExpression, FinalExpression.class);
+        return new ArrayAccessExpression(ctx.basic_identifier().getText(), Long.parseLong(ctx.NUMERIC_VALUE().getText()));
     }
 
     @Override

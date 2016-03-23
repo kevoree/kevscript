@@ -1,0 +1,10 @@
+let myObj = {
+    a : "1",
+    b: "2",
+    c: "3",
+    d: {
+        c: "3"
+    }
+}
+set x:y#d = myObj.b
+set x:y#e = myObj.d.c

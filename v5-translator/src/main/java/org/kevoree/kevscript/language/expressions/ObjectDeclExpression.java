@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class ObjectDeclExpression implements FinalExpression {
 
-    private Map<String, FinalExpression> values = new HashMap<>();
+    public Map<String, FinalExpression> values = new HashMap<>();
 
     public Expression put(String key, FinalExpression value) {
         return values.put(key, value);
