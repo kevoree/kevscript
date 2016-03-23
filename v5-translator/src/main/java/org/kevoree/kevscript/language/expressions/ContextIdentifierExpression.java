@@ -8,20 +8,20 @@ import java.util.List;
 /**
  * Created by mleduc on 02/03/16.
  */
-public class ContextIdentifierExpression extends Expression {
+public class ContextIdentifierExpression implements FinalExpression {
 
-    private List<Expression> elems = new ArrayList<>();
+    private List<FinalExpression> elems = new ArrayList<>();
 
     @Override
     public String toText() {
         final List<String> strElemens = new ArrayList<>();
-        for (Expression e : elems) {
+        for (FinalExpression e : elems) {
             strElemens.add(e.toText());
         }
         return StringUtils.join(strElemens, ".");
     }
 
-    public void add(Expression a) {
+    public void add(FinalExpression a) {
         elems.add(a);
     }
 }

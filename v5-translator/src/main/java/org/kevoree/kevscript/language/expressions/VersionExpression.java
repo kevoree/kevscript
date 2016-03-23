@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.expressions;
 /**
  * Created by mleduc on 16/03/16.
  */
-public class VersionExpression extends Expression {
+public class VersionExpression implements FinalExpression {
     public final long version;
 
     public VersionExpression(long version) {
@@ -14,11 +14,4 @@ public class VersionExpression extends Expression {
     public String toText() {
         return String.valueOf(version);
     }
-
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
-
-
 }

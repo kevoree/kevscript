@@ -5,23 +5,18 @@ import org.apache.commons.lang3.NotImplementedException;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class ConcatExpression extends Expression {
-    private final Expression left;
-    private final Expression right;
+public class ConcatExpression implements NonFinalExpression {
+    private final FinalExpression left;
+    private final FinalExpression right;
 
-    public ConcatExpression(final Expression left, final Expression right) {
+    public ConcatExpression(final FinalExpression left, final FinalExpression right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public String toText() {
-        throw new NotImplementedException("TODO");
+    public String toPath() {
+        throw new IllegalStateException("Concat can't be used as a selector");
     }
-
-   /* @Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
 
 }

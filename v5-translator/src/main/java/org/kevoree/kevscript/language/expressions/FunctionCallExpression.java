@@ -1,32 +1,29 @@
 package org.kevoree.kevscript.language.expressions;
 
+import org.kevoree.kevscript.language.commands.Commands;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by mleduc on 03/03/16.
  */
-public class FunctionCallExpression extends Expression {
+public class FunctionCallExpression implements FinalExpression {
+    public final Commands commands;
+    public final String returnValue;
 
-    private final String name;
-    private final List<Expression> expressions = new ArrayList<>();
+    public FunctionCallExpression(Commands commands) {
+        this.commands = commands;
+        this.returnValue = null;
+    }
 
-    public FunctionCallExpression(final String name) {
-        this.name = name;
+    public FunctionCallExpression(Commands commands, String returnValue) {
+        this.commands = commands;
+        this.returnValue = returnValue;
     }
 
     @Override
     public String toText() {
-        return null;
-    }
-
-
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
-
-    public void add(final Expression expression) {
-        expressions.add(expression);
+        return returnValue;
     }
 }

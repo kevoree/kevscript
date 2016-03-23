@@ -4,10 +4,7 @@ import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.Expression;
-import org.kevoree.kevscript.language.expressions.InstanceExpression;
-import org.kevoree.kevscript.language.expressions.StringExpression;
-import org.kevoree.kevscript.language.expressions.VersionExpression;
+import org.kevoree.kevscript.language.expressions.*;
 import org.kevoree.kevscript.language.visitors.ExpressionVisitor;
 
 /**
@@ -20,13 +17,18 @@ public class KevscriptHelper {
         if (expression instanceof VersionExpression) {
             versionValue = ((VersionExpression) expression).version;
         } else if (expression != null) {
-            final Expression version = context.lookup(expression.toText(), Expression.class);
-            if (version instanceof VersionExpression) {
-                versionValue = ((VersionExpression) version).version;
-            } else if (version instanceof StringExpression) {
+            final FinalExpression version = context.lookup(expression, FinalExpression.class);
+            if (version instanceof StringExpression) {
                 versionValue = Long.parseLong(((StringExpression) version).text);
+            } else if(version instanceof InstanceExpression) {
+                final VersionExpression instanceTypeDefVersion = ((InstanceExpression) version).instanceTypeDefVersion;
+                if(instanceTypeDefVersion != null) {
+                    versionValue = instanceTypeDefVersion.version;
+                }   else {
+                    versionValue = null;
+                }
             } else {
-                throw new WrongTypeException(expression.toText(), VersionExpression.class);
+                throw new WrongTypeException(expression.toString(), FinalExpression.class);
             }
         } else {
             versionValue = null;
@@ -34,9 +36,22 @@ public class KevscriptHelper {
         return versionValue;
     }
 
+    public InstanceExpression getInstanceExpressionFromContext(final Context context, KevScriptParser.IdentifierContext node) {
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
+        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
+        final InstanceExpression nodeInstanceExpression;
+
+        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
+            nodeInstanceExpression = new InstanceExpression(new StringExpression(node.basic_identifier().getText()), null, null, null);
+        } else {
+            nodeInstanceExpression = nodeInstance;
+        }
+        return nodeInstanceExpression;
+    }
+
     public InstanceElement getInstanceFromContext(final Context context, KevScriptParser.IdentifierContext node) {
-        final Expression nodeExpression = new ExpressionVisitor(context).visit(node);
-        final InstanceExpression nodeInstance = context.lookup(nodeExpression.toText(), InstanceExpression.class, false);
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
+        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
         final InstanceElement nodeInstanceElement;
 
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
@@ -51,13 +66,11 @@ public class KevscriptHelper {
     }
 
     public String getPortNameFromIdentifier(final Context context, final Expression portNameIdentifier) {
-        final StringExpression portNameExpr = context.lookup(portNameIdentifier.toText(), StringExpression.class, false);
-        final String portName;
-        if (portNameExpr != null) {
-            portName = portNameExpr.text;
+        final StringExpression portNameExpr = context.lookup(portNameIdentifier, StringExpression.class);
+        if(portNameExpr != null) {
+            return portNameExpr.text;
         } else {
-            portName = portNameIdentifier.toText();
+            return null;
         }
-        return portName;
     }
 }

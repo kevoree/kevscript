@@ -5,16 +5,18 @@ import org.apache.commons.lang3.NotImplementedException;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class InstancePathExpression extends Expression {
+public class InstancePathExpression implements FinalExpression {
 
-    public final Expression node;
-    public final Expression component;
+    public final FinalExpression node;
+    public final FinalExpression component;
 
-    public InstancePathExpression(Expression component) {
+    public InstancePathExpression(FinalExpression component) {
         this(null, component);
     }
 
-    public InstancePathExpression(Expression node, Expression component) {
+    public InstancePathExpression(FinalExpression node, FinalExpression component) {
+        assert node != null;
+        assert component != null;
         this.node = node;
         this.component = component;
     }

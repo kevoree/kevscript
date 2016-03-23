@@ -5,7 +5,7 @@ import org.apache.commons.lang3.NotImplementedException;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class ArrayAccessExpression extends Expression {
+public class ArrayAccessExpression implements NonFinalExpression {
 
 
     private final long index;
@@ -17,13 +17,10 @@ public class ArrayAccessExpression extends Expression {
     }
 
     @Override
-    public String toText() {
-        throw new NotImplementedException("TODO");
+    public String toPath() {
+        return this.id + "["+index+"]";
+
     }
 
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
 }
 

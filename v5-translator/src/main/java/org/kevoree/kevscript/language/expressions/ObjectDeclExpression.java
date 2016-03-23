@@ -6,11 +6,11 @@ import java.util.Map;
 /**
  * Created by mleduc on 02/03/16.
  */
-public class ObjectDeclExpression extends Expression {
+public class ObjectDeclExpression implements FinalExpression {
 
-    private Map<String, Expression> values = new HashMap<>();
+    private Map<String, FinalExpression> values = new HashMap<>();
 
-    public Expression put(String key, Expression value) {
+    public Expression put(String key, FinalExpression value) {
         return values.put(key, value);
     }
 
@@ -19,21 +19,15 @@ public class ObjectDeclExpression extends Expression {
         final StringBuilder sb = new StringBuilder();
         sb.append('{');
         sb.append('\n');
-        for (Map.Entry<String, Expression> aa : values.entrySet()) {
-            sb.append(aa.getKey());
+        for (Map.Entry<String, FinalExpression> itt : values.entrySet()) {
+            sb.append(itt.getKey());
             sb.append(" : ");
-            sb.append(aa.getValue().toText());
+            sb.append(itt.getValue().toText());
             sb.append('\n');
         }
         sb.append('}');
         return sb.toString();
     }
-
-
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
 
 
     public Expression get(String chunk) {

@@ -6,14 +6,14 @@ import org.kevoree.kevscript.language.expressions.Expression;
  * Created by mleduc on 21/03/16.
  */
 public class PortPathNotFound extends RuntimeException {
-    private final Expression identifier;
+    private final String identifier;
 
-    public PortPathNotFound(Expression identifier) {
+    public PortPathNotFound(String identifier) {
         this.identifier = identifier;
     }
 
     @Override
     public String getMessage() {
-        return "portPath " + identifier.toText() + " not found.";
+        return "portPath " + identifier + " not found.";
     }
 }

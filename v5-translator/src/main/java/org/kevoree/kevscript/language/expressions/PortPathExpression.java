@@ -5,12 +5,13 @@ import org.apache.commons.lang3.NotImplementedException;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class PortPathExpression extends Expression {
+public class PortPathExpression implements FinalExpression {
     public final InstancePathExpression instancePath;
     public final boolean isInput;
-    public final Expression portName;
+    public final String portName;
 
-    public PortPathExpression(final InstancePathExpression instancePath, final boolean isInput, final Expression portName) {
+    public PortPathExpression(final InstancePathExpression instancePath, final boolean isInput, final String portName) {
+        assert instancePath != null;
         this.instancePath = instancePath;
         this.isInput = isInput;
         this.portName = portName;

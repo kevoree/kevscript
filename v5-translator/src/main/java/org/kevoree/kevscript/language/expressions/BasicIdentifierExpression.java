@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.expressions;
 /**
  * Created by mleduc on 21/03/16.
  */
-public class BasicIdentifierExpression extends Expression {
+public class BasicIdentifierExpression implements NonFinalExpression {
     private final String text;
 
     public BasicIdentifierExpression(String text) {
@@ -11,7 +11,7 @@ public class BasicIdentifierExpression extends Expression {
     }
 
     @Override
-    public String toText() {
+    public String toPath() {
         return text;
     }
 }

@@ -10,6 +10,7 @@ import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.excpt.CustomException;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
+import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
 import org.kevoree.kevscript.language.processor.CommandsToString;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
@@ -71,15 +72,15 @@ public class Phase1Test {
 
     @Test
     public void testFunctionError1() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("Wrong number of parameters");
+        exception.expect(WrongNumberOfArguments.class);
+        exception.expectMessage("method a expected 0 arguments but got 1");
         interpretPhase1(pathToString("/phase1/function_error/function_err_1.kevs"));
     }
 
     @Test
     public void testFunctionError2() throws Exception {
-        exception.expect(CustomException.class);
-        exception.expectMessage("Wrong number of parameters");
+        exception.expect(WrongNumberOfArguments.class);
+        exception.expectMessage("method b expected 1 arguments but got 0");
         interpretPhase1(pathToString("/phase1/function_error/function_err_2.kevs"));
     }
 

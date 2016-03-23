@@ -3,23 +3,23 @@ package org.kevoree.kevscript.language.expressions;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class IdentifierExpression extends Expression {
+public class IdentifierExpression implements NonFinalExpression {
 
-    public final Expression left;
-    public final Expression right;
+    public final FinalExpression left;
+    public final FinalExpression right;
 
-    public IdentifierExpression(final Expression left) {
+    public IdentifierExpression(final FinalExpression left) {
         this.left = left;
         this.right = null;
     }
 
-    public IdentifierExpression(final Expression left, final Expression visit) {
+    public IdentifierExpression(final FinalExpression left, final FinalExpression visit) {
         this.left = left;
         this.right = visit;
     }
 
     @Override
-    public String toText() {
+    public String toPath() {
         return serial();
     }
 
@@ -32,12 +32,4 @@ public class IdentifierExpression extends Expression {
         }
         return ret;
     }
-
-
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
-
-
 }

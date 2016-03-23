@@ -1,28 +1,30 @@
 package org.kevoree.kevscript.language.expressions;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by mleduc on 15/03/16.
  */
-public class ArrayDeclExpression extends Expression {
+public class ArrayDeclExpression implements FinalExpression {
 
-    private List<Expression> expressionList = new ArrayList<>();
+    private List<FinalExpression> expressionList = new ArrayList<>();
 
     @Override
     public String toText() {
-        throw new NotImplementedException("TODO");
+
+        List<String> sb = new ArrayList<>();
+        for(FinalExpression fe : expressionList) {
+            sb.add(fe.toText());
+        }
+        return StringUtils.join(sb, ", ");
     }
 
-    /*@Override
-    public boolean match(Expression identifier) {
-        return false;
-    }*/
-
-    public void add(Expression expression) {
+    public void add(FinalExpression expression) {
         expressionList.add(expression);
     }
 }
