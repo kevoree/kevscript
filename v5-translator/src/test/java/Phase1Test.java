@@ -62,13 +62,6 @@ public class Phase1Test {
     }
 
     @Test
-    public void testLetError3() throws Exception {
-        exception.expect(WrongTypeException.class);
-        exception.expectMessage("a is expected to be of type InstanceExpression");
-        interpretPhase1(pathToString("/phase1/let/rec_error/error3.kevs"));
-    }
-
-    @Test
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
     }

@@ -291,7 +291,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                             ret.addCommand(new UnbindCommand(chan, portElement));
                         }
                     } else {
-                        throw new PortPathNotFound(instanceB.toText());
+                        throw new PortPathNotFound(portPath.identifier().getText());
                     }
                 } catch (InstanceNameNotFound e) {
                     throw new PortPathNotFound(result.toString());
