@@ -6,15 +6,12 @@ package org.kevoree.kevscript.language.commands.element;
 public class DictionaryElement {
     public final String dicoName;
     public final String frag;
-    public final InstanceElement node;
-    public final InstanceElement component;
+    public final InstanceElement instance;
 
-    public DictionaryElement(final String dicoName, final String frag, final InstanceElement node,
-                             final InstanceElement component) {
+    public DictionaryElement(final String dicoName, final String frag, final InstanceElement instance) {
         this.dicoName = dicoName;
         this.frag = frag;
-        this.node = node;
-        this.component = component;
+        this.instance = instance;
     }
 
 

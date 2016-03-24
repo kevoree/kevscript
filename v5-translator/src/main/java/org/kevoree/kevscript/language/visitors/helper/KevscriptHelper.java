@@ -1,10 +1,14 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
-import org.kevoree.kevscript.language.commands.element.InstanceElement;
+import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
 import org.kevoree.kevscript.language.visitors.ExpressionVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.kevoree.kevscript.KevScriptParser.IdentifierContext;
 
@@ -65,20 +69,30 @@ public class KevscriptHelper {
         return nodeInstanceExpression;
     }
 
-    public InstanceElement getInstanceFromContext(final IdentifierContext node) {
+    public List<RootInstanceElement> getInstancesFromInstancePathContext(final KevScriptParser.InstancePathContext instancePathContext) {
+
+        final List<RootInstanceElement> ret = new ArrayList<>();
+        for(final IdentifierContext a : instancePathContext.identifier()) {
+            ret.add(this.getInstanceFromIdentifierContext(a));
+        }
+
+        return ret;
+    }
+
+    public RootInstanceElement getInstanceFromIdentifierContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
-        final InstanceElement nodeInstanceElement;
+        final RootInstanceElement nodeRootInstanceElement;
 
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
-            nodeInstanceElement = new InstanceElement(node.basic_identifier().getText(), null, null);
+            nodeRootInstanceElement = new RootInstanceElement(node.basic_identifier().getText(), null, null);
         } else {
             final String nodeName = nodeInstance.instanceName;
             final Long nodeVersion = this.convertVersionToLong(nodeInstance.instanceTypeDefVersion);
             final String instanceTypeDefName = nodeInstance.instanceTypeDefName;
-            nodeInstanceElement = new InstanceElement(nodeName, instanceTypeDefName, nodeVersion);
+            nodeRootInstanceElement = new RootInstanceElement(nodeName, instanceTypeDefName, nodeVersion);
         }
-        return nodeInstanceElement;
+        return nodeRootInstanceElement;
     }
 
     public String getPortNameFromIdentifier(final Expression portNameIdentifier) {
@@ -90,24 +104,24 @@ public class KevscriptHelper {
         }
     }
 
-    public InstanceElement convertPortPathToComponentElement(final InstancePathExpression instancePath) {
+    public RootInstanceElement convertPortPathToComponentElement(final InstancePathExpression instancePath) {
         final InstanceExpression componentExpression = context.lookup(instancePath.component, InstanceExpression.class, false);
-        final InstanceElement component;
+        final RootInstanceElement component;
         if (componentExpression != null) {
-            component = new InstanceElement(componentExpression.instanceName, componentExpression.instanceTypeDefName, this.convertVersionToLong(componentExpression.instanceTypeDefVersion));
+            component = new RootInstanceElement(componentExpression.instanceName, componentExpression.instanceTypeDefName, this.convertVersionToLong(componentExpression.instanceTypeDefVersion));
         } else {
-            component = new InstanceElement(context.lookup(instancePath.node, FinalExpression.class).toText());
+            component = new RootInstanceElement(context.lookup(instancePath.node, FinalExpression.class).toText());
         }
         return component;
     }
 
-    public InstanceElement convertPortPathToNodeElement(final InstancePathExpression instancePath) {
+    public RootInstanceElement convertPortPathToNodeElement(final InstancePathExpression instancePath) {
         final InstanceExpression nodeExpression = context.lookup(instancePath.node, InstanceExpression.class, false);
-        final InstanceElement node;
+        final RootInstanceElement node;
         if (nodeExpression != null) {
-            node = new InstanceElement(nodeExpression.instanceName, nodeExpression.instanceTypeDefName, this.convertVersionToLong(nodeExpression.instanceTypeDefVersion));
+            node = new RootInstanceElement(nodeExpression.instanceName, nodeExpression.instanceTypeDefName, this.convertVersionToLong(nodeExpression.instanceTypeDefVersion));
         } else if (instancePath.node != null) {
-            node = new InstanceElement(this.context.lookup(instancePath.node, FinalExpression.class).toText());
+            node = new RootInstanceElement(this.context.lookup(instancePath.node, FinalExpression.class).toText());
         } else {
             node = null;
         }

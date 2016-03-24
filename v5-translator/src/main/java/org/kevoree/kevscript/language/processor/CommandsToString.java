@@ -42,11 +42,11 @@ public class CommandsToString {
     private String proceedRemoveCommand(RemoveCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("remove ");
-        if(command.parent != null) {
-            sb.append(command.parent.instanceName);
+        if(command.instance.parent != null) {
+            sb.append(command.instance.parent.instanceName);
             sb.append(".");
         }
-        sb.append(command.child.instanceName);
+        sb.append(command.instance.child.instanceName);
         return sb.toString();
     }
 
@@ -54,12 +54,12 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("set ");
         final DictionaryElement dictionaryElement = command.dictionaryElement;
-        if (dictionaryElement.node != null) {
-            sb.append(dictionaryElement.node.instanceName);
+        if (dictionaryElement.instance.parent != null) {
+            sb.append(dictionaryElement.instance.parent.instanceName);
             sb.append(".");
         }
 
-        sb.append(dictionaryElement.component.instanceName);
+        sb.append(dictionaryElement.instance.child.instanceName);
         sb.append(".");
         sb.append(dictionaryElement.dicoName);
 
@@ -80,11 +80,11 @@ public class CommandsToString {
         sb.append("unbind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        if (command.port.node != null) {
-            sb.append(command.port.node.instanceName);
+        if (command.port.instance.parent != null) {
+            sb.append(command.port.instance.parent.instanceName);
             sb.append('.');
         }
-        sb.append(command.port.component.instanceName);
+        sb.append(command.port.instance.child.instanceName);
         sb.append('.');
         sb.append(command.port.name);
         return sb.toString();
@@ -104,11 +104,11 @@ public class CommandsToString {
         sb.append("bind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        if (command.port.node != null) {
-            sb.append(command.port.node.instanceName);
+        if (command.port.instance.parent != null) {
+            sb.append(command.port.instance.parent.instanceName);
             sb.append('.');
         }
-        sb.append(command.port.component.instanceName);
+        sb.append(command.port.instance.child.instanceName);
         sb.append('.');
         sb.append(command.port.name);
         return sb.toString();
@@ -126,13 +126,13 @@ public class CommandsToString {
     private String proceedAddCommand(final AddCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("add ");
-        if (command.parent == null) {
-            sb.append(command.child.instanceName);
+        if (command.instance.parent == null) {
+            sb.append(command.instance.child.instanceName);
             sb.append(" : ");
-            sb.append(command.child.typeName);
-            if (command.child.version != null) {
+            sb.append(command.instance.child.typeName);
+            if (command.instance.child.version != null) {
                 sb.append('/');
-                sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(command.child.version), 3, '0').toCharArray(), '.'));
+                sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(command.instance.child.version), 3, '0').toCharArray(), '.'));
             }
         } else {
 

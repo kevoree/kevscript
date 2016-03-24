@@ -5,14 +5,12 @@ package org.kevoree.kevscript.language.commands.element;
  */
 public class PortElement {
     public final String name;
-    public final InstanceElement node;
-    public final InstanceElement component;
+    public final InstanceElement instance;
     public final Boolean isInput;
 
-    public PortElement(final String name, final InstanceElement node, InstanceElement component, final Boolean isInput) {
+    public PortElement(final String name, final InstanceElement instance, final Boolean isInput) {
         this.name = name;
-        this.node = node;
-        this.component = component;
+        this.instance = instance;
         this.isInput = isInput;
     }
 }

@@ -7,16 +7,9 @@ import org.kevoree.kevscript.language.commands.element.InstanceElement;
  */
 public class AddCommand extends AbstractCommand {
 
-    public final InstanceElement parent;
-    public final InstanceElement child;
+    public final InstanceElement instance;
 
-    public AddCommand(final InstanceElement parent, final InstanceElement child) {
-        this.parent = parent;
-        this.child = child;
-    }
-
-    public AddCommand(final InstanceElement child) {
-        this.parent = null;
-        this.child = child;
+    public AddCommand(final InstanceElement instance) {
+        this.instance = instance;
     }
 }

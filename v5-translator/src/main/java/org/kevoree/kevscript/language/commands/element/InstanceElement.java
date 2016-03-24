@@ -1,28 +1,19 @@
 package org.kevoree.kevscript.language.commands.element;
 
 /**
- * Created by mleduc on 16/03/16.
+ * Created by mleduc on 24/03/16.
  */
 public class InstanceElement {
-    public final String instanceName;
-    public final String typeName;
-    public final Long version;
+    public final RootInstanceElement parent;
+    public final RootInstanceElement child;
 
-    public InstanceElement(final String instanceName) {
-        this.instanceName = instanceName;
-        this.typeName = null;
-        this.version = null;
+    public InstanceElement(final RootInstanceElement parent, final RootInstanceElement child) {
+        this.parent = parent;
+        this.child = child;
     }
 
-    public InstanceElement(final String instanceName, final String typeName) {
-        this.instanceName = instanceName;
-        this.typeName = typeName;
-        this.version = null;
-    }
-
-    public InstanceElement(final String instanceName, final String typeName, final Long version) {
-        this.instanceName = instanceName;
-        this.typeName = typeName;
-        this.version = version;
+    public InstanceElement(final RootInstanceElement child) {
+        this.parent = null;
+        this.child = child;
     }
 }
