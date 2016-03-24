@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -248,29 +249,15 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     private Commands visitBindNodeInstancePath(final RootInstanceElement chan, final PortPathContext portPath, final InstancePathContext instancePathContext) {
-        final Commands ret = new Commands();
         final IdentifierContext identifier = portPath.identifier();
         final String portName = helper.getPortPathFromIdentifier(identifier);
         final boolean isInput = portPath.LEFT_LIGHT_ARROW() != null;
-        final InstanceElement instance;
-        final List<RootInstanceElement> componentInstances = this.helper.getInstancesFromInstancePathContext(instancePathContext);
-        if (instancePathContext.identifier().size() == 1) {
-            // direct reference to a component, must be in the current scope
-            //final Expression portNameIdentifier = new ExpressionVisitor(context).visit(portPath.identifier());
-            //final StringExpression portNameStr = this.context.lookup(portNameIdentifier, StringExpression.class);
-            //final PortElement port = new PortElement(portName, instance, isInput);
-            instance = new InstanceElement(componentInstances.get(0));
-        } else {
-            // reference to a component via its node, might be found in the context or later in the CDN
-            final RootInstanceElement nodeInstance = componentInstances.get(0);
-            final RootInstanceElement componentInstance = componentInstances.get(1);
-            instance = new InstanceElement(nodeInstance, componentInstance);
-        }
+        final InstanceElement instance = this.helper.getInstanceElement(instancePathContext);
         final PortElement port = new PortElement(portName, instance, isInput);
-        ret.addCommand(new BindCommand(chan, port));
-
-        return ret;
+        return new Commands().addCommand(new BindCommand(chan, port));
     }
+
+
 
     private Commands visitBindNodeInstanceReference(RootInstanceElement chan, PortPathContext portPath) {
         final Commands ret = new Commands();
@@ -281,7 +268,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 final String name = instance.portName;
                 final Boolean isInput = instance.isInput;
                 final InstanceElement instance1;
-                // TODO let see if we can factorise more !
                 if (instance.instancePath.node == null) {
                     final InstanceExpression componentExpression = context.lookup(instance.instancePath.component, InstanceExpression.class);
                     final String instanceName = componentExpression.instanceName;
@@ -289,8 +275,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     final Long version = helper.convertVersionToLong(componentExpression.instanceTypeDefVersion);
                     final RootInstanceElement component = new RootInstanceElement(instanceName, instanceTypeDefName, version);
                     instance1 = new InstanceElement(component);
-//                    final PortElement portElement = new PortElement(name, instance1, isInput);
-                    //ret.addCommand(new BindCommand(chan, portElement));
                 } else {
                     final RootInstanceElement node = helper.convertPortPathToNodeElement(instance.instancePath);
                     final RootInstanceElement component = helper.convertPortPathToComponentElement(instance.instancePath);
@@ -325,24 +309,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return ret;
     }
 
-    private Commands visitUnbindInstancePath(RootInstanceElement chan, PortPathContext portPath, InstancePathContext instancePathContext) {
-        final Commands ret = new Commands();
-        final List<RootInstanceElement> listInstances = this.helper.getInstancesFromInstancePathContext(instancePathContext);
-        if (instancePathContext.identifier().size() == 1) {
-            // direct reference to a component, must be in the current scope
-            final RootInstanceElement componentInstance = listInstances.get(0);
-            final String portName = helper.getPortPathFromIdentifier(portPath.identifier());
-            final PortElement port = new PortElement(portName, new InstanceElement(null, componentInstance), portPath.LEFT_LIGHT_ARROW() != null);
-            ret.addCommand(new UnbindCommand(chan, port));
-        } else {
-            // reference to a component via its node, might be found in the context or later in the CDN
-            final RootInstanceElement nodeInstance = listInstances.get(0);
-            final RootInstanceElement componentInstance = listInstances.get(1);
-            final String portName = helper.getPortPathFromIdentifier(portPath.identifier());
-            final PortElement port = new PortElement(portName, new InstanceElement(nodeInstance, componentInstance), portPath.LEFT_LIGHT_ARROW() != null);
-            ret.addCommand(new UnbindCommand(chan, port));
-        }
-        return ret;
+    private Commands visitUnbindInstancePath(final RootInstanceElement chan, final PortPathContext portPath, final InstancePathContext instancePathContext) {
+        final boolean isInput = portPath.LEFT_LIGHT_ARROW() != null;
+        final String portName = helper.getPortPathFromIdentifier(portPath.identifier());
+        final InstanceElement instanceElement = this.helper.getInstanceElement(instancePathContext);
+        final PortElement port = new PortElement(portName, instanceElement, isInput);
+        return new Commands().addCommand(new UnbindCommand(chan, port));
     }
 
     private Commands visitUnbindInstanceRef(RootInstanceElement chan, PortPathContext portPath) {

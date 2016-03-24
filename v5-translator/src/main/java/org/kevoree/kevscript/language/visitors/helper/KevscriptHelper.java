@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
 import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
@@ -79,6 +80,15 @@ public class KevscriptHelper {
         return ret;
     }
 
+    public String getPortNameFromIdentifier(final Expression portNameIdentifier) {
+        final StringExpression portNameExpr = context.lookup(portNameIdentifier, StringExpression.class);
+        if (portNameExpr != null) {
+            return portNameExpr.text;
+        } else {
+            return null;
+        }
+    }
+
     public RootInstanceElement getInstanceFromIdentifierContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
@@ -93,15 +103,6 @@ public class KevscriptHelper {
             nodeRootInstanceElement = new RootInstanceElement(nodeName, instanceTypeDefName, nodeVersion);
         }
         return nodeRootInstanceElement;
-    }
-
-    public String getPortNameFromIdentifier(final Expression portNameIdentifier) {
-        final StringExpression portNameExpr = context.lookup(portNameIdentifier, StringExpression.class);
-        if (portNameExpr != null) {
-            return portNameExpr.text;
-        } else {
-            return null;
-        }
     }
 
     public RootInstanceElement convertPortPathToComponentElement(final InstancePathExpression instancePath) {
@@ -138,6 +139,20 @@ public class KevscriptHelper {
             ret = portNameFromIdentifier;
         }
         return ret;
+    }
+
+    public InstanceElement getInstanceElement(KevScriptParser.InstancePathContext instancePathContext) {
+        final List<RootInstanceElement> listInstances = this.getInstancesFromInstancePathContext(instancePathContext);
+        final InstanceElement instance;
+        if (listInstances.size() == 1) {
+            final RootInstanceElement childInstance = listInstances.get(0);
+            instance = new InstanceElement(childInstance);
+        } else {
+            final RootInstanceElement nodeInstance = listInstances.get(0);
+            final RootInstanceElement componentInstance = listInstances.get(1);
+            instance = new InstanceElement(nodeInstance, componentInstance);
+        }
+        return instance;
     }
 
 }
