@@ -317,7 +317,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitFuncCall(FuncCallContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(this.context);
-        final FunctionCallExpression res = expressionVisitor.visitFuncCall(ctx);
+        expressionVisitor.visitFuncCall(ctx);
         return expressionVisitor.aggregatedFunctionsCommands;
     }
 

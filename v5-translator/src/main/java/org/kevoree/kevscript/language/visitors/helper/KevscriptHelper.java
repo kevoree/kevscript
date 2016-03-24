@@ -27,11 +27,11 @@ public class KevscriptHelper {
             final FinalExpression version = context.lookup(expression, FinalExpression.class);
             if (version instanceof StringExpression) {
                 versionValue = Long.parseLong(((StringExpression) version).text);
-            } else if(version instanceof InstanceExpression) {
+            } else if (version instanceof InstanceExpression) {
                 final VersionExpression instanceTypeDefVersion = ((InstanceExpression) version).instanceTypeDefVersion;
-                if(instanceTypeDefVersion != null) {
+                if (instanceTypeDefVersion != null) {
                     versionValue = instanceTypeDefVersion.version;
-                }   else {
+                } else {
                     versionValue = null;
                 }
             } else {
@@ -46,14 +46,13 @@ public class KevscriptHelper {
     public InstanceExpression getInstanceExpressionFromContext(IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance;
-        if(nodeExpression instanceof  IdentifierExpression) {
+        if (nodeExpression instanceof IdentifierExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
-        } else if (nodeExpression instanceof  InstanceExpression) {
+        } else if (nodeExpression instanceof InstanceExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
-        }else if(nodeExpression == null) {
+        } else if (nodeExpression == null) {
             nodeInstance = new InstanceExpression(node.getText(), null, null, null);
-        } else
-        {
+        } else {
             throw new WrongTypeException(node.getText(), InstanceExpression.class);
         }
         final InstanceExpression nodeInstanceExpression;
@@ -84,7 +83,7 @@ public class KevscriptHelper {
 
     public String getPortNameFromIdentifier(final Expression portNameIdentifier) {
         final StringExpression portNameExpr = context.lookup(portNameIdentifier, StringExpression.class);
-        if(portNameExpr != null) {
+        if (portNameExpr != null) {
             return portNameExpr.text;
         } else {
             return null;
@@ -107,7 +106,7 @@ public class KevscriptHelper {
         final InstanceElement node;
         if (nodeExpression != null) {
             node = new InstanceElement(nodeExpression.instanceName, nodeExpression.instanceTypeDefName, this.convertVersionToLong(nodeExpression.instanceTypeDefVersion));
-        } else if(instancePath.node != null){
+        } else if (instancePath.node != null) {
             node = new InstanceElement(this.context.lookup(instancePath.node, FinalExpression.class).toText());
         } else {
             node = null;
@@ -119,7 +118,7 @@ public class KevscriptHelper {
         final Expression portNameIdentifier = new ExpressionVisitor(context).visit(identifier);
         final String portNameFromIdentifier = this.getPortNameFromIdentifier(portNameIdentifier);
         final String ret;
-        if(portNameFromIdentifier == null) {
+        if (portNameFromIdentifier == null) {
             ret = identifier.getText();
         } else {
             ret = portNameFromIdentifier;

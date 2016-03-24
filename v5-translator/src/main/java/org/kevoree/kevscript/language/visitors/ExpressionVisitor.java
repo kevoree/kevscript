@@ -179,7 +179,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public FunctionCallExpression visitFuncCall(final FuncCallContext ctx) {
+    public FinalExpression visitFuncCall(final FuncCallContext ctx) {
         final String functionName = ctx.basic_identifier().getText();
         final FunctionExpression functionExpression = this.context.lookupByStrKey(functionName, FunctionExpression.class);
 
@@ -212,18 +212,18 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             commands.addAll(visit);
         }
 
-        final String returnValue;
+        final FinalExpression returnValue;
         if (functionBody.returnStatement() != null) {
             final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
             final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
-            returnValue = returnRes.toText();
+            returnValue = returnRes;
         } else {
             returnValue = null;
         }
 
         this.aggregatedFunctionsCommands.addAll(commands);
 
-        return new FunctionCallExpression(returnValue);
+        return returnValue;
     }
 
     @Override
