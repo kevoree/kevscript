@@ -1,0 +1,8 @@
+remove a:b
+remove b
+instance c = "test" WSGroup
+remove c
+
+remove [a:b]
+remove [b]
+remove [c]

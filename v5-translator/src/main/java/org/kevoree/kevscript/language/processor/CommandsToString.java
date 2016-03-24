@@ -31,10 +31,23 @@ public class CommandsToString {
             ret = this.proceedUnbindCommand((UnbindCommand) command);
         } else if (command instanceof SetCommand) {
             ret = this.proceedSetCommand((SetCommand) command);
+        } else if (command instanceof RemoveCommand) {
+            ret = this.proceedRemoveCommand((RemoveCommand) command);
         } else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedRemoveCommand(RemoveCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("remove ");
+        if(command.parent != null) {
+            sb.append(command.parent.instanceName);
+            sb.append(".");
+        }
+        sb.append(command.child.instanceName);
+        return sb.toString();
     }
 
     private String proceedSetCommand(SetCommand command) {

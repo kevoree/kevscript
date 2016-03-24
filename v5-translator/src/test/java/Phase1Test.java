@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -80,6 +81,7 @@ public class Phase1Test {
     }
 
     @Test
+    @Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
     }
@@ -185,6 +187,16 @@ public class Phase1Test {
     @Test
     public void testDetach() throws Exception {
         analyzeDirectory("phase1/detach/valid");
+    }
+
+    @Test
+    public void testRemoveManyInstances() throws Exception {
+        analyzeDirectory("phase1/remove/many_instances");
+    }
+
+    @Test
+    public void testRemoveSingleInstance() throws Exception {
+        analyzeDirectory("phase1/remove/single_instance");
     }
 
     @Test

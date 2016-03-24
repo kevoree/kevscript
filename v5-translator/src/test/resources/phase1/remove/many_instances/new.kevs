@@ -1,0 +1,2 @@
+instance c = "test" WSGroup/2
+remove [a:b, b, c]
