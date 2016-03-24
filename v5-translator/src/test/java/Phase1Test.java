@@ -186,9 +186,14 @@ public class Phase1Test {
 
     @Test
     public void testSetError1() throws Exception {
-        exception.expect(PortPathNotFound.class);
-        exception.expectMessage("portPath node1 not found");
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("conflict is expected to be of type StringExpression");
         interpretPhase1(pathToString("/phase1/set/error1.kevs"));
+    }
+
+    @Test
+    public void testSetOk1() throws Exception {
+        interpretPhase1(pathToString("/phase1/set/ok1.kevs"));
     }
 
     @Test

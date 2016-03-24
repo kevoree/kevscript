@@ -1,0 +1,5 @@
+let conflict = {
+    a: "aaa"
+}
+
+set a:b#conflict = "ok"

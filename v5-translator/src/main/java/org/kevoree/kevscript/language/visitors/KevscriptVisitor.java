@@ -1,7 +1,9 @@
 package org.kevoree.kevscript.language.visitors;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -35,6 +37,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitScript(final ScriptContext ctx) {
+        return loopOverChildren(ctx);
+    }
+
+    private Commands loopOverChildren(ParserRuleContext ctx) {
         final Commands c = new Commands();
         for (ParseTree child : ctx.children) {
             final Commands visit = this.visit(child);
@@ -329,5 +335,30 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final DictionaryElement dictionaryElement = new DictionaryElement(instanceDicoRef.dicoName, instanceDicoRef.frag, node, component);
         final SetCommand setCommand = new SetCommand(dictionaryElement, value.toText());
         return new Commands().addCommand(setCommand);
+    }
+
+    @Override
+    public Commands visitForDecl(ForDeclContext ctx) {
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final ArrayDeclExpression iterable = expressionVisitor.visitIterable(ctx.iterable());
+        final Commands forCommands = new Commands();
+
+        int i=0;
+        for(FinalExpression expression: iterable.expressionList) {
+            final Context localForContext = new Context(context);
+            if(ctx.index != null) {
+                localForContext.addExpression(ctx.index.getText(), new StringExpression(String.valueOf(i++)));
+            }
+
+            localForContext.addExpression(ctx.val.getText(), expression);
+            forCommands.addAll(new KevscriptVisitor(localForContext).visit(ctx.forBody()));
+        }
+
+        return forCommands;
+    }
+
+    @Override
+    public Commands visitForBody(ForBodyContext ctx) {
+        return loopOverChildren(ctx);
     }
 }
