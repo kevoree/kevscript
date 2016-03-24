@@ -80,6 +80,22 @@ public class Phase1Test {
         analyzeDirectory("phase1/let/array_object");
     }
 
+
+    @Test
+    public void testMoveTest1() throws Exception {
+        analyzeDirectory("phase1/move/test1");
+    }
+
+    @Test
+    public void testMoveTest2() throws Exception {
+        analyzeDirectory("phase1/move/test2");
+    }
+
+    @Test
+    public void testMoveTest3() throws Exception {
+        analyzeDirectory("phase1/move/test3");
+    }
+
     @Test
     @Ignore
     public void testRealWorld0() throws Exception {

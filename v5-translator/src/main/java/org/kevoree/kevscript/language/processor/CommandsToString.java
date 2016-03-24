@@ -1,8 +1,12 @@
 package org.kevoree.kevscript.language.processor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
+import org.kevoree.kevscript.language.commands.element.InstanceElement;
+import org.kevoree.kevscript.language.commands.element.PortElement;
+import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 
 /**
  * Created by mleduc on 16/03/16.
@@ -33,34 +37,48 @@ public class CommandsToString {
             ret = this.proceedSetCommand((SetCommand) command);
         } else if (command instanceof RemoveCommand) {
             ret = this.proceedRemoveCommand((RemoveCommand) command);
+        } else if(command instanceof  MoveCommand) {
+            ret = this.proceedMoveCommand((MoveCommand) command);
         } else {
             ret = "";
         }
         return ret;
     }
 
+    private String proceedMoveCommand(MoveCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("move ");
+        processInstanceElement(sb, command.targetInstance);
+        sb.append(' ');
+        processInstanceElement(sb, command.sourceInstance);
+        return sb.toString();
+    }
+
     private String proceedRemoveCommand(RemoveCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("remove ");
-        if(command.instance.parent != null) {
-            sb.append(command.instance.parent.instanceName);
-            sb.append(".");
-        }
-        sb.append(command.instance.child.instanceName);
+        final InstanceElement instance = command.instance;
+        processInstanceElement(sb, instance);
         return sb.toString();
+    }
+
+    private void processInstanceElement(StringBuilder sb, InstanceElement instance) {
+        final RootInstanceElement parent = instance.parent;
+        if(parent != null) {
+            sb.append(parent.instanceName);
+            sb.append('.');
+        }
+        final RootInstanceElement child = instance.child;
+        sb.append(child.instanceName);
     }
 
     private String proceedSetCommand(SetCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("set ");
         final DictionaryElement dictionaryElement = command.dictionaryElement;
-        if (dictionaryElement.instance.parent != null) {
-            sb.append(dictionaryElement.instance.parent.instanceName);
-            sb.append(".");
-        }
-
-        sb.append(dictionaryElement.instance.child.instanceName);
-        sb.append(".");
+        final InstanceElement instance = dictionaryElement.instance;
+        processInstanceElement(sb, instance);
+        sb.append('.');
         sb.append(dictionaryElement.dicoName);
 
         if (dictionaryElement.frag != null) {
@@ -78,24 +96,29 @@ public class CommandsToString {
     private String proceedUnbindCommand(UnbindCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("unbind ");
-        sb.append(command.chan.instanceName);
+        final RootInstanceElement chan = command.chan;
+        sb.append(chan.instanceName);
         sb.append(" ");
-        if (command.port.instance.parent != null) {
-            sb.append(command.port.instance.parent.instanceName);
+        final PortElement port = command.port;
+        final InstanceElement instance = port.instance;
+        if (instance.parent != null) {
+            sb.append(instance.parent.instanceName);
             sb.append('.');
         }
-        sb.append(command.port.instance.child.instanceName);
+        sb.append(instance.child.instanceName);
         sb.append('.');
-        sb.append(command.port.name);
+        sb.append(port.name);
         return sb.toString();
     }
 
     private String proceedDetachCommand(DetachCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("detach ");
-        sb.append(command.node.instanceName);
+        final RootInstanceElement node = command.node;
+        sb.append(node.instanceName);
         sb.append(' ');
-        sb.append(command.group.instanceName);
+        final RootInstanceElement group = command.group;
+        sb.append(group.instanceName);
         return sb.toString();
     }
 
@@ -104,11 +127,7 @@ public class CommandsToString {
         sb.append("bind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        if (command.port.instance.parent != null) {
-            sb.append(command.port.instance.parent.instanceName);
-            sb.append('.');
-        }
-        sb.append(command.port.instance.child.instanceName);
+        processInstanceElement(sb, command.port.instance);
         sb.append('.');
         sb.append(command.port.name);
         return sb.toString();
@@ -117,22 +136,27 @@ public class CommandsToString {
     private String proceedAttachCommand(final AttachCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("attach ");
-        sb.append(command.node.instanceName);
+        final RootInstanceElement node = command.node;
+        sb.append(node.instanceName);
         sb.append(' ');
-        sb.append(command.group.instanceName);
+        final RootInstanceElement group = command.group;
+        sb.append(group.instanceName);
         return sb.toString();
     }
 
     private String proceedAddCommand(final AddCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("add ");
-        if (command.instance.parent == null) {
-            sb.append(command.instance.child.instanceName);
+        final InstanceElement instance = command.instance;
+        final RootInstanceElement parent = instance.parent;
+        if (parent == null) {
+            final RootInstanceElement child = instance.child;
+            sb.append(child.instanceName);
             sb.append(" : ");
-            sb.append(command.instance.child.typeName);
-            if (command.instance.child.version != null) {
+            sb.append(child.typeName);
+            if (child.version != null) {
                 sb.append('/');
-                sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(command.instance.child.version), 3, '0').toCharArray(), '.'));
+                sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(child.version), 3, '0').toCharArray(), '.'));
             }
         } else {
 

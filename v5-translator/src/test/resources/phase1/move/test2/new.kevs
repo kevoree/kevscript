@@ -1,0 +1,4 @@
+instance x = "test" JavaNode
+
+move a b
+move a:b x:b

@@ -1,0 +1,3 @@
+instance c = "test" Ticker
+// let's imagine c have been added to a node before the move
+move a [b:b, c]
