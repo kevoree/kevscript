@@ -29,9 +29,9 @@ public class CommandsToString {
             ret = this.proceedDetachCommand((DetachCommand) command);
         } else if (command instanceof UnbindCommand) {
             ret = this.proceedUnbindCommand((UnbindCommand) command);
-        } else if (command instanceof  SetCommand) {
+        } else if (command instanceof SetCommand) {
             ret = this.proceedSetCommand((SetCommand) command);
-        }else {
+        } else {
             ret = "";
         }
         return ret;
@@ -41,7 +41,7 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("set ");
         final DictionaryElement dictionaryElement = command.dictionaryElement;
-        if(dictionaryElement.node != null) {
+        if (dictionaryElement.node != null) {
             sb.append(dictionaryElement.node.instanceName);
             sb.append(".");
         }
@@ -50,7 +50,7 @@ public class CommandsToString {
         sb.append(".");
         sb.append(dictionaryElement.dicoName);
 
-        if(dictionaryElement.frag != null) {
+        if (dictionaryElement.frag != null) {
             sb.append('/');
             sb.append(dictionaryElement.frag);
         }

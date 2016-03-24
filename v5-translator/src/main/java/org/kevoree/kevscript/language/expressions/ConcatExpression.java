@@ -1,7 +1,5 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 /**
  * Created by mleduc on 15/03/16.
  */

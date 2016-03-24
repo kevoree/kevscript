@@ -16,6 +16,6 @@ public class WrongNumberOfArguments extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "method " + methodName + " expected "+definedNbr+" arguments but got " + callerNbr;
+        return "method " + methodName + " expected " + definedNbr + " arguments but got " + callerNbr;
     }
 }

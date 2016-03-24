@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.expressions;
 /**
  * Created by mleduc on 23/03/16.
  */
-public class DictionaryPathExpression implements FinalExpression{
+public class DictionaryPathExpression implements FinalExpression {
     public final InstancePathExpression instancePathExpression;
     public final String dicoName;
     public final String frag;
@@ -17,10 +17,10 @@ public class DictionaryPathExpression implements FinalExpression{
     @Override
     public String toText() {
         final String ret;
-        if(this.frag == null) {
+        if (this.frag == null) {
             ret = this.instancePathExpression.toText() + "#" + this.dicoName;
         } else {
-            ret  = this.instancePathExpression.toText() + "#" + this.dicoName + "/" + frag;
+            ret = this.instancePathExpression.toText() + "#" + this.dicoName + "/" + frag;
         }
         return ret;
     }

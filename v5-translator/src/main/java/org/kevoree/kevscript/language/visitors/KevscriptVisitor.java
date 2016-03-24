@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -109,8 +108,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             if (ctx.instanceName != null) {
                 final Expression tmp = new ExpressionVisitor(context).visit(ctx.instanceName);
                 final FinalExpression instanceName2 = this.context.lookup(tmp, FinalExpression.class);
-                if(instanceName2 != null) {
-                    if(instanceName2 instanceof StringExpression) { // || instanceName2 instanceof InstanceExpression
+                if (instanceName2 != null) {
+                    if (instanceName2 instanceof StringExpression) { // || instanceName2 instanceof InstanceExpression
                         instanceName = instanceName2;
                     } else {
                         throw new WrongTypeException(instanceName2.toText(), FinalExpression.class);
@@ -294,13 +293,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
 
-
     @Override
     public Commands visitFuncDecl(final FuncDeclContext ctx) {
 
-        if(ctx.NATIVE() == null) {
+        if (ctx.NATIVE() == null) {
             final FunctionExpression functionExpression = new FunctionExpression();
-            if(ctx.parameters != null) {
+            if (ctx.parameters != null) {
                 for (final Basic_identifierContext param : ctx.parameters.basic_identifier()) {
                     functionExpression.addParam(param.getText());
                 }
@@ -343,10 +341,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final ArrayDeclExpression iterable = expressionVisitor.visitIterable(ctx.iterable());
         final Commands forCommands = new Commands();
 
-        int i=0;
-        for(FinalExpression expression: iterable.expressionList) {
+        int i = 0;
+        for (FinalExpression expression : iterable.expressionList) {
             final Context localForContext = new Context(context);
-            if(ctx.index != null) {
+            if (ctx.index != null) {
                 localForContext.addExpression(ctx.index.getText(), new StringExpression(String.valueOf(i++)));
             }
 

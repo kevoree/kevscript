@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language.excpt;
 
-import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.FinalExpression;
 
 /**

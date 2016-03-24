@@ -1,7 +1,5 @@
 package org.kevoree.kevscript.language.excpt;
 
-import org.kevoree.kevscript.language.expressions.Expression;
-
 /**
  * Created by mleduc on 21/03/16.
  */

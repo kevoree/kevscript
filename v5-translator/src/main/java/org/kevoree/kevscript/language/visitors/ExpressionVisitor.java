@@ -2,7 +2,6 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
@@ -280,7 +279,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         final FinalExpression visit = this.visit(ctx.identifier(0));
         final String dicoName;
         if (visit != null) {
-            if(visit instanceof StringExpression) {
+            if (visit instanceof StringExpression) {
                 dicoName = visit.toText();
             } else {
                 throw new WrongTypeException(ctx.identifier(0).getText(), StringExpression.class);
@@ -290,7 +289,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
         final String frag;
-        if(ctx.identifier(1) != null) {
+        if (ctx.identifier(1) != null) {
             frag = this.visit(ctx.identifier(1)).toText();
         } else {
             frag = null;
@@ -302,10 +301,10 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     @Override
     public ArrayDeclExpression visitIterable(final IterableContext ctx) {
         final ArrayDeclExpression ret;
-        if(ctx.arrayDecl() != null) {
+        if (ctx.arrayDecl() != null) {
             // TODO array decl
             ret = this.visitArrayDecl(ctx.arrayDecl());
-        } else if(ctx.identifier() != null) {
+        } else if (ctx.identifier() != null) {
             ret = this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class);
         } else {
             // TODO context reference
