@@ -2,7 +2,6 @@ package org.kevoree.kevscript.language.visitors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
@@ -13,7 +12,6 @@ import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sun.corba.se.spi.activation.IIOP_CLEAR_TEXT.value;
 import static org.kevoree.kevscript.KevScriptParser.*;
 
 /**
@@ -22,6 +20,9 @@ import static org.kevoree.kevscript.KevScriptParser.*;
 public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     private final Context context;
     private final KevscriptHelper helper;
+
+
+    public final Commands aggregatedFunctionsCommands = new Commands();
 
     public ExpressionVisitor(final Context context) {
         this.context = context;
@@ -32,10 +33,8 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public FinalExpression visitExpression(ExpressionContext ctx) {
         final FinalExpression ret;
         if (ctx.CONCAT() != null) {
-            //ret = new ConcatExpression(this.visit(ctx.expression(0)), this.visit(ctx.expression(1))).resolve();
             final StringExpression left = this.context.lookup(this.visit(ctx.expression(0)), StringExpression.class);
             final StringExpression right = this.context.lookup(this.visit(ctx.expression(1)), StringExpression.class);
-
             ret = new StringExpression(left.toText() + right.toText());
         } else if (ctx.string() != null) {
             ret = this.visit(ctx.string());
@@ -147,7 +146,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         Expression ret;
         final FinalExpression left = this.visit(ctx.funcCall());
         if (ctx.DOT() == null) {
-            ret = new InstanceExpression(left.toText(), null, null, null);
+            ret = left;
         } else {
             ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
         }
@@ -220,7 +219,9 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             returnValue = null;
         }
 
-        return new FunctionCallExpression(commands, returnValue);
+        this.aggregatedFunctionsCommands.addAll(commands);
+
+        return new FunctionCallExpression(returnValue);
     }
 
     @Override

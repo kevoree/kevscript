@@ -160,17 +160,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitLetDecl(final LetDeclContext ctx) {
-        final FinalExpression res = new ExpressionVisitor(context).visit(ctx.val);
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final FinalExpression res = expressionVisitor.visit(ctx.val);
         this.context.addExpression(ctx.basic_identifier().getText(), res);
-        final Commands ret = new Commands();
-        if(res instanceof IdentifierExpression) {
-            final IdentifierExpression identifierExpression = (IdentifierExpression) res;
-            if (identifierExpression.left instanceof FunctionCallExpression) {
-                final FunctionCallExpression functionExpression = (FunctionCallExpression) identifierExpression.left;
-                ret.addAll(functionExpression.commands);
-            }
-        }
-        return ret;
+        return expressionVisitor.aggregatedFunctionsCommands;
     }
 
     @Override
@@ -351,8 +344,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitFuncCall(FuncCallContext ctx) {
-        final FunctionCallExpression res = new ExpressionVisitor(this.context).visitFuncCall(ctx);
-        return res.commands;
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(this.context);
+        final FunctionCallExpression res = expressionVisitor.visitFuncCall(ctx);
+        return expressionVisitor.aggregatedFunctionsCommands;
     }
 
     public Context getContext() {
