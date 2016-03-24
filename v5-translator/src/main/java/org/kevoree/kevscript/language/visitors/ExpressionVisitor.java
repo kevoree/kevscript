@@ -26,7 +26,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     public ExpressionVisitor(final Context context) {
         this.context = context;
-        this.helper = new KevscriptHelper();
+        this.helper = new KevscriptHelper(this.context);
     }
 
     @Override
@@ -75,12 +75,12 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public FinalExpression visitContextIdentifier(ContextIdentifierContext ctx) {
-        final ContextIdentifierExpression ret = getContextIdentifierExpression(ctx);
+    public FinalExpression visitContextIdentifier(final ContextIdentifierContext ctx) {
+        final ContextIdentifierExpression ret = recVisitContextIdentifier(ctx);
         return this.context.lookup(ret);
     }
 
-    private ContextIdentifierExpression getContextIdentifierExpression(ContextIdentifierContext ctx) {
+    private ContextIdentifierExpression recVisitContextIdentifier(final ContextIdentifierContext ctx) {
         final ContextIdentifierExpression ret = new ContextIdentifierExpression();
         if (ctx.basic_identifier() != null) {
             ret.add(ctx.basic_identifier().getText());
@@ -89,8 +89,8 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else if (ctx.arrayAccess() != null) {
             ret.add(this.visit(ctx.arrayAccess()).toText());
         } else if (ctx.DOT() != null) {
-            final ContextIdentifierExpression left = this.getContextIdentifierExpression(ctx.contextIdentifier(0));
-            final ContextIdentifierExpression right = this.getContextIdentifierExpression(ctx.contextIdentifier(1));
+            final ContextIdentifierExpression left = this.recVisitContextIdentifier(ctx.contextIdentifier(0));
+            final ContextIdentifierExpression right = this.recVisitContextIdentifier(ctx.contextIdentifier(1));
             ret.addAll(left);
             ret.addAll(right);
         }
@@ -228,10 +228,10 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public InstancePathExpression visitInstancePath(InstancePathContext ctx) {
         final InstancePathExpression ret;
         if (ctx.identifier().size() == 1) {
-            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(context, ctx.identifier(0)));
+            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(ctx.identifier(0)));
         } else {
-            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(context, ctx.identifier(0)),
-                    this.helper.getInstanceExpressionFromContext(context, ctx.identifier(1)));
+            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(ctx.identifier(0)),
+                    this.helper.getInstanceExpressionFromContext(ctx.identifier(1)));
         }
 
         return ret;
