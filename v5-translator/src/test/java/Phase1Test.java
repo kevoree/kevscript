@@ -228,6 +228,16 @@ public class Phase1Test {
     }
 
     @Test
+    public void testStartTest1() throws Exception {
+        analyzeDirectory("phase1/start/test1");
+    }
+
+    @Test
+    public void testStopTest1() throws Exception {
+        analyzeDirectory("phase1/stop/test1");
+    }
+
+    @Test
     public void testUnbind() throws Exception {
         analyzeDirectory("phase1/unbind/valid");
     }

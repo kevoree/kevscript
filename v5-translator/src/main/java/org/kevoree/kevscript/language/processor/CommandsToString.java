@@ -1,7 +1,6 @@
 package org.kevoree.kevscript.language.processor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -37,12 +36,30 @@ public class CommandsToString {
             ret = this.proceedSetCommand((SetCommand) command);
         } else if (command instanceof RemoveCommand) {
             ret = this.proceedRemoveCommand((RemoveCommand) command);
-        } else if(command instanceof  MoveCommand) {
+        } else if (command instanceof MoveCommand) {
             ret = this.proceedMoveCommand((MoveCommand) command);
+        } else if (command instanceof StartCommand) {
+            ret = this.proceedStartCommand((StartCommand) command);
+        } else if (command instanceof StopCommand) {
+            ret = this.proceedStopCommand((StopCommand) command);
         } else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedStartCommand(StartCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("start ");
+        this.processInstanceElement(sb, command.instance);
+        return sb.toString();
+    }
+
+    private String proceedStopCommand(StopCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("stop ");
+        this.processInstanceElement(sb, command.instance);
+        return sb.toString();
     }
 
     private String proceedMoveCommand(MoveCommand command) {
@@ -64,7 +81,7 @@ public class CommandsToString {
 
     private void processInstanceElement(StringBuilder sb, InstanceElement instance) {
         final RootInstanceElement parent = instance.parent;
-        if(parent != null) {
+        if (parent != null) {
             sb.append(parent.instanceName);
             sb.append('.');
         }

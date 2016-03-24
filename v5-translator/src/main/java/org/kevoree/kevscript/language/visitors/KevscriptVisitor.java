@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -211,7 +210,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             final RootInstanceElement target = identifierContextToRootInstance(ctx.identifier(0));
             final InstanceElement targetInstance = new InstanceElement(target);
             if(ctx.identifierList() != null) {
-                //new ExpressionVisitor()
                 for(IdentifierContext a : ctx.identifierList().identifiers) {
                     final RootInstanceElement source = identifierContextToRootInstance(a);
                     commands.addCommand(new MoveCommand(targetInstance, new InstanceElement(source)));
@@ -232,6 +230,30 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             final MoveCommand e = new MoveCommand(targetInstance, sourceInstance);
             commands.add(e);
         }
+        return commands;
+    }
+
+    @Override
+    public Commands visitStart(StartContext ctx) {
+        final Commands commands = new Commands();
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        for(InstancePathContext instancePath: ctx.instanceList().instances) {
+            final InstanceElement instance = instancePathToInstanceElement(expressionVisitor.visitInstancePath(instancePath));
+            commands.addCommand(new StartCommand(instance));
+        }
+
+        return commands;
+    }
+
+    @Override
+    public Commands visitStop(StopContext ctx) {
+        final Commands commands = new Commands();
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        for(InstancePathContext instancePath: ctx.instanceList().instances) {
+            final InstanceElement instance = instancePathToInstanceElement(expressionVisitor.visitInstancePath(instancePath));
+            commands.addCommand(new StopCommand(instance));
+        }
+
         return commands;
     }
 
@@ -429,4 +451,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitForBody(final ForBodyContext ctx) {
         return loopOverChildren(ctx);
     }
+
+
 }

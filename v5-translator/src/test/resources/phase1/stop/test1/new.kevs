@@ -1,0 +1,2 @@
+instance d = "test" WSGroup
+stop [a, b:c, d]

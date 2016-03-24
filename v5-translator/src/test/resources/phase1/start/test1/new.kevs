@@ -1,0 +1,2 @@
+instance d = "test" WSGroup
+start [a, b:c, d]
