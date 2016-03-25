@@ -1,7 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
+import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 
 /**
  * Created by mleduc on 17/03/16.

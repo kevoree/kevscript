@@ -121,6 +121,30 @@ public class Phase1Test {
     }
 
     @Test
+    public void testNetMergeTest1() throws Exception {
+        analyzeDirectory("phase1/net-merge/test1");
+    }
+
+    @Test
+    public void testNetMergeTest2() throws Exception {
+        analyzeDirectory("phase1/net-merge/test2");
+    }
+
+    @Test
+    public void testNetMergeError1() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        interpretPhase1(pathToString("/phase1/net-merge/error1.kevs"));
+    }
+
+    @Test
+    public void testNetMergeError2() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        interpretPhase1(pathToString("/phase1/net-merge/error2.kevs"));
+    }
+
+    @Test
     @Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");

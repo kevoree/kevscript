@@ -78,7 +78,7 @@ public class KevscriptHelper {
     public List<RootInstanceElement> getInstancesFromInstancePathContext(final KevScriptParser.InstancePathContext instancePathContext) {
 
         final List<RootInstanceElement> ret = new ArrayList<>();
-        for(final IdentifierContext a : instancePathContext.identifier()) {
+        for (final IdentifierContext a : instancePathContext.identifier()) {
             ret.add(this.getInstanceFromIdentifierContext(a));
         }
 
@@ -162,7 +162,7 @@ public class KevscriptHelper {
 
     public ObjectElement convertObjectDeclToObjectElement(final ObjectDeclExpression objectExpr) {
         final ObjectElement ret = new ObjectElement();
-        for(Map.Entry<String, FinalExpression> entry : objectExpr.values.entrySet()) {
+        for (Map.Entry<String, FinalExpression> entry : objectExpr.values.entrySet()) {
             final FinalExpression valueExpr = entry.getValue();
             ret.put(entry.getKey(), internalExpressionToObjectConversion(valueExpr));
         }
@@ -171,7 +171,7 @@ public class KevscriptHelper {
 
     private ArrayElement convertArrayDeclExpressionToObjectElement(final ArrayDeclExpression arrayExpr) {
         final ArrayElement ret = new ArrayElement();
-        for(final FinalExpression entry : arrayExpr.expressionList) {
+        for (final FinalExpression entry : arrayExpr.expressionList) {
             ret.add(internalExpressionToObjectConversion(entry));
         }
         return ret;
@@ -179,11 +179,11 @@ public class KevscriptHelper {
 
     private AbstractObjectElement internalExpressionToObjectConversion(FinalExpression entry) {
         AbstractObjectElement value;
-        if(entry instanceof StringExpression) {
+        if (entry instanceof StringExpression) {
             value = new StringElement(((StringExpression) entry).text);
-        } else if(entry instanceof ObjectDeclExpression) {
+        } else if (entry instanceof ObjectDeclExpression) {
             value = this.convertObjectDeclToObjectElement((ObjectDeclExpression) entry);
-        } else if(entry instanceof ArrayDeclExpression) {
+        } else if (entry instanceof ArrayDeclExpression) {
             value = this.convertArrayDeclExpressionToObjectElement((ArrayDeclExpression) entry);
         } else {
             throw new WrongTypeException(null, null);

@@ -1,0 +1,2 @@
+let b = "ko"
+net-init a b

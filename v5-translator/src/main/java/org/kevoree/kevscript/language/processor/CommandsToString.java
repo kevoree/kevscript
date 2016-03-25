@@ -52,10 +52,21 @@ public class CommandsToString {
             ret = this.proceedStopCommand((StopCommand) command);
         } else if (command instanceof NetInitCommand) {
             ret = this.proceedNetInitCommand((NetInitCommand) command);
+        } else if (command instanceof NetMergeCommand) {
+            ret = this.proceedNetMergeCommand((NetMergeCommand) command);
         } else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedNetMergeCommand(NetMergeCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("net-init ");
+        sb.append(command.node.instanceName);
+        sb.append(' ');
+        sb.append(proceedObjectElement(command.network));
+        return sb.toString();
     }
 
     private String proceedNetInitCommand(final NetInitCommand command) {

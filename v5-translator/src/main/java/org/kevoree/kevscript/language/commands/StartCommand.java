@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.AbstractCommand;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 
 /**
