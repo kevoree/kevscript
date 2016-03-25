@@ -1,0 +1,2 @@
+net-remove node0 a.b
+net-remove node2 [c, d.e.f]

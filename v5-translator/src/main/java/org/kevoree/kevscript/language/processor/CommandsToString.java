@@ -54,10 +54,27 @@ public class CommandsToString {
             ret = this.proceedNetInitCommand((NetInitCommand) command);
         } else if (command instanceof NetMergeCommand) {
             ret = this.proceedNetMergeCommand((NetMergeCommand) command);
+        } else if (command instanceof NetRemoveCommand) {
+            ret = this.proceedNetRemoveCommand((NetRemoveCommand) command);
         } else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedNetRemoveCommand(final NetRemoveCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("net-remove ");
+        sb.append(command.node.instanceName);
+        sb.append( " " );
+        if(command.objectRefs.size() > 1) {
+            sb.append("[");
+            sb.append(StringUtils.join(command.objectRefs, ", "));
+            sb.append("]");
+        } else {
+            sb.append(StringUtils.join(command.objectRefs, ""));
+        }
+        return sb.toString();
     }
 
     private String proceedNetMergeCommand(NetMergeCommand command) {

@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -16,6 +17,7 @@ import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
@@ -490,5 +492,21 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             throw new WrongTypeException(ctx.identifier(1).getText(), ObjectDeclExpression.class);
         }
         return new Commands().addCommand(new NetMergeCommand(node, network));
+    }
+
+    @Override
+    public Commands visitNetremove(final NetremoveContext ctx) {
+        final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final Commands ret = new Commands();
+
+        final List<String> objectRefs = new ArrayList<>();
+        if(ctx.identifierList() != null) {
+            for(final IdentifierContext identifier: ctx.identifierList().identifier()) {
+                objectRefs.add(identifier.getText());
+            }
+        } else {
+            objectRefs.add(ctx.identifier(1).getText());
+        }
+        return ret.addCommand(new NetRemoveCommand(node, objectRefs));
     }
 }
