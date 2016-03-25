@@ -61,7 +61,7 @@ public class CommandsToString {
     private String proceedNetInitCommand(final NetInitCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("net-init ");
-        sb.append(command.instance.instanceName);
+        sb.append(command.node.instanceName);
         sb.append(' ');
         sb.append(proceedObjectElement(command.network));
         return sb.toString();

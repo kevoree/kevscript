@@ -457,7 +457,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitNetinit(final NetinitContext ctx) {
-        final RootInstanceElement chan = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         final FinalExpression res;
         if(ctx.identifier(1) != null) {
@@ -472,6 +472,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         } else {
             throw new WrongTypeException(ctx.identifier(1).getText(), ObjectDeclExpression.class);
         }
-        return new Commands().addCommand(new NetInitCommand(chan, network));
+        return new Commands().addCommand(new NetInitCommand(node, network));
     }
 }

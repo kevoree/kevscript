@@ -1,0 +1,2 @@
+instance b = WSGroup
+net-init a b

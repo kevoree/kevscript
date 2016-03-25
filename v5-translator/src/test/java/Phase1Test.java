@@ -102,6 +102,25 @@ public class Phase1Test {
     }
 
     @Test
+    public void testNetInitTest2() throws Exception {
+        analyzeDirectory("phase1/net-init/test2");
+    }
+
+    @Test
+    public void testNetInitError1() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        interpretPhase1(pathToString("/phase1/net-init/error1.kevs"));
+    }
+
+    @Test
+    public void testNetInitError2() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        interpretPhase1(pathToString("/phase1/net-init/error2.kevs"));
+    }
+
+    @Test
     @Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
