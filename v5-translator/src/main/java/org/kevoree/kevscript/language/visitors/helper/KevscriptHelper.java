@@ -3,6 +3,10 @@ package org.kevoree.kevscript.language.visitors.helper;
 import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
+import org.kevoree.kevscript.language.commands.element.object.AbstractObjectElement;
+import org.kevoree.kevscript.language.commands.element.object.ArrayElement;
+import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
+import org.kevoree.kevscript.language.commands.element.object.StringElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
@@ -10,6 +14,7 @@ import org.kevoree.kevscript.language.visitors.ExpressionVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.kevoree.kevscript.KevScriptParser.IdentifierContext;
 
@@ -155,4 +160,34 @@ public class KevscriptHelper {
         return instance;
     }
 
+    public ObjectElement convertObjectDeclToObjectElement(final ObjectDeclExpression objectExpr) {
+        final ObjectElement ret = new ObjectElement();
+        for(Map.Entry<String, FinalExpression> entry : objectExpr.values.entrySet()) {
+            final FinalExpression valueExpr = entry.getValue();
+            ret.put(entry.getKey(), internalExpressionToObjectConversion(valueExpr));
+        }
+        return ret;
+    }
+
+    private ArrayElement convertArrayDeclExpressionToObjectElement(final ArrayDeclExpression arrayExpr) {
+        final ArrayElement ret = new ArrayElement();
+        for(final FinalExpression entry : arrayExpr.expressionList) {
+            ret.add(internalExpressionToObjectConversion(entry));
+        }
+        return ret;
+    }
+
+    private AbstractObjectElement internalExpressionToObjectConversion(FinalExpression entry) {
+        AbstractObjectElement value;
+        if(entry instanceof StringExpression) {
+            value = new StringElement(((StringExpression) entry).text);
+        } else if(entry instanceof ObjectDeclExpression) {
+            value = this.convertObjectDeclToObjectElement((ObjectDeclExpression) entry);
+        } else if(entry instanceof ArrayDeclExpression) {
+            value = this.convertArrayDeclExpressionToObjectElement((ArrayDeclExpression) entry);
+        } else {
+            throw new WrongTypeException(null, null);
+        }
+        return value;
+    }
 }

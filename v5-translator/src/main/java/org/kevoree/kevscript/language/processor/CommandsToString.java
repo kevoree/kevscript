@@ -6,6 +6,14 @@ import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
+import org.kevoree.kevscript.language.commands.element.object.AbstractObjectElement;
+import org.kevoree.kevscript.language.commands.element.object.ArrayElement;
+import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
+import org.kevoree.kevscript.language.commands.element.object.StringElement;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mleduc on 16/03/16.
@@ -42,32 +50,82 @@ public class CommandsToString {
             ret = this.proceedStartCommand((StartCommand) command);
         } else if (command instanceof StopCommand) {
             ret = this.proceedStopCommand((StopCommand) command);
+        } else if (command instanceof NetInitCommand) {
+            ret = this.proceedNetInitCommand((NetInitCommand) command);
         } else {
             ret = "";
         }
         return ret;
     }
 
+    private String proceedNetInitCommand(final NetInitCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("net-init ");
+        sb.append(command.instance.instanceName);
+        sb.append(' ');
+        sb.append(proceedObjectElement(command.network));
+        return sb.toString();
+    }
+
+    private String proceedObjectElement(final ObjectElement objectElement) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{ ");
+        final List<String> keyValues = new ArrayList<>();
+        for (final Map.Entry<String, AbstractObjectElement> entry : objectElement.entrySet()) {
+            final AbstractObjectElement abstractObjectElement = entry.getValue();
+            final String value = proceedAbstractObjectElement(abstractObjectElement);
+            keyValues.add(entry.getKey() + " : " + value);
+        }
+        sb.append(StringUtils.join(keyValues, ", "));
+        sb.append(" }");
+        return sb.toString();
+    }
+
+    private String proceedArrayElement(final ArrayElement arrayElement) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("[ ");
+        final List<String> keyValues = new ArrayList<>();
+        for (final AbstractObjectElement abstractObjectElement : arrayElement) {
+            final String value = proceedAbstractObjectElement(abstractObjectElement);
+            keyValues.add(value);
+        }
+        sb.append(StringUtils.join(keyValues, ", "));
+        sb.append(" ]");
+        return sb.toString();
+    }
+
+    private String proceedAbstractObjectElement(AbstractObjectElement abstractObjectElement) {
+        final String value;
+        if (abstractObjectElement instanceof ObjectElement) {
+            value = proceedObjectElement((ObjectElement) abstractObjectElement);
+        } else if (abstractObjectElement instanceof ArrayElement) {
+            value = proceedArrayElement((ArrayElement) abstractObjectElement);
+        } else {
+            value = '"' + ((StringElement) abstractObjectElement).text + '"';
+        }
+        return value;
+    }
+
     private String proceedStartCommand(StartCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("start ");
-        this.processInstanceElement(sb, command.instance);
+        sb.append(this.processInstanceElement(command.instance));
         return sb.toString();
     }
 
     private String proceedStopCommand(StopCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("stop ");
-        this.processInstanceElement(sb, command.instance);
+        sb.append(this.processInstanceElement(command.instance));
         return sb.toString();
     }
 
     private String proceedMoveCommand(MoveCommand command) {
         final StringBuilder sb = new StringBuilder();
         sb.append("move ");
-        processInstanceElement(sb, command.targetInstance);
+        sb.append(processInstanceElement(command.targetInstance));
         sb.append(' ');
-        processInstanceElement(sb, command.sourceInstance);
+        sb.append(processInstanceElement(command.sourceInstance));
         return sb.toString();
     }
 
@@ -75,11 +133,12 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("remove ");
         final InstanceElement instance = command.instance;
-        processInstanceElement(sb, instance);
+        sb.append(processInstanceElement(instance));
         return sb.toString();
     }
 
-    private void processInstanceElement(StringBuilder sb, InstanceElement instance) {
+    private String processInstanceElement(InstanceElement instance) {
+        StringBuilder sb = new StringBuilder();
         final RootInstanceElement parent = instance.parent;
         if (parent != null) {
             sb.append(parent.instanceName);
@@ -87,6 +146,7 @@ public class CommandsToString {
         }
         final RootInstanceElement child = instance.child;
         sb.append(child.instanceName);
+        return sb.toString();
     }
 
     private String proceedSetCommand(SetCommand command) {
@@ -94,7 +154,7 @@ public class CommandsToString {
         sb.append("set ");
         final DictionaryElement dictionaryElement = command.dictionaryElement;
         final InstanceElement instance = dictionaryElement.instance;
-        processInstanceElement(sb, instance);
+        sb.append(processInstanceElement(instance));
         sb.append('.');
         sb.append(dictionaryElement.dicoName);
 
@@ -144,7 +204,7 @@ public class CommandsToString {
         sb.append("bind ");
         sb.append(command.chan.instanceName);
         sb.append(" ");
-        processInstanceElement(sb, command.port.instance);
+        sb.append(processInstanceElement(command.port.instance));
         sb.append('.');
         sb.append(command.port.name);
         return sb.toString();

@@ -97,6 +97,11 @@ public class Phase1Test {
     }
 
     @Test
+    public void testNetInitTest1() throws Exception {
+        analyzeDirectory("phase1/net-init/test1");
+    }
+
+    @Test
     @Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");

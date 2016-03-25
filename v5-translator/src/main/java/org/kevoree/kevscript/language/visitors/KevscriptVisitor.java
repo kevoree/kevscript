@@ -1,13 +1,16 @@
 package org.kevoree.kevscript.language.visitors;
 
+import javafx.beans.binding.ObjectExpression;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.commands.element.PortElement;
+import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
@@ -452,5 +455,23 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return loopOverChildren(ctx);
     }
 
+    @Override
+    public Commands visitNetinit(final NetinitContext ctx) {
+        final RootInstanceElement chan = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final FinalExpression res;
+        if(ctx.identifier(1) != null) {
+            res = expressionVisitor.visitIdentifier(ctx.identifier(1));
+        } else {
+            res = expressionVisitor.visitObjectDecl(ctx.objectDecl());
+        }
 
+        final ObjectElement network;
+        if(res instanceof ObjectDeclExpression) {
+            network = this.helper.convertObjectDeclToObjectElement((ObjectDeclExpression)res);
+        } else {
+            throw new WrongTypeException(ctx.identifier(1).getText(), ObjectDeclExpression.class);
+        }
+        return new Commands().addCommand(new NetInitCommand(chan, network));
+    }
 }
