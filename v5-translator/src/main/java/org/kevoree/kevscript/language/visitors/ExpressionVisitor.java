@@ -305,7 +305,6 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public ArrayDeclExpression visitIterable(final IterableContext ctx) {
         final ArrayDeclExpression ret;
         if (ctx.arrayDecl() != null) {
-            // TODO array decl
             ret = this.visitArrayDecl(ctx.arrayDecl());
         } else if (ctx.identifier() != null) {
             ret = this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class);

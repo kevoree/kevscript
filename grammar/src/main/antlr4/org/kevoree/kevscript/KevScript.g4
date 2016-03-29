@@ -1,6 +1,7 @@
 grammar KevScript;
 
 script
+
     : statement*
     ;
 statement
@@ -65,7 +66,7 @@ replaceModelConnector : REPLACE_MODEL_CONNECTOR nodeId=identifier modelConnector
 
 move
     : MOVE identifier (LS_BRACKET identifierList RS_BRACKET | identifier | instanceList)            // move a list of instances to a targeted node ; if instanceList is a single element, this element is renamed)
-    | MOVE instancePath instancePath        // move an instance path to another instance path
+    | MOVE instancePath instancePath                                                                // move an instance path to another instance path
     ;
 bind
     : BIND chan=identifier nodes=portList
@@ -74,7 +75,7 @@ unbind
     : UNBIND chan=identifier nodes=portList
     ;
 letDecl
-    : LET basic_identifier ASSIGN val=expression
+    : EXPORT? LET basic_identifier ASSIGN val=expression
     ;
 netinit
     : NETINIT identifier (objectDecl|identifier)
@@ -123,12 +124,13 @@ funcCall
     : basic_identifier L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
     ;
 funcDecl
-    : FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
-    | FUNCTION NATIVE functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
+    : EXPORT? FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
+    | EXPORT? FUNCTION NATIVE functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
     ;
 
-importDecl : IMPORT (qualifier=basic_identifier FROM)? ressource=string;
-
+importDecl
+    : IMPORT (qualifier=basic_identifier FROM)? ressource=string
+    ;
 
 funcBody
     : (statement*) returnStatement?
@@ -213,6 +215,7 @@ basic_identifier : ID ;
 
 FROM : 'from' ;
 IMPORT : 'import' ;
+EXPORT : 'export' ;
 SHARP : '#' ;
 RETURN : 'return' ;
 ASSIGN : '=' ;
