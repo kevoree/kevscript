@@ -37,6 +37,16 @@ public class KevScriptTest {
     }
 
     @Test
+    public void testAttachModelConnector() throws Exception {
+        tester(getClass().getResourceAsStream("/attach_model_connector.kevs"));
+    }
+
+    @Test
+    public void testDetachModelConnector() throws Exception {
+        tester(getClass().getResourceAsStream("/detach_model_connector.kevs"));
+    }
+
+    @Test
     public void testFor() throws Exception {
         tester(getClass().getResourceAsStream("/for.kevs"));
     }
@@ -98,6 +108,11 @@ public class KevScriptTest {
     @Test
     public void testRemove() throws Exception {
         tester(getClass().getResourceAsStream("/remove.kevs"));
+    }
+
+    @Test
+    public void testReplaceModelConnector() throws Exception {
+        tester(getClass().getResourceAsStream("/replace_model_connector.kevs"));
     }
 
     @Test

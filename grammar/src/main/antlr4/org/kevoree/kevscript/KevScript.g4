@@ -26,6 +26,9 @@ statement
     | forDecl
     | funcCall
     | importDecl
+    | attachModelConnector
+    | detachModelConnector
+    | replaceModelConnector
     ;
 instance
     : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
@@ -54,6 +57,12 @@ attach
 detach
     : DETACH groupId=identifier nodesId=identifierList
     ;
+
+attachModelConnector : ATTACH_MODEL_CONNECTOR nodeId=identifier modelConnectorId=identifier;
+detachModelConnector : DETACH_MODEL_CONNECTOR nodeId=identifier ;
+replaceModelConnector : REPLACE_MODEL_CONNECTOR nodeId=identifier modelConnectorId=identifier;
+
+
 move
     : MOVE identifier (LS_BRACKET identifierList RS_BRACKET | identifier | instanceList)            // move a list of instances to a targeted node ; if instanceList is a single element, this element is renamed)
     | MOVE instancePath instancePath        // move an instance path to another instance path
@@ -243,6 +252,9 @@ NETREMOVE : 'net-remove' ;
 METAINIT : 'meta-init' ;
 METAMERGE : 'meta-merge' ;
 METAREMOVE : 'meta-remove' ;
+ATTACH_MODEL_CONNECTOR : 'attach-model-connector' ;
+DETACH_MODEL_CONNECTOR : 'detach-model-connector' ;
+REPLACE_MODEL_CONNECTOR : 'replace-model-connector' ;
 
 SOURCE_CODE : '{{{' .*? '}}}';
 COMMENT
