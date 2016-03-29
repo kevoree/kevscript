@@ -67,7 +67,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 ret.add(new AddCommand(new InstanceElement(parent, childElement)));
             } else if (ctx.identifierList() != null && ctx.identifierList().identifiers != null) {
                 for (final IdentifierContext instance : ctx.identifierList().identifiers) {
-                    // TODO complete me
+                    final RootInstanceElement nodeRootInstanceElement = this.helper.getInstanceFromIdentifierContext(instance);
+                    ret.addCommand(new AddCommand(new InstanceElement(nodeRootInstanceElement)));
                 }
             } else {
                 ret.add(new AddCommand(new InstanceElement(parent)));

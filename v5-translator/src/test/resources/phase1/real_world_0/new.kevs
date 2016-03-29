@@ -8,7 +8,7 @@ let confs = {
     },
     nodes: {
         javascript: {
-            version: "5.3.3"
+            version: "533"
         }
     }
 }
@@ -18,8 +18,8 @@ function initWebNode(nodeName, group, nodeVersion) {
     instance chart1, chart2, chart3 = Chart/2
     add web
     add web:chart1
-    add web.chart2
-    add web.chart3
+    add web:chart2
+    add web:chart3
     attach group web
     return web
 }
@@ -50,7 +50,8 @@ function bindByChan(port0, port1, chanName, host, uuid) {
     bind chan [port0, port1]
 }
 
-add mainGroup: RemoteWSGroup
+instance mainGroup = RemoteWSGroup
+add mainGroup
 set mainGroup#host = confs.group.host
 set mainGroup#path = confs.group.path
 set mainGroup#answerPull/edison2 = "false"

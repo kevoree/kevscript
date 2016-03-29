@@ -13,18 +13,16 @@ import java.util.Map;
  */
 public class Context {
     private final Map<String, FinalExpression> mapIdentifiers;
+    private final Context parentContext;
 
     public Context() {
         mapIdentifiers = new HashMap<>();
+        this.parentContext = null;
     }
 
     public Context(Context rootContext) {
-        this();
-        mapIdentifiers.putAll(rootContext.getIdentifiers());
-    }
-
-    public Map<String, FinalExpression> getIdentifiers() {
-        return mapIdentifiers;
+        mapIdentifiers = new HashMap<>();
+        this.parentContext = rootContext;
     }
 
     public FinalExpression lookup(final Expression identifier) {
@@ -51,9 +49,10 @@ public class Context {
         return ret;
     }
 
-    private <T extends FinalExpression> T lookupByStrKey(String key, Class<T> clazz, boolean throwException) {
-        if (this.mapIdentifiers.containsKey(key)) {
-            final FinalExpression expression = this.mapIdentifiers.get(key);
+    public <T extends FinalExpression> T lookupByStrKey(final String key, final Class<T> clazz, final boolean throwException) {
+        final Map<String, FinalExpression> mapIdentifiers = this.getInheritedContext();
+        if (mapIdentifiers.containsKey(key)) {
+            final FinalExpression expression = mapIdentifiers.get(key);
             if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
                 throw new WrongTypeException(key, clazz);
             }
@@ -62,6 +61,15 @@ public class Context {
             throw new InstanceNameNotFound(key);
         }
         return null;
+    }
+
+    private Map<String, FinalExpression> getInheritedContext() {
+        final Map<String, FinalExpression> ret = new HashMap<>();
+        if(this.parentContext != null) {
+            ret.putAll(this.parentContext.getInheritedContext());
+        }
+        ret.putAll(this.mapIdentifiers);
+        return ret;
     }
 
     public void addExpression(final String identifier, final FinalExpression expression) {

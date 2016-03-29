@@ -292,18 +292,13 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("add ");
         final InstanceElement instance = command.instance;
-        final RootInstanceElement parent = instance.parent;
-        if (parent == null) {
-            final RootInstanceElement child = instance.child;
-            sb.append(child.instanceName);
-            sb.append(" : ");
-            sb.append(child.typeName);
-            if (child.version != null) {
-                sb.append('/');
-                sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(child.version), 3, '0').toCharArray(), '.'));
-            }
-        } else {
-
+        sb.append(this.processInstanceElement(instance));
+        final RootInstanceElement child = instance.child;
+        sb.append(" : ");
+        sb.append(child.typeName);
+        if (child.version != null) {
+            sb.append('/');
+            sb.append(StringUtils.join(StringUtils.rightPad(String.valueOf(child.version), 3, '0').toCharArray(), '.'));
         }
         return sb.toString();
     }

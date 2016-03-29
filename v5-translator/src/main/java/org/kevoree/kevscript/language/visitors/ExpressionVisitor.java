@@ -4,6 +4,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
@@ -38,23 +39,23 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             final StringExpression right = this.context.lookup(this.visit(ctx.expression(1)), StringExpression.class);
             ret = new StringExpression(left.toText() + right.toText());
         } else if (ctx.string() != null) {
-            ret = this.visit(ctx.string());
+            ret = this.visitString(ctx.string());
         } else if (ctx.objectDecl() != null) {
-            ret = this.visit(ctx.objectDecl());
+            ret = this.visitObjectDecl(ctx.objectDecl());
         } else if (ctx.contextIdentifier() != null) {
-            ret = this.visit(ctx.contextIdentifier());
+            ret = this.visitContextIdentifier(ctx.contextIdentifier());
         } else if (ctx.arrayDecl() != null) {
-            ret = this.visit(ctx.arrayDecl());
+            ret = this.visitArrayDecl(ctx.arrayDecl());
         } else if (ctx.arrayAccess() != null) {
-            ret = this.visit(ctx.arrayAccess());
+            ret = this.visitArrayAccess(ctx.arrayAccess());
         } else if (ctx.identifier() != null) {
-            ret = this.visit(ctx.identifier());
+            ret = this.visitIdentifier(ctx.identifier());
         } else if (ctx.funcCall() != null) {
-            ret = this.visit(ctx.funcCall());
+            ret = this.visitFuncCall(ctx.funcCall());
         } else if (ctx.instancePath() != null) {
-            ret = this.visit(ctx.instancePath());
+            ret = this.visitInstancePath(ctx.instancePath());
         } else if (ctx.portPath() != null) {
-            ret = this.visit(ctx.portPath());
+            ret = this.visitPortPath(ctx.portPath());
         } else {
             throw new NotImplementedException(ctx + " expression context unknow.");
         }
@@ -70,7 +71,11 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public ObjectDeclExpression visitObjectDecl(ObjectDeclContext ctx) {
         final ObjectDeclExpression ret = new ObjectDeclExpression();
         for (KeyAndValueContext value : ctx.values) {
-            ret.put(value.key.getText(), this.visit(value.value));
+            try {
+                ret.put(value.key.getText(), this.visit(value.value));
+            } catch (InstanceNameNotFound e) {
+                ret.put(value.key.getText(), new InstanceExpression(value.value.getText(), null, null, null));
+            }
         }
         return ret;
     }
@@ -155,26 +160,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     private FinalExpression visitBasicIdentifier(final IdentifierContext ctx) {
-        final Expression ret;
-        final BasicIdentifierExpression left = new BasicIdentifierExpression(ctx.basic_identifier().getText());
-        final FinalExpression res = this.context.lookup(left, FinalExpression.class, false);
-        if (ctx.DOT() == null) {
-            /*if(res != null && res instanceof InstanceExpression) {
-                ret = res;
-            } else {
-                ret = new InstanceExpression(new StringExpression(left.toPath()), null, null, null);
-            }*/
-            if (res != null) {
-                ret = res;
-            } else {
-                ret = left;
-            }
-        } else {
-            ret = this.context.lookup(new IdentifierExpression(res, this.visit(ctx.identifier())));
-        }
-        FinalExpression lookup = this.context.lookup(ret, FinalExpression.class, false);
-
-        return lookup;
+        return this.context.lookupByStrKey(ctx.getText(), FinalExpression.class, false);
     }
 
     @Override
@@ -289,8 +275,14 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
         final String frag;
-        if (ctx.identifier(1) != null) {
-            frag = this.visit(ctx.identifier(1)).toText();
+        final IdentifierContext fragIdentifierContext = ctx.identifier(1);
+        if (fragIdentifierContext != null) {
+            final FinalExpression visit1 = this.visit(fragIdentifierContext);
+            if(visit1 != null) {
+                frag = visit1.toText();
+            } else {
+                frag = fragIdentifierContext.getText();
+            }
         } else {
             frag = null;
         }
@@ -316,6 +308,4 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public Context getContext() {
         return context;
     }
-
-
 }

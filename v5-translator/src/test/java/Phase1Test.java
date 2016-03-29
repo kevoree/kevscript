@@ -150,7 +150,7 @@ public class Phase1Test {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
     }

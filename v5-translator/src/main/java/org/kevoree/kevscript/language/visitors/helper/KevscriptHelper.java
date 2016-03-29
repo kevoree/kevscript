@@ -54,7 +54,7 @@ public class KevscriptHelper {
     }
 
     public InstanceExpression getInstanceExpressionFromContext(IdentifierContext node) {
-        final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visitIdentifier(node);
         final InstanceExpression nodeInstance;
         if (nodeExpression instanceof IdentifierExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
