@@ -20,9 +20,9 @@ public class Context {
         this.parentContext = null;
     }
 
-    public Context(Context rootContext) {
+    public Context(Context parentContext) {
         mapIdentifiers = new HashMap<>();
-        this.parentContext = rootContext;
+        this.parentContext = parentContext;
     }
 
     public FinalExpression lookup(final Expression identifier) {
@@ -50,7 +50,10 @@ public class Context {
     }
 
     public <T extends FinalExpression> T lookupByStrKey(final String key, final Class<T> clazz, final boolean throwException) {
-        final Map<String, FinalExpression> mapIdentifiers = this.getInheritedContext();
+        return lookupByStrKey(key, clazz, throwException, this.getInheritedContext());
+    }
+
+    protected <T extends FinalExpression> T lookupByStrKey(String key, Class<T> clazz, boolean throwException, Map<String, FinalExpression> mapIdentifiers) {
         if (mapIdentifiers.containsKey(key)) {
             final FinalExpression expression = mapIdentifiers.get(key);
             if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
@@ -65,7 +68,7 @@ public class Context {
 
     private Map<String, FinalExpression> getInheritedContext() {
         final Map<String, FinalExpression> ret = new HashMap<>();
-        if(this.parentContext != null) {
+        if (this.parentContext != null) {
             ret.putAll(this.parentContext.getInheritedContext());
         }
         ret.putAll(this.mapIdentifiers);
@@ -89,11 +92,10 @@ public class Context {
         basicAddExpression(identifier, expression);
     }
 
-    private void basicAddExpression(String identifier, FinalExpression expression) {
+    protected void basicAddExpression(String identifier, FinalExpression expression) {
         if (this.mapIdentifiers.containsKey(identifier)) {
             throw new NameCollisionException(identifier);
         }
         this.mapIdentifiers.put(identifier, expression);
     }
-
 }

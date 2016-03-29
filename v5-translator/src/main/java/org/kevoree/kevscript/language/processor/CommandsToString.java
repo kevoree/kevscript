@@ -72,8 +72,8 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("meta-remove ");
         sb.append(command.instance.instanceName);
-        sb.append( " " );
-        if(command.objectRefs.size() > 1) {
+        sb.append(" ");
+        if (command.objectRefs.size() > 1) {
             sb.append("[");
             sb.append(StringUtils.join(command.objectRefs, ", "));
             sb.append("]");
@@ -105,8 +105,8 @@ public class CommandsToString {
         final StringBuilder sb = new StringBuilder();
         sb.append("net-remove ");
         sb.append(command.node.instanceName);
-        sb.append( " " );
-        if(command.objectRefs.size() > 1) {
+        sb.append(" ");
+        if (command.objectRefs.size() > 1) {
             sb.append("[");
             sb.append(StringUtils.join(command.objectRefs, ", "));
             sb.append("]");

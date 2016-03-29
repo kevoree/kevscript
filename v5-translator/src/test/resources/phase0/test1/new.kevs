@@ -1,0 +1,2 @@
+instance node0 = &default.node.name DotnetNode/1
+add node0

@@ -82,18 +82,22 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public FinalExpression visitContextIdentifier(final ContextIdentifierContext ctx) {
-        final ContextIdentifierExpression ret = recVisitContextIdentifier(ctx);
-        return this.context.lookup(ret);
+        final FinalExpression res;
+        if (ctx.contextRef() != null) {
+            res = this.visitContextRef(ctx.contextRef());
+        } else {
+            final ContextIdentifierExpression ret = recVisitContextIdentifier(ctx);
+            res = this.context.lookup(ret);
+        }
+        return res;
     }
 
     private ContextIdentifierExpression recVisitContextIdentifier(final ContextIdentifierContext ctx) {
         final ContextIdentifierExpression ret = new ContextIdentifierExpression();
         if (ctx.basic_identifier() != null) {
             ret.add(ctx.basic_identifier().getText());
-        } else if (ctx.contextRef() != null) {
-            ret.add(this.visit(ctx.contextRef()).toText());
         } else if (ctx.arrayAccess() != null) {
-            ret.add(this.visit(ctx.arrayAccess()).toText());
+            ret.add(this.visitArrayAccess(ctx.arrayAccess()).toText());
         } else if (ctx.DOT() != null) {
             final ContextIdentifierExpression left = this.recVisitContextIdentifier(ctx.contextIdentifier(0));
             final ContextIdentifierExpression right = this.recVisitContextIdentifier(ctx.contextIdentifier(1));
@@ -103,6 +107,13 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         return ret;
     }
 
+    @Override
+    public FinalExpression visitContextRef(ContextRefContext ctx) {
+        final ContextIdentifierExpression ret = recVisitContextIdentifier(ctx.contextIdentifier());
+        final ContextRefExpression identifier = new ContextRefExpression();
+        identifier.addAll(ret);
+        return this.context.lookup(identifier);
+    }
 
     @Override
     public ArrayDeclExpression visitArrayDecl(ArrayDeclContext ctx) {
@@ -278,7 +289,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         final IdentifierContext fragIdentifierContext = ctx.identifier(1);
         if (fragIdentifierContext != null) {
             final FinalExpression visit1 = this.visit(fragIdentifierContext);
-            if(visit1 != null) {
+            if (visit1 != null) {
                 frag = visit1.toText();
             } else {
                 frag = fragIdentifierContext.getText();

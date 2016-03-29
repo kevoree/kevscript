@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -11,6 +10,7 @@ import org.kevoree.kevscript.language.commands.element.PortElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
@@ -31,7 +31,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     private final KevscriptHelper helper;
 
     public KevscriptVisitor() {
-        this.context = new Context();
+        this.context = new RootContext();
         this.helper = new KevscriptHelper(this.context);
     }
 
@@ -150,7 +150,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             final String instanceVarName = ctx.varName.getText();
             final FinalExpression instanceName;
             if (ctx.instanceName != null) {
-                final Expression tmp = new ExpressionVisitor(context).visit(ctx.instanceName);
+                final Expression tmp = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
                 final FinalExpression instanceName2 = this.context.lookup(tmp, FinalExpression.class);
                 if (instanceName2 != null) {
                     if (instanceName2 instanceof StringExpression) { // || instanceName2 instanceof InstanceExpression
@@ -500,8 +500,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     private List<String> getListObjectRefs(IdentifierListContext identifierListContext, IdentifierContext identifierContext) {
         final List<String> objectRefs = new ArrayList<>();
-        if(identifierListContext != null) {
-            for(final IdentifierContext identifier: identifierListContext.identifier()) {
+        if (identifierListContext != null) {
+            for (final IdentifierContext identifier : identifierListContext.identifier()) {
                 objectRefs.add(identifier.getText());
             }
         } else {

@@ -3,14 +3,9 @@ package org.kevoree.kevscript.language.expressions;
 /**
  * Created by mleduc on 15/03/16.
  */
-public class ContextRefExpression implements FinalExpression {
-    public ContextRefExpression(Expression visit) {
-        // TODO
-    }
-
-
+public class ContextRefExpression extends ContextIdentifierExpression {
     @Override
-    public String toText() {
-        return null;
+    public String toPath() {
+        return '&' + super.toPath();
     }
 }
