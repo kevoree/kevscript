@@ -401,7 +401,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             functionExpression.setFunctionBody(ctx.funcBody());
             this.context.addExpression(ctx.functionName.getText(), functionExpression);
         } else {
-            // TODO native function
+            final FunctionNativeExpression functionNativeExpression = new FunctionNativeExpression();
+            if (ctx.parameters != null) {
+                for (final Basic_identifierContext param : ctx.parameters.basic_identifier()) {
+                    functionNativeExpression.addParam(param.getText());
+                }
+            }
+            functionNativeExpression.setFunctionBody(ctx.funcBody().getText());
+            this.context.addExpression(ctx.functionName.getText(), functionNativeExpression);
         }
 
         return new Commands();

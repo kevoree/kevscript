@@ -8,11 +8,6 @@ public class IdentifierExpression implements NonFinalExpression {
     public final FinalExpression left;
     public final FinalExpression right;
 
-    public IdentifierExpression(final FinalExpression left) {
-        this.left = left;
-        this.right = null;
-    }
-
     public IdentifierExpression(final FinalExpression left, final FinalExpression visit) {
         this.left = left;
         this.right = visit;

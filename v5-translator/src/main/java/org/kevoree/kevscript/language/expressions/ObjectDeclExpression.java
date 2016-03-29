@@ -28,9 +28,4 @@ public class ObjectDeclExpression implements FinalExpression {
         sb.append('}');
         return sb.toString();
     }
-
-
-    public Expression get(String chunk) {
-        return this.values.get(chunk);
-    }
 }

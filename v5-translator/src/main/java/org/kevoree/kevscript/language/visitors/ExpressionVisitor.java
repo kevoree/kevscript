@@ -309,13 +309,13 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else if (ctx.identifier() != null) {
             ret = this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class);
         } else {
-            // TODO context reference
-            ret = null;
+            final FinalExpression res = new ExpressionVisitor(context).visitContextIdentifier(ctx.contextIdentifier());
+            if (res instanceof ArrayDeclExpression) {
+                ret = (ArrayDeclExpression) res;
+            } else {
+                throw new WrongTypeException(ctx.contextIdentifier().getText(), ArrayDeclExpression.class);
+            }
         }
         return ret;
-    }
-
-    public Context getContext() {
-        return context;
     }
 }

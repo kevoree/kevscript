@@ -129,7 +129,7 @@ funcDecl
     ;
 
 importDecl
-    : IMPORT (qualifier=basic_identifier FROM)? ressource=string
+    : IMPORT (qualifier=basic_identifier FROM)? resource=string
     ;
 
 funcBody
