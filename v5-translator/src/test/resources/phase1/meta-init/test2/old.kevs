@@ -1,0 +1,1 @@
+meta-init node0 { wlan0 : { ip : "192.168.1.1" } }

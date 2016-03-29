@@ -457,56 +457,73 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitNetinit(final NetinitContext ctx) {
         final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final FinalExpression res;
-        if (ctx.identifier(1) != null) {
-            res = expressionVisitor.visitIdentifier(ctx.identifier(1));
-        } else {
-            res = expressionVisitor.visitObjectDecl(ctx.objectDecl());
-        }
-
-        final ObjectElement network;
-        if (res instanceof ObjectDeclExpression) {
-            network = this.helper.convertObjectDeclToObjectElement((ObjectDeclExpression) res);
-        } else {
-            throw new WrongTypeException(ctx.identifier(1).getText(), ObjectDeclExpression.class);
-        }
+        final ObjectElement network = getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
         return new Commands().addCommand(new NetInitCommand(node, network));
     }
 
     @Override
     public Commands visitNetmerge(NetmergeContext ctx) {
         final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final FinalExpression res;
-        if (ctx.identifier(1) != null) {
-            res = expressionVisitor.visitIdentifier(ctx.identifier(1));
-        } else {
-            res = expressionVisitor.visitObjectDecl(ctx.objectDecl());
-        }
-
-        final ObjectElement network;
-        if (res instanceof ObjectDeclExpression) {
-            network = this.helper.convertObjectDeclToObjectElement((ObjectDeclExpression) res);
-        } else {
-            throw new WrongTypeException(ctx.identifier(1).getText(), ObjectDeclExpression.class);
-        }
+        final ObjectElement network = getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
         return new Commands().addCommand(new NetMergeCommand(node, network));
     }
 
     @Override
     public Commands visitNetremove(final NetremoveContext ctx) {
         final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final Commands ret = new Commands();
+        final List<String> objectRefs = getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
+        return new Commands().addCommand(new NetRemoveCommand(node, objectRefs));
+    }
 
+
+    @Override
+    public Commands visitMetainit(MetainitContext ctx) {
+        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final ObjectElement metas = getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
+        return new Commands().addCommand(new MetaInitCommand(instance, metas));
+    }
+
+    @Override
+    public Commands visitMetamerge(MetamergeContext ctx) {
+        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final ObjectElement metas = getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
+        return new Commands().addCommand(new MetaMergeCommand(instance, metas));
+    }
+
+    @Override
+    public Commands visitMetaremove(final MetaremoveContext ctx) {
+        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
+        final List<String> objectRefs = getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
+        return new Commands().addCommand(new MetaRemoveCommand(instance, objectRefs));
+    }
+
+    private List<String> getListObjectRefs(IdentifierListContext identifierListContext, IdentifierContext identifierContext) {
         final List<String> objectRefs = new ArrayList<>();
-        if(ctx.identifierList() != null) {
-            for(final IdentifierContext identifier: ctx.identifierList().identifier()) {
+        if(identifierListContext != null) {
+            for(final IdentifierContext identifier: identifierListContext.identifier()) {
                 objectRefs.add(identifier.getText());
             }
         } else {
-            objectRefs.add(ctx.identifier(1).getText());
+            objectRefs.add(identifierContext.getText());
         }
-        return ret.addCommand(new NetRemoveCommand(node, objectRefs));
+        return objectRefs;
+    }
+
+    private ObjectElement getObjectByDeclOrIdentifier(IdentifierContext identifierContext, ObjectDeclContext objectDeclContext) {
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final FinalExpression res;
+        if (identifierContext != null) {
+            res = expressionVisitor.visitIdentifier(identifierContext);
+        } else {
+            res = expressionVisitor.visitObjectDecl(objectDeclContext);
+        }
+
+        final ObjectElement metas;
+        if (res instanceof ObjectDeclExpression) {
+            metas = this.helper.convertObjectDeclToObjectElement((ObjectDeclExpression) res);
+        } else {
+            throw new WrongTypeException(identifierContext.getText(), ObjectDeclExpression.class);
+        }
+        return metas;
     }
 }

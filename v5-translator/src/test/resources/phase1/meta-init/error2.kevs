@@ -1,2 +1,2 @@
 instance b = WSGroup
-net-merge a b
+meta-init a b

@@ -56,10 +56,49 @@ public class CommandsToString {
             ret = this.proceedNetMergeCommand((NetMergeCommand) command);
         } else if (command instanceof NetRemoveCommand) {
             ret = this.proceedNetRemoveCommand((NetRemoveCommand) command);
+        } else if (command instanceof MetaInitCommand) {
+            ret = this.proceedMetaInitCommand((MetaInitCommand) command);
+        } else if (command instanceof MetaMergeCommand) {
+            ret = this.proceedMetaMergeCommand((MetaMergeCommand) command);
+        } else if (command instanceof MetaRemoveCommand) {
+            ret = this.proceedMetaRemoveCommand((MetaRemoveCommand) command);
         } else {
             ret = "";
         }
         return ret;
+    }
+
+    private String proceedMetaRemoveCommand(MetaRemoveCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("meta-remove ");
+        sb.append(command.instance.instanceName);
+        sb.append( " " );
+        if(command.objectRefs.size() > 1) {
+            sb.append("[");
+            sb.append(StringUtils.join(command.objectRefs, ", "));
+            sb.append("]");
+        } else {
+            sb.append(StringUtils.join(command.objectRefs, ""));
+        }
+        return sb.toString();
+    }
+
+    private String proceedMetaMergeCommand(MetaMergeCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("meta-merge ");
+        sb.append(command.instance.instanceName);
+        sb.append(' ');
+        sb.append(proceedObjectElement(command.metas));
+        return sb.toString();
+    }
+
+    private String proceedMetaInitCommand(MetaInitCommand command) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("net-init ");
+        sb.append(command.instance.instanceName);
+        sb.append(' ');
+        sb.append(proceedObjectElement(command.metas));
+        return sb.toString();
     }
 
     private String proceedNetRemoveCommand(final NetRemoveCommand command) {
@@ -79,7 +118,7 @@ public class CommandsToString {
 
     private String proceedNetMergeCommand(NetMergeCommand command) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("net-init ");
+        sb.append("net-merge ");
         sb.append(command.node.instanceName);
         sb.append(' ');
         sb.append(proceedObjectElement(command.network));
