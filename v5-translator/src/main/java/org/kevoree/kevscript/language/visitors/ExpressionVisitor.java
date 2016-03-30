@@ -226,7 +226,6 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else {
             // TODO interpreting javascript + handling return value
             // CF : https://github.com/kevoree/kevoree-library/tree/master/java/org.kevoree.library.java.avatarjs
-            final JsEngine jsEngine = new JsEngine();
             try {
                 final StringBuilder sb = new StringBuilder();
                 sb.append("function ");
@@ -241,7 +240,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
                 for(ExpressionContext x : parameters) {
                     parametersStr.add(x.getText().replaceAll("\"", ""));
                 }
-                final String result = jsEngine.evaluateFunction(sb.toString(), functionName, parametersStr);
+                final String result = JsEngine.getInstance().evaluateFunction(sb.toString(), functionName, parametersStr);
                 returnValue = new StringExpression(result);
             } catch (ScriptException e) {
                 throw new RuntimeException(e);
