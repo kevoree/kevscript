@@ -9,6 +9,7 @@ public class PortPathExpression implements FinalExpression {
     public final InstancePathExpression instancePath;
     public final boolean isInput;
     public final String portName;
+    private boolean exported;
 
     public PortPathExpression(final InstancePathExpression instancePath, final boolean isInput, final String portName) {
         assert instancePath != null;
@@ -20,6 +21,16 @@ public class PortPathExpression implements FinalExpression {
     @Override
     public String toText() {
         throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public boolean isExported() {
+        return this.exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 
 }

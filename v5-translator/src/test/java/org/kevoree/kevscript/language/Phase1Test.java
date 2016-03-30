@@ -1,20 +1,17 @@
 package org.kevoree.kevscript.language;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.kevoree.kevscript.KevScriptLexer;
-import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.commands.Commands;
+import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
 import org.kevoree.kevscript.language.processor.CommandsToString;
+import org.kevoree.kevscript.language.utils.HttpServer;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
 
 import java.io.IOException;
@@ -169,6 +166,19 @@ public class Phase1Test {
     @Test
     public void testFunctionReturn() throws Exception {
         analyzeDirectory("phase1/function_return");
+    }
+
+    @Test
+    public void testImportByFilesNonQualifiedTest1() throws Exception {
+        analyzeDirectory("phase1/import_by_files/non_qualified/test1");
+    }
+
+    @Test
+    public void testImportByHttpNonQualifiedTest1() throws Exception {
+        final HttpServer httpServer = new HttpServer(8080, "phase1/import_by_http/non_qualified/test1/http");
+        httpServer.buildAndStartServer();
+        analyzeDirectory("phase1/import_by_files/non_qualified/test1");
+        httpServer.stop();
     }
 
     @Test
@@ -343,9 +353,12 @@ public class Phase1Test {
         } else {
             pathB = path;
         }
-        final String newStr = pathToString("/" + pathB + "/new.kevs");
-        final String oldStr = pathToString("/" + pathB + "/old.kevs");
-        assertEquals(oldStr.trim(), interpretPhase1(newStr).trim());
+
+        final String basePathStr = "/" + pathB;
+        final String basePath = getClass().getResource(basePathStr).getPath();
+        final String newStr = pathToString(basePathStr + "/new.kevs");
+        final String oldStr = pathToString(basePathStr + "/old.kevs");
+        assertEquals(oldStr.trim(), interpretPhase1(basePath, newStr).trim());
     }
 
     private String pathToString(String name1) throws IOException {
@@ -354,13 +367,12 @@ public class Phase1Test {
     }
 
     private String interpretPhase1(String expression) {
-        final KevScriptLexer lexer = new KevScriptLexer(new ANTLRInputStream(expression));
-        final KevScriptParser parser = new KevScriptParser(new CommonTokenStream(lexer));
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
-        parser.removeErrorListeners();
-        parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
-        final ParseTree tree = parser.script();
-        return new CommandsToString().proceed(new KevscriptVisitor().visit(tree));
+        final Commands visit = new KevscriptInterpreter().interpret(expression, new KevscriptVisitor(new RootContext(null)));
+        return new CommandsToString().proceed(visit);
+    }
+
+    private String interpretPhase1(final String basePath, String expression) {
+        final Commands visit = new KevscriptInterpreter().interpret(expression, new KevscriptVisitor(new RootContext(basePath)));
+        return new CommandsToString().proceed(visit);
     }
 }

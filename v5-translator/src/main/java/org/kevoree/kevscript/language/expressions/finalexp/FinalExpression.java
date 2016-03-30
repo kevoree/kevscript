@@ -7,4 +7,6 @@ import org.kevoree.kevscript.language.expressions.Expression;
  */
 public interface FinalExpression extends Expression {
     String toText();
+    boolean isExported();
+    void setExported(boolean exported);
 }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.kevoree.kevscript.KevScriptLexer;
 import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.StringExpression;
@@ -40,11 +41,11 @@ public class Phase0Test {
     }
 
 
-    private void analyzeDirectory(String add_0) throws IOException {
-        final String newStr = pathToString("/" + add_0 + "/new.kevs");
-        final String oldStr = pathToString("/" + add_0 + "/old.kevs");
+    private void analyzeDirectory(final String directory) throws IOException {
+        final String newStr = pathToString("/" + directory + "/new.kevs");
+        final String oldStr = pathToString("/" + directory + "/old.kevs");
 
-        final RootContext externalContext = new RootContext();
+        final RootContext externalContext = new RootContext(pathToString("/" + directory));
         final ObjectDeclExpression expression = new ObjectDeclExpression();
         final ObjectDeclExpression value = new ObjectDeclExpression();
         value.put("name", new StringExpression("nodeName"));
@@ -54,19 +55,13 @@ public class Phase0Test {
     }
 
 
-    private String pathToString(String name1) throws IOException {
-        final InputStream newKev = getClass().getResourceAsStream(name1);
+    private String pathToString(final String resource) throws IOException {
+        final InputStream newKev = getClass().getResourceAsStream(resource);
         return IOUtils.toString(newKev);
     }
 
     private String interpretPhase1(final RootContext externalContext, final String expression) {
-        final KevScriptLexer lexer = new KevScriptLexer(new ANTLRInputStream(expression));
-        final KevScriptParser parser = new KevScriptParser(new CommonTokenStream(lexer));
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
-        parser.removeErrorListeners();
-        parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
-        final ParseTree tree = parser.script();
-        return new CommandsToString().proceed(new KevscriptVisitor(externalContext).visit(tree));
+        final Commands visit = new KevscriptInterpreter().interpret(expression, new KevscriptVisitor(externalContext));
+        return new CommandsToString().proceed(visit);
     }
 }

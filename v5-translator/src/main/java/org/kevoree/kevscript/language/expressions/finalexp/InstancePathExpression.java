@@ -9,6 +9,7 @@ public class InstancePathExpression implements FinalExpression {
 
     public final FinalExpression node;
     public final FinalExpression component;
+    private boolean exported;
 
     public InstancePathExpression(FinalExpression component) {
         this(null, component);
@@ -23,5 +24,15 @@ public class InstancePathExpression implements FinalExpression {
     @Override
     public String toText() {
         throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public boolean isExported() {
+        return this.exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 }

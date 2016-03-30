@@ -11,6 +11,7 @@ import java.util.Map;
 public class ObjectDeclExpression implements FinalExpression {
 
     public Map<String, FinalExpression> values = new HashMap<>();
+    private boolean exported;
 
     public Expression put(String key, FinalExpression value) {
         return values.put(key, value);
@@ -29,5 +30,15 @@ public class ObjectDeclExpression implements FinalExpression {
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean isExported() {
+        return this.exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 }

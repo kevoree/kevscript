@@ -70,7 +70,7 @@ public class Context {
         return null;
     }
 
-    private Map<String, FinalExpression> getInheritedContext() {
+    public Map<String, FinalExpression> getInheritedContext() {
         final Map<String, FinalExpression> ret = new HashMap<>();
         if (this.parentContext != null) {
             ret.putAll(this.parentContext.getInheritedContext());
@@ -101,5 +101,9 @@ public class Context {
             throw new NameCollisionException(identifier);
         }
         this.mapIdentifiers.put(identifier, expression);
+    }
+
+    public String getBasePath() {
+        return this.parentContext.getBasePath();
     }
 }

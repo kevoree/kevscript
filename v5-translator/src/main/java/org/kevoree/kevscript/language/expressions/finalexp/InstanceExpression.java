@@ -10,6 +10,7 @@ public class InstanceExpression implements FinalExpression {
     public final String instanceTypeDefName;
     public final VersionExpression instanceTypeDefVersion;
     public final Expression instanceDeployUnits;
+    private boolean exported;
 
     public InstanceExpression(final String instanceName, final String instanceTypeDefName, final VersionExpression instanceTypeDefVersion, final Expression instanceDeployUnits) {
         this.instanceName = instanceName;
@@ -21,5 +22,15 @@ public class InstanceExpression implements FinalExpression {
     @Override
     public String toText() {
         return instanceName;
+    }
+
+    @Override
+    public boolean isExported() {
+        return this.exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 }

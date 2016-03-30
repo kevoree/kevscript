@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -13,17 +14,24 @@ import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
+import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionNativeExpression;
+import org.kevoree.kevscript.language.utils.StringUtils;
+import org.kevoree.kevscript.language.utils.UrlDownloader;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
 
@@ -34,15 +42,30 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     private final Context context;
     private final KevscriptHelper helper;
+    private final ImportsStore importsStore;
 
-    public KevscriptVisitor() {
-        this.context = new RootContext();
+    public KevscriptVisitor(final String basePath) {
+        this.context = new RootContext(basePath);
         this.helper = new KevscriptHelper(this.context);
+        this.importsStore = new ImportsStore();
     }
 
     public KevscriptVisitor(final Context context) {
         this.context = new Context(context);
         this.helper = new KevscriptHelper(this.context);
+        this.importsStore = new ImportsStore();
+    }
+
+    public KevscriptVisitor(final ImportsStore importsStore, final String basePath) {
+        this.context = new RootContext(basePath);
+        this.helper = new KevscriptHelper(this.context);
+        this.importsStore = importsStore;
+    }
+
+    public KevscriptVisitor(final Context context, final ImportsStore importsStore) {
+        this.context = context;
+        this.helper = new KevscriptHelper(this.context);
+        this.importsStore = importsStore;
     }
 
     @Override
@@ -240,6 +263,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitLetDecl(final LetDeclContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         final FinalExpression res = expressionVisitor.visit(ctx.val);
+        res.setExported(ctx.EXPORT() != null);
         this.context.addExpression(ctx.basic_identifier().getText(), res);
         return expressionVisitor.aggregatedFunctionsCommands;
     }
@@ -344,6 +368,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitFuncDecl(final FuncDeclContext ctx) {
 
+        final boolean exported = ctx.EXPORT() != null;
         if (ctx.NATIVE() == null) {
             final FunctionExpression functionExpression = new FunctionExpression();
             if (ctx.parameters != null) {
@@ -352,6 +377,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 }
             }
             functionExpression.setFunctionBody(ctx.funcBody());
+            functionExpression.setExported(exported);
             this.context.addExpression(ctx.functionName.getText(), functionExpression);
         } else {
             final FunctionNativeExpression functionNativeExpression = new FunctionNativeExpression();
@@ -363,6 +389,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
             final String text = ctx.SOURCE_CODE().getText();
             functionNativeExpression.setFunctionBody(text.substring(4, text.length() - 4));
+            functionNativeExpression.setExported(exported);
             this.context.addExpression(ctx.functionName.getText(), functionNativeExpression);
         }
 
@@ -461,20 +488,83 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     @Override
-    public Commands visitImportDecl(ImportDeclContext ctx) {
-        final String aCtxresourceText = ctx.resource.getText();
-        final String pathText = aCtxresourceText.substring(1, aCtxresourceText.length() - 1);
-        try {
-            final URL url = new URL(pathText);
-            //url.
-        } catch (MalformedURLException e) {
-            final File file = new File(pathText);
-            if (file.exists()) {
+    public Commands visitImportDecl(final ImportDeclContext ctx) {
+        final String text = ctx.resource.getText();
+        final Context importedContext = loadContext(text);
 
-            } else {
-                // TODO throw ressource not found exception
+        final String qualifier;
+        if(ctx.AS() != null) {
+            qualifier = ctx.basic_identifier().getText() + ".";
+        } else {
+            qualifier = "";
+        }
+
+        // TODO look for required components in the parsed script.
+        final Map<String, FinalExpression> inheritedContext = importedContext.getInheritedContext();
+        if(ctx.qualifiers == null) {
+            // TODO import everything
+            for(Map.Entry<String, FinalExpression> entry: inheritedContext.entrySet()) {
+                final FinalExpression expression = entry.getValue();
+                if(expression.isExported()) {
+                    this.context.addExpression(qualifier + entry.getKey(), expression);
+                }
+            }
+        } else {
+            // import only required elements
+            for(final Basic_identifierContext a: ctx.qualifiers.basic_identifier()) {
+                final String key = a.getText();
+                if(inheritedContext.containsKey(key)) {
+                    final FinalExpression expression = inheritedContext.get(key);
+                    if(expression.isExported()) {
+                        this.context.addExpression(qualifier + key, expression);
+                    }
+                }
             }
         }
+
         return new Commands();
+    }
+
+    /**
+     * Load the context for the required script.
+     * Either from the import store if the same script had already been asked by another script
+     * or interpret it and memoize the resulting context.
+     * @param resourcePath
+     */
+    private Context loadContext(String resourcePath) {
+        final Context importedContext;
+        if(this.importsStore.containsKey(resourcePath)) {
+            importedContext = this.importsStore.get(resourcePath);
+        } else {
+            final String res = getScriptFromResourcePath(resourcePath, this.context.getBasePath());
+            final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(this.importsStore, this.context.getBasePath());
+            new KevscriptInterpreter().interpret(res, kevscriptVisitor);
+            importedContext = kevscriptVisitor.context;
+            this.importsStore.put(resourcePath, context);
+        }
+        return importedContext;
+    }
+
+    private String getScriptFromResourcePath(final String resourcePath, String basePath) {
+        final String pathText = resourcePath.substring(1, resourcePath.length() - 1);
+        String res;
+        try {
+            final URL url = new URL(pathText);
+            res = new UrlDownloader().saveUrl(url);
+        } catch (MalformedURLException e) {
+            final File file = new File(new File(basePath), pathText);
+            if (file.exists()) {
+                try {
+                    res = StringUtils.join(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8), "\n");
+                } catch (IOException e1) {
+                    throw new RuntimeException(e1);
+                }
+            } else {
+                throw new ResourceNotFoundException(pathText);
+            }
+        } catch (IOException e) {
+            throw  new RuntimeException(e);
+        }
+        return res;
     }
 }

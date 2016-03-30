@@ -16,12 +16,12 @@ public class UrlDownloaderTest {
 
 
     private final UrlDownloader urlDownloader = new UrlDownloader();
-    private final HttpServer httpServer = new HttpServer(8080);
+    private HttpServer httpServer;
 
     @Before
     public void setUp() throws Exception {
+        this.httpServer = new HttpServer(8080, "url_downloader_resources");
         this.httpServer.buildAndStartServer();
-
     }
 
     @Test

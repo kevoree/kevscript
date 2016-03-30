@@ -17,9 +17,11 @@ public class HttpServer {
 
     private final int port;
     private Undertow server;
+    private final String path;
 
-    public HttpServer(int port) {
+    public HttpServer(final int port, final String path) {
         this.port = port;
+        this.path = path;
     }
 
     public void buildAndStartServer() {
@@ -35,7 +37,7 @@ public class HttpServer {
     }
 
     private File getFileFromURL() {
-        URL url = this.getClass().getClassLoader().getResource("url_downloader_resources");
+        URL url = this.getClass().getClassLoader().getResource(path);
         File file = null;
         try {
             file = new File(url.toURI());

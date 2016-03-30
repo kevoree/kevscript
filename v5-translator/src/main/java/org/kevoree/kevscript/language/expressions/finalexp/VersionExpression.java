@@ -5,6 +5,7 @@ package org.kevoree.kevscript.language.expressions.finalexp;
  */
 public class VersionExpression implements FinalExpression {
     public final long version;
+    private boolean exported;
 
     public VersionExpression(long version) {
         this.version = version;
@@ -13,5 +14,15 @@ public class VersionExpression implements FinalExpression {
     @Override
     public String toText() {
         return String.valueOf(version);
+    }
+
+    @Override
+    public boolean isExported() {
+        return this.exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 }

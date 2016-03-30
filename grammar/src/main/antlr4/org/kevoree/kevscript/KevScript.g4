@@ -128,7 +128,7 @@ funcDecl
     ;
 
 importDecl
-    : IMPORT (qualifiers=varIdentifierList FROM)? resource=string ('as' basic_identifier)?
+    : IMPORT (qualifiers=varIdentifierList FROM)? resource=string (AS basic_identifier)?
     ;
 
 funcBody
@@ -236,6 +236,7 @@ FOR : 'for' ;
 IN : 'in' ;
 INSTANCE: 'instance';
 ADD : 'add' ;
+AS : 'as' ;
 REMOVE : 'remove' ;
 START : 'start' ;
 STOP : 'stop' ;

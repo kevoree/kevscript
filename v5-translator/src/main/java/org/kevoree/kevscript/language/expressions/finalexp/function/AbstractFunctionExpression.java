@@ -10,6 +10,13 @@ import java.util.List;
  */
 public abstract class AbstractFunctionExpression<U> implements FinalExpression {
 
+
+    private boolean exported;
+
+    public AbstractFunctionExpression() {
+        this.exported = false;
+    }
+
     private final List<String> params = new ArrayList<>();
     private U functionBody;
 
@@ -40,5 +47,15 @@ public abstract class AbstractFunctionExpression<U> implements FinalExpression {
 
     public List<String> getParameters() {
         return params;
+    }
+
+    @Override
+    public boolean isExported() {
+        return exported;
+    }
+
+    @Override
+    public void setExported(boolean exported) {
+        this.exported = exported;
     }
 }

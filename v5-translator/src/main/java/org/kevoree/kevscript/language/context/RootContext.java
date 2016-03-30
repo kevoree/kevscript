@@ -10,6 +10,13 @@ import java.util.Map;
  * Created by mleduc on 29/03/16.
  */
 public class RootContext extends Context {
+    private final String basePath;
+
+    public RootContext(final String basePath) {
+        super();
+        this.basePath = basePath;
+    }
+
     public void addExternalExpression(final String identifier, final FinalExpression expression) {
 
         if (expression instanceof ArrayDeclExpression) {
@@ -25,5 +32,10 @@ public class RootContext extends Context {
             }
         }
         basicAddExpression('&' + identifier, expression);
+    }
+
+    @Override
+    public String getBasePath() {
+        return this.basePath;
     }
 }
