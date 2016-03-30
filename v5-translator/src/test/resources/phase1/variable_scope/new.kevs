@@ -1,0 +1,7 @@
+let x = "a"
+
+function b() {
+    set u:v#w = x // x should be visible. Since x is not mutable it can safely be accessed.
+}
+
+b()

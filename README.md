@@ -5,8 +5,6 @@ For the KevScript v5, look [here](https://github.com/dukeboard/kevoree/tree/mast
 
 # TODO
 List of missing features :
- * native functions;
- * context reference
  * import + export;
  * model-connector implem (+ renaming ?);
  * KMF integration (and consistency validation steps);

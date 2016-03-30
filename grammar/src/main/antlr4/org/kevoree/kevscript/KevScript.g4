@@ -1,7 +1,6 @@
 grammar KevScript;
 
 script
-
     : statement*
     ;
 statement
@@ -129,7 +128,7 @@ funcDecl
     ;
 
 importDecl
-    : IMPORT (qualifier=basic_identifier FROM)? resource=string
+    : IMPORT (qualifiers=varIdentifierList FROM)? resource=string ('as' basic_identifier)?
     ;
 
 funcBody

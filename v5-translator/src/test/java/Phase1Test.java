@@ -319,9 +319,20 @@ public class Phase1Test {
         interpretPhase1(pathToString("/phase1/unbind/test1.kevs"));
     }
 
-    private void analyzeDirectory(String add_0) throws IOException {
-        final String newStr = pathToString("/" + add_0 + "/new.kevs");
-        final String oldStr = pathToString("/" + add_0 + "/old.kevs");
+    @Test
+    public void testVariableScope() throws Exception {
+        analyzeDirectory("/phase1/variable_scope");
+    }
+
+    private void analyzeDirectory(final String path) throws IOException {
+        final String pathB;
+        if(path.startsWith("/")) {
+            pathB = path.substring(1);
+        } else {
+            pathB = path;
+        }
+        final String newStr = pathToString("/" + pathB + "/new.kevs");
+        final String oldStr = pathToString("/" + pathB + "/old.kevs");
         assertEquals(oldStr.trim(), interpretPhase1(newStr).trim());
     }
 
