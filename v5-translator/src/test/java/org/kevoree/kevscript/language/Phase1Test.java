@@ -1,8 +1,9 @@
+package org.kevoree.kevscript.language;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -278,6 +279,7 @@ public class Phase1Test {
     public void testEmptyScript() throws Exception {
         analyzeDirectory("phase1/empty_script");
     }
+
     @Test
     public void testFirstOrderFunction() throws Exception {
         analyzeDirectory("phase1/first_order_function");
@@ -336,7 +338,7 @@ public class Phase1Test {
 
     private void analyzeDirectory(final String path) throws IOException {
         final String pathB;
-        if(path.startsWith("/")) {
+        if (path.startsWith("/")) {
             pathB = path.substring(1);
         } else {
             pathB = path;

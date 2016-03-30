@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language.expressions.finalexp;
 
-import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 import org.kevoree.kevscript.language.utils.NotImplementedException;
 
 /**

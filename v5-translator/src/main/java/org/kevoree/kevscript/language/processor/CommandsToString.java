@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language.processor;
 
-import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -10,6 +9,7 @@ import org.kevoree.kevscript.language.commands.element.object.AbstractObjectElem
 import org.kevoree.kevscript.language.commands.element.object.ArrayElement;
 import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.commands.element.object.StringElement;
+import org.kevoree.kevscript.language.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

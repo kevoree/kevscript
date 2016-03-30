@@ -9,7 +9,7 @@ import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.commands.element.object.StringElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
 import org.kevoree.kevscript.language.visitors.ExpressionVisitor;

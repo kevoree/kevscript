@@ -1,3 +1,5 @@
+package org.kevoree.kevscript.language;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -38,7 +40,6 @@ public class Phase0Test {
     }
 
 
-
     private void analyzeDirectory(String add_0) throws IOException {
         final String newStr = pathToString("/" + add_0 + "/new.kevs");
         final String oldStr = pathToString("/" + add_0 + "/old.kevs");
@@ -51,7 +52,6 @@ public class Phase0Test {
         externalContext.addExternalExpression("default", expression);
         assertEquals(oldStr.trim(), interpretPhase1(externalContext, newStr).trim());
     }
-
 
 
     private String pathToString(String name1) throws IOException {

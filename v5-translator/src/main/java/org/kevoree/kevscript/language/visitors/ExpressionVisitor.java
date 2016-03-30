@@ -1,11 +1,5 @@
 package org.kevoree.kevscript.language.visitors;
 
-import org.kevoree.kevscript.language.expressions.finalexp.*;
-import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextIdentifierExpression;
-import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextRefExpression;
-import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
-import org.kevoree.kevscript.language.utils.JsEngine;
-import org.kevoree.kevscript.language.utils.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
@@ -13,9 +7,15 @@ import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.Expression;
+import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.AbstractFunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextIdentifierExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextRefExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
+import org.kevoree.kevscript.language.utils.JsEngine;
+import org.kevoree.kevscript.language.utils.NotImplementedException;
 import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
@@ -176,7 +176,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else {
             ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
         }
-        return  this.context.lookup(ret, FinalExpression.class);
+        return this.context.lookup(ret, FinalExpression.class);
     }
 
     private FinalExpression visitBasicIdentifier(final IdentifierContext ctx) {
@@ -211,9 +211,9 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
         final Commands commands = new Commands();
         final FinalExpression returnValue;
-        if(functionExpression instanceof FunctionExpression) {
+        if (functionExpression instanceof FunctionExpression) {
             final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(functionContext);
-            final FuncBodyContext functionBody = ((FunctionExpression)functionExpression).getFunctionBody();
+            final FuncBodyContext functionBody = ((FunctionExpression) functionExpression).getFunctionBody();
             for (final StatementContext a : functionBody.statement()) {
                 final Commands visit = kevscriptVisitor.visit(a);
                 commands.addAll(visit);
@@ -241,7 +241,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
                 sb.append(functionExpression.getFunctionBody());
                 sb.append("}");
                 List<String> parametersStr = new ArrayList<>();
-                for(ExpressionContext x : parameters) {
+                for (ExpressionContext x : parameters) {
                     parametersStr.add(x.getText().replaceAll("\"", ""));
                 }
                 final String result = JsEngine.getInstance().evaluateFunction(sb.toString(), functionName, parametersStr);

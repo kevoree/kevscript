@@ -14,13 +14,15 @@ import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionNativeExpression;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
@@ -50,7 +52,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     private Commands loopOverChildren(ParserRuleContext ctx) {
         final Commands c = new Commands();
-        if(ctx.children != null) {
+        if (ctx.children != null) {
             for (ParseTree child : ctx.children) {
                 final Commands visit = this.visit(child);
                 if (visit != null) {
@@ -102,7 +104,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         }
         return commands;
     }
-
 
 
     @Override
@@ -361,7 +362,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             }
 
             final String text = ctx.SOURCE_CODE().getText();
-            functionNativeExpression.setFunctionBody(text.substring(4, text.length()-4));
+            functionNativeExpression.setFunctionBody(text.substring(4, text.length() - 4));
             this.context.addExpression(ctx.functionName.getText(), functionNativeExpression);
         }
 
@@ -459,5 +460,21 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return new Commands().addCommand(new MetaRemoveCommand(instance, objectRefs));
     }
 
+    @Override
+    public Commands visitImportDecl(ImportDeclContext ctx) {
+        final String aCtxresourceText = ctx.resource.getText();
+        final String pathText = aCtxresourceText.substring(1, aCtxresourceText.length() - 1);
+        try {
+            final URL url = new URL(pathText);
+            //url.
+        } catch (MalformedURLException e) {
+            final File file = new File(pathText);
+            if (file.exists()) {
 
+            } else {
+                // TODO throw ressource not found exception
+            }
+        }
+        return new Commands();
+    }
 }

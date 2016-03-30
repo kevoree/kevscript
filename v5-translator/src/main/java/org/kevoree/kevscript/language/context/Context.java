@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.context;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.ArrayDeclExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;

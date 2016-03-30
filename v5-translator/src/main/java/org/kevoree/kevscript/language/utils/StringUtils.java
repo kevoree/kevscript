@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Created by mleduc on 30/03/16.
- *
+ * <p>
  * Simplified version of {@link org.apache.commons.lang3.StringUtils} for transpiling purpose.
  */
 public class StringUtils {
@@ -29,7 +29,7 @@ public class StringUtils {
         }
         final Object first = iterator.next();
         if (!iterator.hasNext()) {
-            @SuppressWarnings( "deprecation" ) // ObjectUtils.toString(Object) has been deprecated in 3.2
+            @SuppressWarnings("deprecation") // ObjectUtils.toString(Object) has been deprecated in 3.2
             final
             String result = Objects.toString(first);
             return result;

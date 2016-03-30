@@ -5,7 +5,7 @@ import static org.kevoree.kevscript.KevScriptParser.FuncBodyContext;
 /**
  * Created by mleduc on 22/03/16.
  */
-public class FunctionExpression  extends AbstractFunctionExpression<FuncBodyContext>  {
+public class FunctionExpression extends AbstractFunctionExpression<FuncBodyContext> {
 
 
     @Override
