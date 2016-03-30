@@ -35,12 +35,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     private final KevscriptHelper helper;
     private final ImportsStore importsStore;
 
-    public KevscriptVisitor(final String basePath) {
-        this.context = new RootContext(basePath);
-        this.helper = new KevscriptHelper(this.context);
-        this.importsStore = new ImportsStore();
-    }
-
     public KevscriptVisitor(final Context context) {
         this.context = new Context(context);
         this.helper = new KevscriptHelper(this.context);
@@ -49,12 +43,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     public KevscriptVisitor(final ImportsStore importsStore, final String basePath) {
         this.context = new RootContext(basePath);
-        this.helper = new KevscriptHelper(this.context);
-        this.importsStore = importsStore;
-    }
-
-    public KevscriptVisitor(final Context context, final ImportsStore importsStore) {
-        this.context = context;
         this.helper = new KevscriptHelper(this.context);
         this.importsStore = importsStore;
     }
@@ -482,16 +470,19 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitImportDecl(final ImportDeclContext ctx) {
         final String resourcePath = ctx.resource.getText();
         final Context importedContext = helper.loadContext(resourcePath, importsStore);
+        final Map<String, FinalExpression> inheritedContext = importedContext.getInheritedContext();
 
         final String qualifier;
         if (ctx.AS() != null) {
-            qualifier = ctx.basic_identifier().getText() + ".";
+            final String root = ctx.basic_identifier().getText();
+            this.context.addExpression(root, new NullExpression());
+            qualifier = root + ".";
+
         } else {
             qualifier = "";
         }
 
         // look for required components in the parsed script.
-        final Map<String, FinalExpression> inheritedContext = importedContext.getInheritedContext();
         if (ctx.qualifiers == null) {
             // import everything
             for (Map.Entry<String, FinalExpression> entry : inheritedContext.entrySet()) {

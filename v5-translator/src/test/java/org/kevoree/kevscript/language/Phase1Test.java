@@ -171,11 +171,58 @@ public class Phase1Test {
     }
 
     @Test
+    public void testImportByFilesNonQualifiedTest2() throws Exception {
+        analyzeDirectory("phase1/import_by_files/non_qualified/test2");
+    }
+
+    @Test
+    public void testImportByFilesQualifiedTest1() throws Exception {
+        analyzeDirectory("phase1/import_by_files/qualified/test1");
+    }
+
+    @Test
+    public void testImportByFilesQualifiedTest2() throws Exception {
+        analyzeDirectory("phase1/import_by_files/qualified/test2");
+    }
+
+    @Test
     public void testImportByFilesNonQualifiedError1() throws Exception {
         exception.expect(ResourceNotFoundException.class);
         exception.expectMessage("doesnotexists.kevs not found");
         final String basePath = "/phase1/import_by_files/";
         interpretPhase1(basePath, pathToString(basePath + "error1.kevs"));
+    }
+
+    @Test
+    public void testImportByFilesNonQualifiedNameColision1() throws Exception {
+        exception.expect(NameCollisionException.class);
+        exception.expectMessage("a already declared in this scope");
+        final String basePath = "/phase1/import_by_files/non_qualified/name_colision_1";
+        interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
+    }
+
+    @Test
+    public void testImportByFilesNonQualifiedNameColision2() throws Exception {
+        exception.expect(NameCollisionException.class);
+        exception.expectMessage("a already declared in this scope");
+        final String basePath = "/phase1/import_by_files/non_qualified/name_colision_2";
+        interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
+    }
+
+    @Test
+    public void testImportByFilesQualifiedNameColision1() throws Exception {
+        exception.expect(NameCollisionException.class);
+        exception.expectMessage("test already declared in this scope");
+        final String basePath = "/phase1/import_by_files/qualified/name_colision_1";
+        interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
+    }
+
+    @Test
+    public void testImportByFilesQualifiedNameColision2() throws Exception {
+        exception.expect(NameCollisionException.class);
+        exception.expectMessage("test already declared in this scope");
+        final String basePath = "/phase1/import_by_files/qualified/name_colision_2";
+        interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
     }
 
     @Test
@@ -186,6 +233,17 @@ public class Phase1Test {
         final String basePath = getClass().getResource(basePathS).getPath();
         interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
     }
+
+    @Test
+    public void testImportByFilesNonQualifiedImportButNotExported() throws Exception {
+        exception.expect(ImportException.class);
+        exception.expectMessage("a not found in \"dep.kevs\"");
+        final String basePathS = "/phase1/import_by_files/import_but_not_exported";
+        final String basePath = getClass().getResource(basePathS).getPath();
+        interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
+    }
+
+
 
     @Test
     public void testImportByHttpNonQualifiedTest1() throws Exception {

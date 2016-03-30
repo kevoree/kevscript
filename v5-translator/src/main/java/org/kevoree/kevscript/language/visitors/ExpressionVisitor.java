@@ -185,7 +185,12 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public FinalExpression visitFuncCall(final FuncCallContext ctx) {
-        final String functionName = ctx.basic_identifier().getText();
+        final String functionName;
+        if(ctx.basic_identifier().size() > 1) {
+            functionName = ctx.basic_identifier(0).getText() + "." + ctx.basic_identifier(1).getText();
+        } else {
+            functionName = ctx.basic_identifier(0).getText();
+        }
         final AbstractFunctionExpression functionExpression = this.context.lookupByStrKey(functionName, AbstractFunctionExpression.class);
 
         final Context functionContext = new Context(this.context);

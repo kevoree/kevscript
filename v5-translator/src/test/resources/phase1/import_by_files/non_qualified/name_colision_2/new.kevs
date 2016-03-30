@@ -1,0 +1,5 @@
+let a = "err"
+
+import "new1.kevs"
+
+a()

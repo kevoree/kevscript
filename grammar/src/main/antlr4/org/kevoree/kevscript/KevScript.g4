@@ -120,7 +120,7 @@ arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : basic_identifier L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
+    : basic_identifier (DOT basic_identifier)? L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
     ;
 funcDecl
     : EXPORT? FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET

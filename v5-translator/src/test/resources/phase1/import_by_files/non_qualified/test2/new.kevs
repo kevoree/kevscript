@@ -1,0 +1,3 @@
+import a from "new1.kevs"
+
+a()
