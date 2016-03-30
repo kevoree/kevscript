@@ -300,7 +300,7 @@ public class KevscriptHelper {
                 throw new ResourceNotFoundException(pathText);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ResourceNotFoundException(pathText);
         }
         return res;
     }

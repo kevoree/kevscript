@@ -187,6 +187,17 @@ public class Phase1Test {
     }
 
     @Test
+    public void testImportByHttpNonQualifiedError1() throws Exception {
+        final String basePath = "phase1/import_by_http/";
+        final HttpServer httpServer = new HttpServer(8080, basePath);
+        httpServer.buildAndStartServer();
+        exception.expect(ResourceNotFoundException.class);
+        exception.expectMessage("http://localhost:8080/doesnotexists.kevs not found");
+        interpretPhase1(basePath, pathToString("/"+basePath + "error1.kevs"));
+        httpServer.stop();
+    }
+
+    @Test
     public void testForFunctionReturn() throws Exception {
         analyzeDirectory("phase1/for_function_return");
     }
