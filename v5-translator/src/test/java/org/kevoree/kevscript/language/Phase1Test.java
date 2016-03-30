@@ -179,8 +179,17 @@ public class Phase1Test {
     }
 
     @Test
+    public void testImportByFilesNonQualifiedImportButDoesNotExists() throws Exception {
+        exception.expect(ImportException.class);
+        exception.expectMessage("a not found in \"dep.kevs\"");
+        final String basePathS = "/phase1/import_by_files/import_but_does_not_exists";
+        final String basePath = getClass().getResource(basePathS).getPath();
+        interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
+    }
+
+    @Test
     public void testImportByHttpNonQualifiedTest1() throws Exception {
-        final HttpServer httpServer = new HttpServer(8080, "phase1/import_by_http/non_qualified/test1/http");
+        final HttpServer httpServer = new HttpServer(8083, "phase1/import_by_http/non_qualified/test1/http");
         httpServer.buildAndStartServer();
         analyzeDirectory("phase1/import_by_files/non_qualified/test1");
         httpServer.stop();
@@ -190,11 +199,14 @@ public class Phase1Test {
     public void testImportByHttpNonQualifiedError1() throws Exception {
         final String basePath = "phase1/import_by_http/";
         final HttpServer httpServer = new HttpServer(8080, basePath);
-        httpServer.buildAndStartServer();
-        exception.expect(ResourceNotFoundException.class);
-        exception.expectMessage("http://localhost:8080/doesnotexists.kevs not found");
-        interpretPhase1(basePath, pathToString("/"+basePath + "error1.kevs"));
-        httpServer.stop();
+        try {
+            httpServer.buildAndStartServer();
+            exception.expect(ResourceNotFoundException.class);
+            exception.expectMessage("http://localhost:8080/doesnotexists.kevs not found");
+            interpretPhase1(basePath, pathToString("/" + basePath + "error1.kevs"));
+        } finally {
+            httpServer.stop();
+        }
     }
 
     @Test

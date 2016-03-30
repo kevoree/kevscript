@@ -480,8 +480,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitImportDecl(final ImportDeclContext ctx) {
-        final String text = ctx.resource.getText();
-        final Context importedContext = helper.loadContext(text, importsStore);
+        final String resourcePath = ctx.resource.getText();
+        final Context importedContext = helper.loadContext(resourcePath, importsStore);
 
         final String qualifier;
         if (ctx.AS() != null) {
@@ -509,10 +509,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     if (expression.isExported()) {
                         this.context.addExpression(qualifier + key, expression);
                     } else {
-                        throw new ImportException(key, ctx.resource.getText());
+                        throw new ImportException(key, resourcePath);
                     }
                 } else {
-                    throw new ImportException(key, ctx.resource.getText());
+                    throw new ImportException(key, resourcePath);
                 }
             }
         }
