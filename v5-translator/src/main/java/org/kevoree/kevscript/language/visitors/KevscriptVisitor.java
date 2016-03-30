@@ -490,7 +490,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitImportDecl(final ImportDeclContext ctx) {
         final String text = ctx.resource.getText();
-        final Context importedContext = loadContext(text);
+        final Context importedContext = helper.loadContext(text, importsStore);
 
         final String qualifier;
         if(ctx.AS() != null) {
@@ -525,46 +525,5 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return new Commands();
     }
 
-    /**
-     * Load the context for the required script.
-     * Either from the import store if the same script had already been asked by another script
-     * or interpret it and memoize the resulting context.
-     * @param resourcePath
-     */
-    private Context loadContext(String resourcePath) {
-        final Context importedContext;
-        if(this.importsStore.containsKey(resourcePath)) {
-            importedContext = this.importsStore.get(resourcePath);
-        } else {
-            final String res = getScriptFromResourcePath(resourcePath, this.context.getBasePath());
-            final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(this.importsStore, this.context.getBasePath());
-            new KevscriptInterpreter().interpret(res, kevscriptVisitor);
-            importedContext = kevscriptVisitor.context;
-            this.importsStore.put(resourcePath, context);
-        }
-        return importedContext;
-    }
 
-    private String getScriptFromResourcePath(final String resourcePath, String basePath) {
-        final String pathText = resourcePath.substring(1, resourcePath.length() - 1);
-        String res;
-        try {
-            final URL url = new URL(pathText);
-            res = new UrlDownloader().saveUrl(url);
-        } catch (MalformedURLException e) {
-            final File file = new File(new File(basePath), pathText);
-            if (file.exists()) {
-                try {
-                    res = StringUtils.join(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8), "\n");
-                } catch (IOException e1) {
-                    throw new RuntimeException(e1);
-                }
-            } else {
-                throw new ResourceNotFoundException(pathText);
-            }
-        } catch (IOException e) {
-            throw  new RuntimeException(e);
-        }
-        return res;
-    }
 }

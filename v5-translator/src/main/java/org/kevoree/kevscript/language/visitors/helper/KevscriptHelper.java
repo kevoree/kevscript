@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
 import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
 import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.commands.element.object.AbstractObjectElement;
@@ -8,12 +9,23 @@ import org.kevoree.kevscript.language.commands.element.object.ArrayElement;
 import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.commands.element.object.StringElement;
 import org.kevoree.kevscript.language.context.Context;
+import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
+import org.kevoree.kevscript.language.utils.StringUtils;
+import org.kevoree.kevscript.language.utils.UrlDownloader;
 import org.kevoree.kevscript.language.visitors.ExpressionVisitor;
+import org.kevoree.kevscript.language.visitors.ImportsStore;
+import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +259,49 @@ public class KevscriptHelper {
             instance1 = new InstanceElement(node, component);
         }
         return instance1;
+    }
+
+    /**
+     * Load the context for the required script.
+     * Either from the import store if the same script had already been asked by another script
+     * or interpret it and memoize the resulting context.
+     * @param resourcePath
+     */
+    public Context loadContext(String resourcePath, ImportsStore importsStore) {
+        final Context importedContext;
+        if(importsStore.containsKey(resourcePath)) {
+            importedContext = importsStore.get(resourcePath);
+        } else {
+            final String res = getScriptFromResourcePath(resourcePath, this.context.getBasePath());
+            final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(importsStore, this.context.getBasePath());
+            new KevscriptInterpreter().interpret(res, kevscriptVisitor);
+            importedContext = kevscriptVisitor.getContext();
+            importsStore.put(resourcePath, context);
+        }
+        return importedContext;
+    }
+
+    private String getScriptFromResourcePath(final String resourcePath, String basePath) {
+        final String pathText = resourcePath.substring(1, resourcePath.length() - 1);
+        String res;
+        try {
+            final URL url = new URL(pathText);
+            res = new UrlDownloader().saveUrl(url);
+        } catch (MalformedURLException e) {
+            final File file = new File(new File(basePath), pathText);
+            if (file.exists()) {
+                try {
+                    res = StringUtils.join(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8), "\n");
+                } catch (IOException e1) {
+                    throw new RuntimeException(e1);
+                }
+            } else {
+                throw new ResourceNotFoundException(pathText);
+            }
+        } catch (IOException e) {
+            throw  new RuntimeException(e);
+        }
+        return res;
     }
 
 
