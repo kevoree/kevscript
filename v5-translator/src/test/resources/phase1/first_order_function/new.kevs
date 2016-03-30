@@ -1,0 +1,9 @@
+function function1(a) {
+    return a()
+}
+
+function function2() {
+    set u:v#w = "d"
+}
+
+function1(function2)

@@ -1,4 +1,4 @@
-package org.kevoree.kevscript.language.expressions;
+package org.kevoree.kevscript.language.expressions.finalexp;
 
 /**
  * Created by mleduc on 15/03/16.

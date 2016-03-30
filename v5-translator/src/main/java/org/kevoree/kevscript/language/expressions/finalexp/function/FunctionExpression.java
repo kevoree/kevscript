@@ -1,4 +1,4 @@
-package org.kevoree.kevscript.language.expressions.function;
+package org.kevoree.kevscript.language.expressions.finalexp.function;
 
 import static org.kevoree.kevscript.KevScriptParser.FuncBodyContext;
 

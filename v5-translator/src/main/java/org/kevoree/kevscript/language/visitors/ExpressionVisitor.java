@@ -1,6 +1,9 @@
 package org.kevoree.kevscript.language.visitors;
 
-import org.kevoree.kevscript.language.expressions.function.FunctionNativeExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.*;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextIdentifierExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextRefExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
 import org.kevoree.kevscript.language.utils.JsEngine;
 import org.kevoree.kevscript.language.utils.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
@@ -11,8 +14,8 @@ import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
-import org.kevoree.kevscript.language.expressions.function.AbstractFunctionExpression;
-import org.kevoree.kevscript.language.expressions.function.FunctionExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.function.AbstractFunctionExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
@@ -167,13 +170,13 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     private FinalExpression visitFunctionCall(IdentifierContext ctx) {
         Expression ret;
-        final FinalExpression left = this.visit(ctx.funcCall());
+        final FinalExpression left = this.visitFuncCall(ctx.funcCall());
         if (ctx.DOT() == null) {
             ret = left;
         } else {
             ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
         }
-        return this.context.lookup(ret, FinalExpression.class);
+        return  this.context.lookup(ret, FinalExpression.class);
     }
 
     private FinalExpression visitBasicIdentifier(final IdentifierContext ctx) {
@@ -219,6 +222,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             if (functionBody.returnStatement() != null) {
                 final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
                 final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
+                commands.addAll(expressionVisitor.aggregatedFunctionsCommands);
                 returnValue = returnRes;
             } else {
                 returnValue = null;

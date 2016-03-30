@@ -274,6 +274,11 @@ public class Phase1Test {
     }
 
     @Test
+    public void testFirstOrderFunction() throws Exception {
+        analyzeDirectory("phase1/first_order_function");
+    }
+
+    @Test
     public void testSetError1() throws Exception {
         exception.expect(WrongTypeException.class);
         exception.expectMessage("conflict is expected to be of type StringExpression");

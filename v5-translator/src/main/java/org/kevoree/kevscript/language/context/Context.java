@@ -4,6 +4,10 @@ import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.finalexp.ArrayDeclExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.NonFinalExpression;
 
 import java.util.HashMap;
 import java.util.Map;

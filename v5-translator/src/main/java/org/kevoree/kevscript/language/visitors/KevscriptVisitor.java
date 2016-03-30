@@ -15,8 +15,9 @@ import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
-import org.kevoree.kevscript.language.expressions.function.FunctionExpression;
-import org.kevoree.kevscript.language.expressions.function.FunctionNativeExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.*;
+import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionNativeExpression;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
 import java.util.ArrayList;

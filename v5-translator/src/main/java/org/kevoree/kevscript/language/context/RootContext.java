@@ -1,8 +1,8 @@
 package org.kevoree.kevscript.language.context;
 
-import org.kevoree.kevscript.language.expressions.ArrayDeclExpression;
-import org.kevoree.kevscript.language.expressions.FinalExpression;
-import org.kevoree.kevscript.language.expressions.ObjectDeclExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ArrayDeclExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 
 import java.util.Map;
 

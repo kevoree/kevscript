@@ -1,4 +1,4 @@
-package org.kevoree.kevscript.language.expressions;
+package org.kevoree.kevscript.language.expressions.nonfinalexp;
 
 import org.kevoree.kevscript.language.utils.StringUtils;
 

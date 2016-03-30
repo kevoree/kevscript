@@ -1,6 +1,6 @@
-package org.kevoree.kevscript.language.expressions.function;
+package org.kevoree.kevscript.language.expressions.finalexp.function;
 
-import org.kevoree.kevscript.language.expressions.FinalExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,6 @@
-package org.kevoree.kevscript.language.expressions;
+package org.kevoree.kevscript.language.expressions.nonfinalexp;
+
+import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextIdentifierExpression;
 
 /**
  * Created by mleduc on 15/03/16.

@@ -1,4 +1,6 @@
-package org.kevoree.kevscript.language.expressions;
+package org.kevoree.kevscript.language.expressions.finalexp;
+
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 
 /**
  * Created by mleduc on 02/03/16.

@@ -1,4 +1,7 @@
-package org.kevoree.kevscript.language.expressions;
+package org.kevoree.kevscript.language.expressions.finalexp;
+
+import org.kevoree.kevscript.language.expressions.Expression;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 
 import java.util.HashMap;
 import java.util.Map;
