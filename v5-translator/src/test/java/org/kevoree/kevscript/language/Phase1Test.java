@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.RootContext;
-import org.kevoree.kevscript.language.excpt.NameCollisionException;
-import org.kevoree.kevscript.language.excpt.PortPathNotFound;
-import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
-import org.kevoree.kevscript.language.excpt.WrongTypeException;
+import org.kevoree.kevscript.language.excpt.*;
 import org.kevoree.kevscript.language.processor.CommandsToString;
 import org.kevoree.kevscript.language.utils.HttpServer;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
@@ -171,6 +168,14 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedTest1() throws Exception {
         analyzeDirectory("phase1/import_by_files/non_qualified/test1");
+    }
+
+    @Test
+    public void testImportByFilesNonQualifiedError1() throws Exception {
+        exception.expect(ResourceNotFoundException.class);
+        exception.expectMessage("doesnotexists.kevs not found");
+        final String basePath = "/phase1/import_by_files/";
+        interpretPhase1(basePath, pathToString(basePath + "error1.kevs"));
     }
 
     @Test

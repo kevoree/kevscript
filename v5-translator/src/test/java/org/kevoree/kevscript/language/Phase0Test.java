@@ -1,19 +1,13 @@
 package org.kevoree.kevscript.language;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.kevoree.kevscript.KevScriptLexer;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.StringExpression;
-import org.kevoree.kevscript.language.listener.DescriptiveErrorListener;
 import org.kevoree.kevscript.language.processor.CommandsToString;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
 

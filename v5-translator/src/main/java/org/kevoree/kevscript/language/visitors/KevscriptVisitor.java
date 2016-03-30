@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;
@@ -12,24 +11,16 @@ import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
 import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
+import org.kevoree.kevscript.language.excpt.ImportException;
 import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
-import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionNativeExpression;
-import org.kevoree.kevscript.language.utils.StringUtils;
-import org.kevoree.kevscript.language.utils.UrlDownloader;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -493,31 +484,35 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Context importedContext = helper.loadContext(text, importsStore);
 
         final String qualifier;
-        if(ctx.AS() != null) {
+        if (ctx.AS() != null) {
             qualifier = ctx.basic_identifier().getText() + ".";
         } else {
             qualifier = "";
         }
 
-        // TODO look for required components in the parsed script.
+        // look for required components in the parsed script.
         final Map<String, FinalExpression> inheritedContext = importedContext.getInheritedContext();
-        if(ctx.qualifiers == null) {
-            // TODO import everything
-            for(Map.Entry<String, FinalExpression> entry: inheritedContext.entrySet()) {
+        if (ctx.qualifiers == null) {
+            // import everything
+            for (Map.Entry<String, FinalExpression> entry : inheritedContext.entrySet()) {
                 final FinalExpression expression = entry.getValue();
-                if(expression.isExported()) {
+                if (expression.isExported()) {
                     this.context.addExpression(qualifier + entry.getKey(), expression);
                 }
             }
         } else {
             // import only required elements
-            for(final Basic_identifierContext a: ctx.qualifiers.basic_identifier()) {
+            for (final Basic_identifierContext a : ctx.qualifiers.basic_identifier()) {
                 final String key = a.getText();
-                if(inheritedContext.containsKey(key)) {
+                if (inheritedContext.containsKey(key)) {
                     final FinalExpression expression = inheritedContext.get(key);
-                    if(expression.isExported()) {
+                    if (expression.isExported()) {
                         this.context.addExpression(qualifier + key, expression);
+                    } else {
+                        throw new ImportException(key, ctx.resource.getText());
                     }
+                } else {
+                    throw new ImportException(key, ctx.resource.getText());
                 }
             }
         }

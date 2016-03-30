@@ -265,11 +265,12 @@ public class KevscriptHelper {
      * Load the context for the required script.
      * Either from the import store if the same script had already been asked by another script
      * or interpret it and memoize the resulting context.
+     *
      * @param resourcePath
      */
     public Context loadContext(String resourcePath, ImportsStore importsStore) {
         final Context importedContext;
-        if(importsStore.containsKey(resourcePath)) {
+        if (importsStore.containsKey(resourcePath)) {
             importedContext = importsStore.get(resourcePath);
         } else {
             final String res = getScriptFromResourcePath(resourcePath, this.context.getBasePath());
@@ -299,7 +300,7 @@ public class KevscriptHelper {
                 throw new ResourceNotFoundException(pathText);
             }
         } catch (IOException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         return res;
     }
