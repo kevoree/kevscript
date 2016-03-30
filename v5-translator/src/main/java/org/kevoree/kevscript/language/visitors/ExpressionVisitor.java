@@ -1,6 +1,8 @@
 package org.kevoree.kevscript.language.visitors;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.kevoree.kevscript.language.expressions.function.FunctionNativeExpression;
+import org.kevoree.kevscript.language.utils.JsEngine;
+import org.kevoree.kevscript.language.utils.NotImplementedException;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
@@ -9,8 +11,12 @@ import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.function.AbstractFunctionExpression;
+import org.kevoree.kevscript.language.expressions.function.FunctionExpression;
+import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,7 +183,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     @Override
     public FinalExpression visitFuncCall(final FuncCallContext ctx) {
         final String functionName = ctx.basic_identifier().getText();
-        final FunctionExpression functionExpression = this.context.lookupByStrKey(functionName, FunctionExpression.class);
+        final AbstractFunctionExpression functionExpression = this.context.lookupByStrKey(functionName, AbstractFunctionExpression.class);
 
         final Context functionContext = new Context(this.context);
         int parameterCount = 0;
@@ -188,7 +194,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else {
             parameters = new ArrayList<>();
         }
-        final int definedNbr = functionExpression.getParamtersSize();
+        final int definedNbr = functionExpression.getParametersSize();
         final int callerNbr = parameters.size();
         if (callerNbr != definedNbr) {
             throw new WrongNumberOfArguments(functionName, definedNbr, callerNbr);
@@ -200,21 +206,48 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
 
-        final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(functionContext);
         final Commands commands = new Commands();
-        final FuncBodyContext functionBody = functionExpression.getFunctionBody();
-        for (final StatementContext a : functionBody.statement()) {
-            final Commands visit = kevscriptVisitor.visit(a);
-            commands.addAll(visit);
-        }
-
         final FinalExpression returnValue;
-        if (functionBody.returnStatement() != null) {
-            final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
-            final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
-            returnValue = returnRes;
+        if(functionExpression instanceof FunctionExpression) {
+            final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(functionContext);
+            final FuncBodyContext functionBody = ((FunctionExpression)functionExpression).getFunctionBody();
+            for (final StatementContext a : functionBody.statement()) {
+                final Commands visit = kevscriptVisitor.visit(a);
+                commands.addAll(visit);
+            }
+
+            if (functionBody.returnStatement() != null) {
+                final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
+                final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
+                returnValue = returnRes;
+            } else {
+                returnValue = null;
+            }
         } else {
-            returnValue = null;
+            // TODO interpreting javascript + handling return value
+            // CF : https://github.com/kevoree/kevoree-library/tree/master/java/org.kevoree.library.java.avatarjs
+            final JsEngine jsEngine = new JsEngine();
+            try {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("function ");
+                sb.append(functionName);
+                sb.append("(");
+                sb.append(StringUtils.join(functionExpression.getParameters(), ", "));
+                sb.append(")");
+                sb.append("{");
+                sb.append(functionExpression.getFunctionBody());
+                sb.append("}");
+                List<String> parametersStr = new ArrayList<>();
+                for(ExpressionContext x : parameters) {
+                    parametersStr.add(x.getText().replaceAll("\"", ""));
+                }
+                final String result = jsEngine.evaluateFunction(sb.toString(), functionName, parametersStr);
+                returnValue = new StringExpression(result);
+            } catch (ScriptException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         this.aggregatedFunctionsCommands.addAll(commands);

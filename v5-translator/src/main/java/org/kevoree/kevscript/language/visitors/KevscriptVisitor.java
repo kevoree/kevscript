@@ -15,6 +15,8 @@ import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
 import org.kevoree.kevscript.language.excpt.PortPathNotFound;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.*;
+import org.kevoree.kevscript.language.expressions.function.FunctionExpression;
+import org.kevoree.kevscript.language.expressions.function.FunctionNativeExpression;
 import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 
 import java.util.ArrayList;
@@ -407,7 +409,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     functionNativeExpression.addParam(param.getText());
                 }
             }
-            functionNativeExpression.setFunctionBody(ctx.funcBody().getText());
+
+            final String text = ctx.SOURCE_CODE().getText();
+            functionNativeExpression.setFunctionBody(text.substring(4, text.length()-4));
             this.context.addExpression(ctx.functionName.getText(), functionNativeExpression);
         }
 
@@ -431,7 +435,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final DictionaryPathExpression instanceDicoRef = expressionVisitor.visitDictionaryPath(ctx.dictionaryPath());
         final RootInstanceElement node = helper.convertPortPathToNodeElement(instanceDicoRef.instancePathExpression);
         final RootInstanceElement component = helper.convertPortPathToComponentElement(instanceDicoRef.instancePathExpression);
-        final FinalExpression value = expressionVisitor.visit(ctx.val);
+        final FinalExpression value = expressionVisitor.visitExpression(ctx.val);
         final DictionaryElement dictionaryElement = new DictionaryElement(instanceDicoRef.dicoName, instanceDicoRef.frag, new InstanceElement(node, component));
         final SetCommand setCommand = new SetCommand(dictionaryElement, value.toText());
         return new Commands().addCommand(setCommand);

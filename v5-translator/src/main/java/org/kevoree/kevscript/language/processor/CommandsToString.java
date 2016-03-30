@@ -1,6 +1,6 @@
 package org.kevoree.kevscript.language.processor;
 
-import org.apache.commons.lang3.StringUtils;
+import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.commands.element.DictionaryElement;
 import org.kevoree.kevscript.language.commands.element.InstanceElement;

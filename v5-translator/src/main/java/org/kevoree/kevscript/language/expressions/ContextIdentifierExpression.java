@@ -1,6 +1,6 @@
 package org.kevoree.kevscript.language.expressions;
 
-import org.apache.commons.lang3.StringUtils;
+import org.kevoree.kevscript.language.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

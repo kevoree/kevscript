@@ -1,0 +1,5 @@
+function native test(a, b) {{{
+    return Math.pow(a,b)
+}}}
+
+set a#b = test("3", "4")

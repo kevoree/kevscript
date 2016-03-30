@@ -97,6 +97,11 @@ public class Phase1Test {
     }
 
     @Test
+    public void testNativeFunctionTest1() throws Exception {
+        analyzeDirectory("phase1/native_function/test1");
+    }
+
+    @Test
     public void testNetInitTest1() throws Exception {
         analyzeDirectory("phase1/net-init/test1");
     }
