@@ -77,16 +77,6 @@ public class KevscriptHelper {
         return nodeInstanceExpression;
     }
 
-    public List<RootInstanceElement> getInstancesFromInstancePathContext(final KevScriptParser.InstancePathContext instancePathContext) {
-
-        final List<RootInstanceElement> ret = new ArrayList<>();
-        for (final IdentifierContext a : instancePathContext.identifier()) {
-            ret.add(this.getInstanceFromIdentifierContext(a));
-        }
-
-        return ret;
-    }
-
     public String getPortNameFromIdentifier(final Expression portNameIdentifier) {
         final StringExpression portNameExpr = context.lookup(portNameIdentifier, StringExpression.class);
         if (portNameExpr != null) {
@@ -149,14 +139,16 @@ public class KevscriptHelper {
     }
 
     public InstanceElement getInstanceElement(KevScriptParser.InstancePathContext instancePathContext) {
-        final List<RootInstanceElement> listInstances = this.getInstancesFromInstancePathContext(instancePathContext);
         final InstanceElement instance;
-        if (listInstances.size() == 1) {
-            final RootInstanceElement childInstance = listInstances.get(0);
-            instance = new InstanceElement(childInstance);
+        if (instancePathContext.identifier().size() == 1) {
+            // direct reference to a component, must be in the current scope
+            final RootInstanceElement componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
+            instance = new InstanceElement(componentInstance);
+
         } else {
-            final RootInstanceElement nodeInstance = listInstances.get(0);
-            final RootInstanceElement componentInstance = listInstances.get(1);
+            // reference to a component via its node, might be found in the context or later in the CDN
+            final RootInstanceElement nodeInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
+            final RootInstanceElement componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(1));
             instance = new InstanceElement(nodeInstance, componentInstance);
         }
         return instance;
@@ -192,4 +184,70 @@ public class KevscriptHelper {
         }
         return value;
     }
+
+    public List<String> getListObjectRefs(KevScriptParser.IdentifierListContext identifierListContext, IdentifierContext identifierContext) {
+        final List<String> objectRefs = new ArrayList<>();
+        if (identifierListContext != null) {
+            for (final IdentifierContext identifier : identifierListContext.identifier()) {
+                objectRefs.add(identifier.getText());
+            }
+        } else {
+            objectRefs.add(identifierContext.getText());
+        }
+        return objectRefs;
+    }
+
+    public ObjectElement getObjectByDeclOrIdentifier(IdentifierContext identifierContext, KevScriptParser.ObjectDeclContext objectDeclContext) {
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final FinalExpression res;
+        if (identifierContext != null) {
+            res = expressionVisitor.visitIdentifier(identifierContext);
+        } else {
+            res = expressionVisitor.visitObjectDecl(objectDeclContext);
+        }
+
+        final ObjectElement metas;
+        if (res instanceof ObjectDeclExpression) {
+            metas = this.convertObjectDeclToObjectElement((ObjectDeclExpression) res);
+        } else {
+            throw new WrongTypeException(identifierContext.getText(), ObjectDeclExpression.class);
+        }
+        return metas;
+    }
+
+    public RootInstanceElement convertInstanceExpressionToRootInstancementElement(InstanceExpression componentExpression) {
+        final String instanceName = componentExpression.instanceName;
+        final String instanceTypeDefName = componentExpression.instanceTypeDefName;
+        final Long version = this.convertVersionToLong(componentExpression.instanceTypeDefVersion);
+        return new RootInstanceElement(instanceName, instanceTypeDefName, version);
+    }
+
+
+    public RootInstanceElement identifierContextToRootInstance(IdentifierContext identifier) {
+        final InstanceExpression parent = context.lookup(new ExpressionVisitor(context).visitIdentifier(identifier), InstanceExpression.class);
+        final RootInstanceElement ret;
+        if (parent != null) {
+            ret = new RootInstanceElement(parent.instanceName, parent.instanceTypeDefName, this.convertVersionToLong(parent.instanceTypeDefVersion));
+        } else {
+            ret = new RootInstanceElement(identifier.getText(), null, null);
+        }
+
+        return ret;
+    }
+
+    public InstanceElement instancePathToInstanceElement(InstancePathExpression instancePath) {
+        InstanceElement instance1;
+        if (instancePath.node == null) {
+            final InstanceExpression componentExpression = context.lookup(instancePath.component, InstanceExpression.class);
+            final RootInstanceElement component = this.convertInstanceExpressionToRootInstancementElement(componentExpression);
+            instance1 = new InstanceElement(component);
+        } else {
+            final RootInstanceElement node = this.convertPortPathToNodeElement(instancePath);
+            final RootInstanceElement component = this.convertPortPathToComponentElement(instancePath);
+            instance1 = new InstanceElement(node, component);
+        }
+        return instance1;
+    }
+
+
 }

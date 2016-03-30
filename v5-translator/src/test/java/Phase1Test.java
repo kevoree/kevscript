@@ -273,6 +273,11 @@ public class Phase1Test {
         analyzeDirectory("phase1/remove/single_instance");
     }
 
+
+    @Test
+    public void testEmptyScript() throws Exception {
+        analyzeDirectory("phase1/empty_script");
+    }
     @Test
     public void testFirstOrderFunction() throws Exception {
         analyzeDirectory("phase1/first_order_function");
