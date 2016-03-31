@@ -1,31 +1,40 @@
 package org.kevoree.kevscript.language.utils;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import org.kevoree.kevscript.language.expressions.finalexp.ArrayDeclExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.StringExpression;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.Scriptable;
+
 import javax.script.ScriptException;
-import java.util.List;
 
 /**
  * Created by mleduc on 30/03/16.
  */
 public class JsEngine {
 
-    private final ScriptEngine engine;
-    private final static JsEngine instance = new JsEngine();
 
-    private JsEngine() {
-        final ScriptEngineManager manager = new ScriptEngineManager();
-        engine = manager.getEngineByName("nashorn");
+    public FinalExpression evaluateFunction(final String expression) throws ScriptException, NoSuchMethodException {
+        final Context cx = Context.enter();
+        final Scriptable scope = cx.initStandardObjects();
+        final Object result = cx.evaluateString(scope, expression, "<cmd>", 1, null);
+        final FinalExpression finalExpression = toFinalExpression(result);
+        return finalExpression;
     }
 
-    public static JsEngine getInstance() {
-        return JsEngine.instance;
-    }
-
-    public String evaluateFunction(final String expression, final String functionName, final List<?> arg) throws ScriptException, NoSuchMethodException {
-        final ScriptEngine scriptEngine = engine.getFactory().getScriptEngine();
-        scriptEngine.eval(expression);
-        return String.valueOf(((Invocable) scriptEngine).invokeFunction(functionName, arg.toArray()));
+    private FinalExpression toFinalExpression(final Object result) {
+        final FinalExpression finalExpression;
+        if(result instanceof NativeArray) {
+            final ArrayDeclExpression arrayDeclExpression = new ArrayDeclExpression();
+            final NativeArray nativeArray = (NativeArray) result;
+            for(Object arrayElem : nativeArray) {
+                arrayDeclExpression.add(this.toFinalExpression(arrayElem));
+            }
+            finalExpression = arrayDeclExpression;
+        } else {
+            finalExpression = new StringExpression(String.valueOf(result));
+        }
+        return finalExpression;
     }
 }

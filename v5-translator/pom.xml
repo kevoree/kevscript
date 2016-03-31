@@ -38,16 +38,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>avatar-js</artifactId>
-            <version>0.10.32-SNAPSHOT</version>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>1.7.7.1</version>
         </dependency>
     </dependencies>
-    <repositories>
+    <!--<repositories>
         <repository>
             <id>maven.java.net</id>
             <snapshots><enabled>true</enabled></snapshots>
             <url>https://maven.java.net/content/groups/public/</url>
         </repository>
-    </repositories>
+    </repositories>-->
 </project>

@@ -230,12 +230,17 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             sb.append("{");
             sb.append(functionExpression.getFunctionBody());
             sb.append("}");
-            List<String> parametersStr = new ArrayList<>();
+            final List<String> parametersStr = new ArrayList<>();
             for (ExpressionContext x : parameters) {
                 parametersStr.add(x.getText().replaceAll("\"", ""));
             }
-            final String result = JsEngine.getInstance().evaluateFunction(sb.toString(), functionName, parametersStr);
-            returnValue = new StringExpression(result);
+
+            sb.append('\n');
+            sb.append(functionName);
+            sb.append('(');
+            sb.append(StringUtils.join(parametersStr, ", " ));
+            sb.append(')');
+            returnValue = new JsEngine().evaluateFunction(sb.toString());
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {

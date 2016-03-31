@@ -4,7 +4,12 @@
 For the KevScript v5, look [here](https://github.com/dukeboard/kevoree/tree/master/kevoree-core/org.kevoree.kevscript)
 
 # TODO TEST
- * tester que seul le "main" a accès au external context. il ne doit pas être hérité vers les scripts importés
+ * the external context should only by accessible by the "main" script
+ * test native functions with :
+   * string return value
+   * json object return value
+   * array return value
+
 
 # TODO
 List of missing features :
@@ -18,4 +23,5 @@ List of missing features :
  * runtime error reporting
  * ergonomic CLI interface
  * transpiling
+ * intégrer la notion de temps
 

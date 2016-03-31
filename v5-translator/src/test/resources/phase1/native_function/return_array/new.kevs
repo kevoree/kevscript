@@ -1,0 +1,12 @@
+function native range(pStart, pStop, pStep) {{{
+    var i, ret = [];
+    for(i=pStart; i<pStop; i+=pStep) {
+        ret.push(i);
+    }
+    return ret;
+}}}
+
+
+for(n in range("0", "100", "10")) {
+    set u:v#w = n
+}

@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.function.Consumer;
+//import java.util.function.Consumer;
 
 /**
  *
@@ -22,7 +22,7 @@ public class TestInterpreter {
 
     @Test
     public void test() throws IOException, URISyntaxException {
-        Files.list(Paths.get(getClass().getResource("/").toURI())).forEach(new Consumer<Path>() {
+       /* Files.list(Paths.get(getClass().getResource("/").toURI())).forEach(new Consumer<Path>() {
             @Override
             public void accept(Path path) {
                 if (path.toString().endsWith(".kevs")) {
@@ -33,7 +33,7 @@ public class TestInterpreter {
                     }
                 }
             }
-        });
+        });*/
     }
 
     private void testKevScript(File file) throws IOException {
