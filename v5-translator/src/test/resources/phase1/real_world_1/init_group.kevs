@@ -1,0 +1,13 @@
+import "conf.kevs"
+
+export function init_group() {
+    instance mainGroup = RemoteWSGroup
+    add mainGroup
+    set mainGroup#host = confs.group.host
+    set mainGroup#path = confs.group.path
+    set mainGroup#answerPull/edison2 = "false"
+    set mainGroup#answerPull/edison3 = "false"
+    set mainGroup#answerPull/edison4 = "false"
+    set mainGroup#answerPull/edison5 = "false"
+    return mainGroup
+}

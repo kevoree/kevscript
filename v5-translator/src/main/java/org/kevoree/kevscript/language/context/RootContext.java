@@ -31,7 +31,7 @@ public class RootContext extends Context {
                 addExternalExpression(identifier + "." + x.getKey(), x.getValue());
             }
         }
-        basicAddExpression('&' + identifier, expression);
+        basicAddExpression('&' + identifier, expression, false);
     }
 
     @Override

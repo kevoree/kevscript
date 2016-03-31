@@ -7,7 +7,6 @@ public class DictionaryPathExpression implements FinalExpression {
     public final InstancePathExpression instancePathExpression;
     public final String dicoName;
     public final String frag;
-    private boolean exported;
 
     public DictionaryPathExpression(InstancePathExpression instancePathExpression, String dicoName, String frag) {
         this.instancePathExpression = instancePathExpression;
@@ -26,13 +25,4 @@ public class DictionaryPathExpression implements FinalExpression {
         return ret;
     }
 
-    @Override
-    public boolean isExported() {
-        return this.exported;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-        this.exported = exported;
-    }
 }

@@ -1,0 +1,36 @@
+export function initWebNode(nodeName, group, nodeVersion) {
+    instance web = nodeName JavascriptNode/nodeVersion
+    instance chart1, chart2, chart3 = Chart/2
+    add web
+    add web:chart1
+    add web:chart2
+    add web:chart3
+    attach group web
+    return web
+}
+
+export function initEdison(nodeName, group, nodeVersion) {
+    instance edison = nodeName JavascriptNode/nodeVersion
+    instance lcd = eu_heads.HeadsLCDDisplayComp/2
+    instance led = eu_heads.HeadsDigitalWriteComp/2
+    instance noise = eu_heads.HeadsAnalogSensorComp/2
+    instance light = eu_heads.HeadsAnalogSensorComp/2
+    add edison [lcd, led, noise, light]
+    set lcd#test = "false"
+    set led#pin = "7"
+    set led#test = "false"
+    set light#pin = "2"
+    set light#test = "false"
+    set noise#test = "false"
+    set temp#pin = "1"
+    set temp#test = "false"
+    attach group edison
+}
+
+export function bindByChan(port0, port1, chanName, host, uuid) {
+    instance chan = chanName RemoteWSChan/5
+    add chan
+    set chan#host = host
+    set chan#uuid = uuid
+    bind chan [port0, port1]
+}

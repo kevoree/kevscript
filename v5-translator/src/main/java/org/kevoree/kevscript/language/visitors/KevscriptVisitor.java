@@ -242,8 +242,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitLetDecl(final LetDeclContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         final FinalExpression res = expressionVisitor.visit(ctx.val);
-        res.setExported(ctx.EXPORT() != null);
-        this.context.addExpression(ctx.basic_identifier().getText(), res);
+        final boolean isExported = ctx.EXPORT() != null;
+        this.context.addExpression(ctx.basic_identifier().getText(), res, isExported);
         return expressionVisitor.aggregatedFunctionsCommands;
     }
 
@@ -349,15 +349,20 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
         final boolean exported = ctx.EXPORT() != null;
         if (ctx.NATIVE() == null) {
-            final FunctionExpression functionExpression = new FunctionExpression();
+
+            /*
+            We snapshot the current context as the one in the scope of the function (for later call).
+             */
+            final Context context = new Context();
+            context.setContext(this.context.getInheritedContext());
+            final FunctionExpression functionExpression = new FunctionExpression(context);
             if (ctx.parameters != null) {
                 for (final Basic_identifierContext param : ctx.parameters.basic_identifier()) {
                     functionExpression.addParam(param.getText());
                 }
             }
             functionExpression.setFunctionBody(ctx.funcBody());
-            functionExpression.setExported(exported);
-            this.context.addExpression(ctx.functionName.getText(), functionExpression);
+            this.context.addExpression(ctx.functionName.getText(), functionExpression, exported);
         } else {
             final FunctionNativeExpression functionNativeExpression = new FunctionNativeExpression();
             if (ctx.parameters != null) {
@@ -368,8 +373,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
             final String text = ctx.SOURCE_CODE().getText();
             functionNativeExpression.setFunctionBody(text.substring(4, text.length() - 4));
-            functionNativeExpression.setExported(exported);
-            this.context.addExpression(ctx.functionName.getText(), functionNativeExpression);
+            this.context.addExpression(ctx.functionName.getText(), functionNativeExpression, exported);
         }
 
         return new Commands();
@@ -469,8 +473,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitImportDecl(final ImportDeclContext ctx) {
         final String resourcePath = ctx.resource.getText();
-        final Context importedContext = helper.loadContext(resourcePath, importsStore);
-        final Map<String, FinalExpression> inheritedContext = importedContext.getInheritedContext();
+        final Map<String, FinalExpression> inheritedContext = helper.loadContext(resourcePath, importsStore);
 
         final String qualifier;
         if (ctx.AS() != null) {
@@ -487,9 +490,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             // import everything
             for (Map.Entry<String, FinalExpression> entry : inheritedContext.entrySet()) {
                 final FinalExpression expression = entry.getValue();
-                if (expression.isExported()) {
-                    this.context.addExpression(qualifier + entry.getKey(), expression);
-                }
+                final String key = qualifier + entry.getKey();
+                this.context.basicAddExpression(key, expression);
             }
         } else {
             // import only required elements
@@ -497,11 +499,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 final String key = a.getText();
                 if (inheritedContext.containsKey(key)) {
                     final FinalExpression expression = inheritedContext.get(key);
-                    if (expression.isExported()) {
-                        this.context.addExpression(qualifier + key, expression);
-                    } else {
-                        throw new ImportException(key, resourcePath);
-                    }
+                    this.context.addExpression(qualifier + key, expression);
                 } else {
                     throw new ImportException(key, resourcePath);
                 }

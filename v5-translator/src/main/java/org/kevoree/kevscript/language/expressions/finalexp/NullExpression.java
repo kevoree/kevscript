@@ -9,13 +9,4 @@ public class NullExpression implements FinalExpression {
         return null;
     }
 
-    @Override
-    public boolean isExported() {
-        return false;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-
-    }
 }

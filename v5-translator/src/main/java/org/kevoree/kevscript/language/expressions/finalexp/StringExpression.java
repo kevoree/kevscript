@@ -5,7 +5,6 @@ package org.kevoree.kevscript.language.expressions.finalexp;
  */
 public class StringExpression implements FinalExpression {
     public final String text;
-    private boolean exported;
 
     public StringExpression(final String text) {
         this.text = text.replaceAll("\"", "");
@@ -21,13 +20,4 @@ public class StringExpression implements FinalExpression {
         return super.toString();
     }
 
-    @Override
-    public boolean isExported() {
-        return this.exported;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-        this.exported = exported;
-    }
 }

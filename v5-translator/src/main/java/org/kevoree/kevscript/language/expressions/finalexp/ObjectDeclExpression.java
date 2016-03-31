@@ -32,13 +32,4 @@ public class ObjectDeclExpression implements FinalExpression {
         return sb.toString();
     }
 
-    @Override
-    public boolean isExported() {
-        return this.exported;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-        this.exported = exported;
-    }
 }

@@ -1,0 +1,8 @@
+import initEdison from "lib.kevs"
+import confs from "conf.kevs"
+
+export function init_edisons(mainGroup) {
+    for (nodeName in ["edison1", "edison2", "edison3", "edison4", "edison5"]) {
+        initEdison(nodeName, mainGroup, confs.nodes.javascript.version)
+    }
+}

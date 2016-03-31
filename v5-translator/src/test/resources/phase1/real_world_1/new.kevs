@@ -1,0 +1,8 @@
+import confs from "conf.kevs"
+import "init_chans.kevs"
+import "init_edisons.kevs"
+import "init_group.kevs"
+
+let grp = init_group()
+init_edisons(grp)
+init_chans(grp)

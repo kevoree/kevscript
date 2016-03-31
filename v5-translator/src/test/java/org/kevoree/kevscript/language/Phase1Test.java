@@ -150,9 +150,13 @@ public class Phase1Test {
     }
 
     @Test
-    //@Ignore
     public void testRealWorld0() throws Exception {
         analyzeDirectory("phase1/real_world_0");
+    }
+
+    @Test
+    public void testRealWorld1() throws Exception {
+        analyzeDirectory("phase1/real_world_1");
     }
 
     @Test
@@ -242,7 +246,6 @@ public class Phase1Test {
         final String basePath = getClass().getResource(basePathS).getPath();
         interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
     }
-
 
 
     @Test

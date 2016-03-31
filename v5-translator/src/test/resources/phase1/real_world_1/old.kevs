@@ -1,0 +1,132 @@
+add mainGroup : RemoteWSGroup
+set mainGroup.host = "ws.kevoree.org"
+set mainGroup.path = "/edisons"
+set mainGroup.answerPull/edison2 = "false"
+set mainGroup.answerPull/edison3 = "false"
+set mainGroup.answerPull/edison4 = "false"
+set mainGroup.answerPull/edison5 = "false"
+add lcd : eu_heads.HeadsLCDDisplayComp/2.0.0
+add led : eu_heads.HeadsDigitalWriteComp/2.0.0
+add noise : eu_heads.HeadsAnalogSensorComp/2.0.0
+add light : eu_heads.HeadsAnalogSensorComp/2.0.0
+set lcd.test = "false"
+set led.pin = "7"
+set led.test = "false"
+set light.pin = "2"
+set light.test = "false"
+set noise.test = "false"
+set temp.pin = "1"
+set temp.test = "false"
+attach edison1 mainGroup
+add lcd : eu_heads.HeadsLCDDisplayComp/2.0.0
+add led : eu_heads.HeadsDigitalWriteComp/2.0.0
+add noise : eu_heads.HeadsAnalogSensorComp/2.0.0
+add light : eu_heads.HeadsAnalogSensorComp/2.0.0
+set lcd.test = "false"
+set led.pin = "7"
+set led.test = "false"
+set light.pin = "2"
+set light.test = "false"
+set noise.test = "false"
+set temp.pin = "1"
+set temp.test = "false"
+attach edison2 mainGroup
+add lcd : eu_heads.HeadsLCDDisplayComp/2.0.0
+add led : eu_heads.HeadsDigitalWriteComp/2.0.0
+add noise : eu_heads.HeadsAnalogSensorComp/2.0.0
+add light : eu_heads.HeadsAnalogSensorComp/2.0.0
+set lcd.test = "false"
+set led.pin = "7"
+set led.test = "false"
+set light.pin = "2"
+set light.test = "false"
+set noise.test = "false"
+set temp.pin = "1"
+set temp.test = "false"
+attach edison3 mainGroup
+add lcd : eu_heads.HeadsLCDDisplayComp/2.0.0
+add led : eu_heads.HeadsDigitalWriteComp/2.0.0
+add noise : eu_heads.HeadsAnalogSensorComp/2.0.0
+add light : eu_heads.HeadsAnalogSensorComp/2.0.0
+set lcd.test = "false"
+set led.pin = "7"
+set led.test = "false"
+set light.pin = "2"
+set light.test = "false"
+set noise.test = "false"
+set temp.pin = "1"
+set temp.test = "false"
+attach edison4 mainGroup
+add lcd : eu_heads.HeadsLCDDisplayComp/2.0.0
+add led : eu_heads.HeadsDigitalWriteComp/2.0.0
+add noise : eu_heads.HeadsAnalogSensorComp/2.0.0
+add light : eu_heads.HeadsAnalogSensorComp/2.0.0
+set lcd.test = "false"
+set led.pin = "7"
+set led.test = "false"
+set light.pin = "2"
+set light.test = "false"
+set noise.test = "false"
+set temp.pin = "1"
+set temp.test = "false"
+attach edison5 mainGroup
+add web1 : JavascriptNode/5.3.3
+add web1.chart1 : Chart/2.0.0
+add web1.chart2 : Chart/2.0.0
+add web1.chart3 : Chart/2.0.0
+attach web1 mainGroup
+add chan : RemoteWSChan/5.0.0
+set chan.ws.kevoree.org = "ws.kevoree.org"
+set chan.edison1Temp = "edison1Temp"
+bind chan web1.chart2.input
+bind chan edison1.temp.out
+add chan1 : RemoteWSChan/5.0.0
+set chan1.ws.kevoree.org = "ws.kevoree.org"
+set chan1.edison1Light = "edison1Light"
+bind chan1 web1.chart3.input
+bind chan1 edison1.light.out
+add chan2 : RemoteWSChan/5.0.0
+set chan2.ws.kevoree.org = "ws.kevoree.org"
+set chan2.edison1Noise = "edison1Noise"
+bind chan2 web1.chart1.input
+bind chan2 edison1.noise.out
+add web2 : JavascriptNode/5.3.3
+add web2.chart1 : Chart/2.0.0
+add web2.chart2 : Chart/2.0.0
+add web2.chart3 : Chart/2.0.0
+attach web2 mainGroup
+add chan : RemoteWSChan/5.0.0
+set chan.ws.kevoree.org = "ws.kevoree.org"
+set chan.edison1Temp = "edison1Temp"
+bind chan web2.chart2.input
+bind chan edison2.temp.out
+add chan1 : RemoteWSChan/5.0.0
+set chan1.ws.kevoree.org = "ws.kevoree.org"
+set chan1.edison1Light = "edison1Light"
+bind chan1 web2.chart3.input
+bind chan1 edison2.light.out
+add chan2 : RemoteWSChan/5.0.0
+set chan2.ws.kevoree.org = "ws.kevoree.org"
+set chan2.edison1Noise = "edison1Noise"
+bind chan2 web2.chart1.input
+bind chan2 edison2.noise.out
+add web3 : JavascriptNode/5.3.3
+add web3.chart1 : Chart/2.0.0
+add web3.chart2 : Chart/2.0.0
+add web3.chart3 : Chart/2.0.0
+attach web3 mainGroup
+add chan : RemoteWSChan/5.0.0
+set chan.ws.kevoree.org = "ws.kevoree.org"
+set chan.edison1Temp = "edison1Temp"
+bind chan web3.chart2.input
+bind chan edison3.temp.out
+add chan1 : RemoteWSChan/5.0.0
+set chan1.ws.kevoree.org = "ws.kevoree.org"
+set chan1.edison1Light = "edison1Light"
+bind chan1 web3.chart3.input
+bind chan1 edison3.light.out
+add chan2 : RemoteWSChan/5.0.0
+set chan2.ws.kevoree.org = "ws.kevoree.org"
+set chan2.edison1Noise = "edison1Noise"
+bind chan2 web3.chart1.input
+bind chan2 edison3.noise.out

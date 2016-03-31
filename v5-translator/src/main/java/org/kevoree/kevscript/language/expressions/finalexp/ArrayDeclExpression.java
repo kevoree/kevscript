@@ -11,7 +11,6 @@ import java.util.List;
 public class ArrayDeclExpression implements FinalExpression {
 
     public List<FinalExpression> expressionList = new ArrayList<>();
-    private boolean exported;
 
     @Override
     public String toText() {
@@ -27,13 +26,4 @@ public class ArrayDeclExpression implements FinalExpression {
         expressionList.add(expression);
     }
 
-    @Override
-    public boolean isExported() {
-        return this.exported;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-        this.exported = exported;
-    }
 }

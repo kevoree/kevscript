@@ -23,15 +23,6 @@ public class PortPathExpression implements FinalExpression {
         throw new NotImplementedException("TODO");
     }
 
-    @Override
-    public boolean isExported() {
-        return this.exported;
-    }
-
-    @Override
-    public void setExported(boolean exported) {
-        this.exported = exported;
-    }
 
 }
 

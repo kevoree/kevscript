@@ -1,0 +1,11 @@
+import "conf.kevs"
+import initWebNode, bindByChan from "lib.kevs"
+
+export function init_chans(mainGroup) {
+    for(elem in [{nodeName : "web1", target:edison1}, {nodeName : "web2", target:edison2}, {nodeName : "web3", target:edison3}]) {
+        let node = initWebNode(elem.nodeName, mainGroup, confs.nodes.javascript.version)
+        bindByChan(node:chart2<-input, elem.target:temp->out, "chan", confs.chan.host, "edison1Temp")
+        bindByChan(node:chart3<-input, elem.target:light->out, "chan1", confs.chan.host, "edison1Light")
+        bindByChan(node:chart1<-input, elem.target:noise->out, "chan2", confs.chan.host, "edison1Noise")
+    }
+}

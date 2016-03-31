@@ -18,6 +18,7 @@ import java.util.Map;
 public class Context {
     private final Map<String, FinalExpression> mapIdentifiers;
     private final Context parentContext;
+    private Map<String, FinalExpression> localyExportedContext = new HashMap<>();
 
     public Context() {
         mapIdentifiers = new HashMap<>();
@@ -79,31 +80,53 @@ public class Context {
         return ret;
     }
 
-    public void addExpression(final String identifier, final FinalExpression expression) {
+    public void addExpression(final String identifier, final FinalExpression expression, final boolean isExported) {
 
         if (expression instanceof ArrayDeclExpression) {
             final ArrayDeclExpression arr = (ArrayDeclExpression) expression;
             int i = 0;
             for (final FinalExpression nx : arr.expressionList) {
-                addExpression(identifier + "[" + (i++) + "]", nx);
+                addExpression(identifier + "[" + (i++) + "]", nx, isExported);
             }
         } else if (expression instanceof ObjectDeclExpression) {
             final ObjectDeclExpression obj = (ObjectDeclExpression) expression;
             for (Map.Entry<String, FinalExpression> x : obj.values.entrySet()) {
-                addExpression(identifier + "." + x.getKey(), x.getValue());
+                addExpression(identifier + "." + x.getKey(), x.getValue(), isExported);
             }
         }
-        basicAddExpression(identifier, expression);
+        basicAddExpression(identifier, expression, isExported);
     }
 
-    protected void basicAddExpression(String identifier, FinalExpression expression) {
+    public void basicAddExpression(final String identifier, final FinalExpression expression) {
+        this.basicAddExpression(identifier, expression, false);
+    }
+
+    protected void basicAddExpression(final String identifier, final FinalExpression expression, final boolean isExported) {
         if (this.mapIdentifiers.containsKey(identifier)) {
             throw new NameCollisionException(identifier);
         }
+
         this.mapIdentifiers.put(identifier, expression);
+
+        if (isExported) {
+            this.localyExportedContext.put(identifier, expression);
+        }
     }
 
     public String getBasePath() {
         return this.parentContext.getBasePath();
+    }
+
+    public Map<String, FinalExpression> getLocalyExportedContext() {
+        return this.localyExportedContext;
+    }
+
+    public void addExpression(final String instanceVarName, final FinalExpression addedInstance) {
+        this.addExpression(instanceVarName, addedInstance, false);
+    }
+
+    public Context setContext(Map<String, FinalExpression> inheritedContext) {
+        this.mapIdentifiers.putAll(inheritedContext);
+        return this;
     }
 }

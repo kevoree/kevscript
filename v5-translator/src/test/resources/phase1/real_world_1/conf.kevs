@@ -1,0 +1,14 @@
+export let confs = {
+    chan: {
+        host: "ws.kevoree.org" // {adresses.braindead.ws} not implemented
+    },
+    group: {
+        host: "ws.kevoree.org", // {adresses.braindead.ws} not implemented
+        path: "/edisons"
+    },
+    nodes: {
+        javascript: {
+            version: "533"
+        }
+    }
+}

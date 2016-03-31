@@ -268,16 +268,16 @@ public class KevscriptHelper {
      *
      * @param resourcePath
      */
-    public Context loadContext(String resourcePath, ImportsStore importsStore) {
-        final Context importedContext;
+    public Map<String, FinalExpression> loadContext(String resourcePath, ImportsStore importsStore) {
+        final Map<String, FinalExpression> importedContext;
         if (importsStore.containsKey(resourcePath)) {
             importedContext = importsStore.get(resourcePath);
         } else {
             final String res = getScriptFromResourcePath(resourcePath, this.context.getBasePath());
             final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(importsStore, this.context.getBasePath());
             new KevscriptInterpreter().interpret(res, kevscriptVisitor);
-            importedContext = kevscriptVisitor.getContext();
-            importsStore.put(resourcePath, context);
+            importedContext = kevscriptVisitor.getContext().getLocalyExportedContext();
+            importsStore.put(resourcePath, importedContext);
         }
         return importedContext;
     }
