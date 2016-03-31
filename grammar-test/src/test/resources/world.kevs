@@ -1,0 +1,16 @@
+world 1 {
+    function b(n) {
+        world n {
+
+
+        }
+
+        return "ok"
+    }
+
+    set u:v#w = "ok"
+
+    world randomInt() {
+        // ...
+    }
+}

@@ -30,6 +30,7 @@ statement
     | detachModelConnector
     | replaceModelConnector
     | timeDecl
+    | worldDecl
     ;
 instance
     : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
@@ -130,6 +131,10 @@ funcDecl
 
 timeDecl
     : TIME (NUMERIC_VALUE|identifier) LC_BRACKET statement* RC_BRACKET
+    ;
+
+worldDecl
+    : WORLD (NUMERIC_VALUE|identifier) LC_BRACKET statement* RC_BRACKET
     ;
 
 importDecl
@@ -243,6 +248,7 @@ INSTANCE: 'instance';
 ADD : 'add' ;
 AS : 'as' ;
 TIME : 'time' ;
+WORLD : 'world' ;
 REMOVE : 'remove' ;
 START : 'start' ;
 STOP : 'stop' ;
