@@ -229,6 +229,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             sb.append(")");
             sb.append("{");
             sb.append(functionExpression.getFunctionBody());
+            sb.append('\n');
             sb.append("}");
             final List<String> parametersStr = new ArrayList<>();
             for (ExpressionContext x : parameters) {
@@ -238,7 +239,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             sb.append('\n');
             sb.append(functionName);
             sb.append('(');
-            sb.append(StringUtils.join(parametersStr, ", " ));
+            sb.append(StringUtils.join(parametersStr, ", "));
             sb.append(')');
             returnValue = new JsEngine().evaluateFunction(sb.toString());
         } catch (ScriptException e) {

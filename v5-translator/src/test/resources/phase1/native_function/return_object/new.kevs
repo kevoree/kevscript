@@ -1,0 +1,8 @@
+function native range(pStart, pStop, pStep) {{{
+    return { pStart: pStart, pStop: [pStop], pStep: pStep }; // complet non sens <- actually this single line comment is a test !
+}}}
+
+let r = range("0", "100", "10")
+
+set u:v#w = r.pStart
+set u:v#x = r.pStop[0]
