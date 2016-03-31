@@ -29,6 +29,7 @@ statement
     | attachModelConnector
     | detachModelConnector
     | replaceModelConnector
+    | timeDecl
     ;
 instance
     : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
@@ -125,6 +126,10 @@ funcCall
 funcDecl
     : EXPORT? FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
     | EXPORT? FUNCTION NATIVE functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
+    ;
+
+timeDecl
+    : TIME (NUMERIC_VALUE|identifier) LC_BRACKET statement* RC_BRACKET
     ;
 
 importDecl
@@ -237,6 +242,7 @@ IN : 'in' ;
 INSTANCE: 'instance';
 ADD : 'add' ;
 AS : 'as' ;
+TIME : 'time' ;
 REMOVE : 'remove' ;
 START : 'start' ;
 STOP : 'stop' ;

@@ -5,14 +5,11 @@ For the KevScript v5, look [here](https://github.com/dukeboard/kevoree/tree/mast
 
 # TODO TEST
  * the external context should only by accessible by the "main" script
- * test native functions with :
-   * string return value
-   * json object return value
-   * array return value
 
 
 # TODO
 List of missing features :
+ * time integration in the interpretor
  * model-connector implem (+ renaming ?);
  * subnodes integration;
  * KMF integration (and consistency validation steps);

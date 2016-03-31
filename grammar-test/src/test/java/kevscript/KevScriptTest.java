@@ -130,5 +130,10 @@ public class KevScriptTest {
         tester(getClass().getResourceAsStream("/stop.kevs"));
     }
 
+    @Test
+    public void testTime() throws Exception {
+        tester(getClass().getResourceAsStream("/time.kevs"));
+    }
+
 
 }

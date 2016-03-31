@@ -1,0 +1,16 @@
+time 1 {
+    function b(n) {
+        time n {
+
+
+        }
+
+        return "ok"
+    }
+
+    set u:v#w = "ok"
+
+    time currentTimeFct() {
+        // ...
+    }
+}
