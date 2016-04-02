@@ -1,23 +1,17 @@
 package org.kevoree.kevscript.language.expressions.finalexp;
 
 /**
- * Created by mleduc on 02/03/16.
+ *
  */
 public class StringExpression implements FinalExpression {
     public final String text;
 
     public StringExpression(final String text) {
-        this.text = text.replaceAll("\"", "");
+        this.text = text;
     }
 
     @Override
     public String toText() {
         return text;
     }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
 }

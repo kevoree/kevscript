@@ -24,4 +24,9 @@ public class ContextIdentifierExpression implements NonFinalExpression {
     public void addAll(ContextIdentifierExpression left) {
         elems.addAll(left.elems);
     }
+
+    @Override
+    public String toText() {
+        return "&" + this.toPath();
+    }
 }

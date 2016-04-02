@@ -1,14 +1,20 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.InstanceElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 
 /**
- * Created by mleduc on 24/03/16.
+ *
+ *
  */
 public class StartCommand extends AbstractCommand {
-    public final InstanceElement instance;
+    public final InstanceExpression instance;
 
-    public StartCommand(InstanceElement instance) {
+    public StartCommand(InstanceExpression instance) {
         this.instance = instance;
+    }
+
+    @Override
+    public String toString() {
+        return "start " + instance.toText();
     }
 }

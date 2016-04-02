@@ -1,16 +1,21 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.DictionaryElement;
+import org.kevoree.kevscript.language.expressions.finalexp.DictionaryPathExpression;
 
 /**
- * Created by mleduc on 22/03/16.
+ *
  */
 public class SetCommand extends AbstractCommand {
-    public DictionaryElement dictionaryElement;
+    public DictionaryPathExpression dicPathExpr;
     public String value;
 
-    public SetCommand(DictionaryElement dictionaryElement, String value) {
-        this.dictionaryElement = dictionaryElement;
+    public SetCommand(DictionaryPathExpression dicPathExpr, String value) {
+        this.dicPathExpr = dicPathExpr;
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "set " + dicPathExpr.toText() + " = " + value;
     }
 }

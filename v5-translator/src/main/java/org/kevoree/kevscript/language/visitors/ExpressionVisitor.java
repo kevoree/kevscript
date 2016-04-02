@@ -3,17 +3,15 @@ package org.kevoree.kevscript.language.visitors;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
-import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
+import org.kevoree.kevscript.language.excpt.ArrayIndexOutOfBoundException;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
 import org.kevoree.kevscript.language.excpt.WrongNumberOfArguments;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.AbstractFunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextIdentifierExpression;
 import org.kevoree.kevscript.language.expressions.nonfinalexp.ContextRefExpression;
-import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
 import org.kevoree.kevscript.language.utils.JsEngine;
 import org.kevoree.kevscript.language.utils.NotImplementedException;
 import org.kevoree.kevscript.language.utils.StringUtils;
@@ -26,7 +24,8 @@ import java.util.List;
 import static org.kevoree.kevscript.KevScriptParser.*;
 
 /**
- * Created by mleduc on 02/03/16.
+ *
+ *
  */
 public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     private final Context context;
@@ -41,6 +40,21 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
+    public TypeExpression visitType(TypeContext ctx) {
+        String namespace = null;
+        String name;
+        if (ctx.typeName().basicIdentifier().size() > 1) {
+            namespace = ctx.typeName().basicIdentifier(0).getText();
+            name = ctx.typeName().basicIdentifier(1).getText();
+        } else {
+            name = ctx.typeName().basicIdentifier(0).getText();
+        }
+        VersionExpression versionExpr = this.visitVersion(ctx.version());
+        ObjectDeclExpression duVersions = this.visitDuVersions(ctx.duVersions());
+        return new TypeExpression(namespace, name, versionExpr, duVersions);
+    }
+
+    @Override
     public FinalExpression visitExpression(ExpressionContext ctx) {
         final FinalExpression ret;
         if (ctx.CONCAT() != null) {
@@ -51,40 +65,32 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             ret = this.visitString(ctx.string());
         } else if (ctx.objectDecl() != null) {
             ret = this.visitObjectDecl(ctx.objectDecl());
-        } else if (ctx.contextIdentifier() != null) {
-            ret = this.visitContextIdentifier(ctx.contextIdentifier());
+        } else if (ctx.contextRef() != null) {
+            ret = this.visitContextRef(ctx.contextRef());
         } else if (ctx.arrayDecl() != null) {
             ret = this.visitArrayDecl(ctx.arrayDecl());
-        } else if (ctx.arrayAccess() != null) {
-            ret = this.visitArrayAccess(ctx.arrayAccess());
         } else if (ctx.identifier() != null) {
             ret = this.visitIdentifier(ctx.identifier());
-        } else if (ctx.funcCall() != null) {
-            ret = this.visitFuncCall(ctx.funcCall());
         } else if (ctx.instancePath() != null) {
             ret = this.visitInstancePath(ctx.instancePath());
         } else if (ctx.portPath() != null) {
             ret = this.visitPortPath(ctx.portPath());
         } else {
-            throw new NotImplementedException(ctx + " expression context unknow.");
+            throw new NotImplementedException(ctx + " expression context unknown");
         }
         return ret;
     }
 
     @Override
     public StringExpression visitString(StringContext ctx) {
-        return new StringExpression(ctx.getText());
+        return new StringExpression(ctx.getText().substring(1, ctx.getText().length() - 1));
     }
 
     @Override
     public ObjectDeclExpression visitObjectDecl(ObjectDeclContext ctx) {
         final ObjectDeclExpression ret = new ObjectDeclExpression();
         for (KeyAndValueContext value : ctx.values) {
-            try {
-                ret.put(value.key.getText(), this.visit(value.value));
-            } catch (InstanceNameNotFound e) {
-                ret.put(value.key.getText(), new InstanceExpression(value.value.getText(), null, null, null));
-            }
+            ret.put(value.key.getText(), this.visit(value.value));
         }
         return ret;
     }
@@ -103,10 +109,8 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     private ContextIdentifierExpression recVisitContextIdentifier(final ContextIdentifierContext ctx) {
         final ContextIdentifierExpression ret = new ContextIdentifierExpression();
-        if (ctx.basic_identifier() != null) {
-            ret.add(ctx.basic_identifier().getText());
-        } else if (ctx.arrayAccess() != null) {
-            ret.add(this.visitArrayAccess(ctx.arrayAccess()).toText());
+        if (ctx.basicIdentifier() != null) {
+            ret.add(ctx.basicIdentifier().getText());
         } else if (ctx.DOT() != null) {
             final ContextIdentifierExpression left = this.recVisitContextIdentifier(ctx.contextIdentifier(0));
             final ContextIdentifierExpression right = this.recVisitContextIdentifier(ctx.contextIdentifier(1));
@@ -136,62 +140,65 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public FinalExpression visitArrayAccess(ArrayAccessContext ctx) {
-        return new ArrayAccessExpression(ctx.basic_identifier().getText(), Long.parseLong(ctx.NUMERIC_VALUE().getText()));
-    }
-
-    @Override
     public FinalExpression visitIdentifier(IdentifierContext ctx) {
-        final FinalExpression ret;
-        if (ctx.basic_identifier() != null) {
+        FinalExpression ret;
+        if (ctx.basicIdentifier() != null) {
             ret = visitBasicIdentifier(ctx);
         } else if (ctx.contextRef() != null) {
             ret = this.visit(ctx.contextRef());
         } else if (ctx.funcCall() != null) {
-            ret = visitFunctionCall(ctx);
-        } else if (ctx.arrayAccess() != null) {
-            ret = visitArrayAccess(ctx);
+            ret = visitFuncCall(ctx.funcCall());
+            if (ctx.arrayAccess() != null) {
+                if (ret instanceof ArrayDeclExpression) {
+                    ArrayDeclExpression arrayDecl = (ArrayDeclExpression) ret;
+                    int arrayIndex = this.helper.convertArrayAccessToInt(ctx.arrayAccess());
+                    if (arrayDecl.expressionList.size() - 1 >= arrayIndex) {
+                        ret = arrayDecl.expressionList.get(arrayIndex);
+                    } else {
+                        throw new ArrayIndexOutOfBoundException(ctx.getText(), arrayIndex);
+                    }
+                } else {
+                    if (ret == null) {
+                        throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, NullExpression.class);
+                    } else {
+                        throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, ret.getClass());
+                    }
+                }
+            }
         } else {
-            throw new NotImplementedException(ctx + "identifier unknow.");
+            throw new NotImplementedException(ctx + "identifier unknown");
         }
         return ret;
     }
 
-    private FinalExpression visitArrayAccess(IdentifierContext ctx) {
-        Expression ret;
-        final FinalExpression left = this.visit(ctx.arrayAccess());
-        if (ctx.DOT() == null) {
-            ret = new InstanceExpression(left.toText(), null, null, null);
-        } else {
-            ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
+    @Override
+    public ObjectDeclExpression visitDuVersions(DuVersionsContext ctx) {
+        if (ctx != null) {
+            if (ctx.objectDecl() != null) {
+                return this.visitObjectDecl(ctx.objectDecl());
+            } else {
+                FinalExpression identifier = this.visitIdentifier(ctx.identifier());
+                FinalExpression expr = this.context.lookup(identifier);
+                if (expr instanceof ObjectDeclExpression) {
+                    return (ObjectDeclExpression) expr;
+                } else {
+                    throw new WrongTypeException(ctx.identifier().getText(), ObjectDeclExpression.class, expr.getClass());
+                }
+            }
         }
-        return this.context.lookup(ret, FinalExpression.class);
-    }
-
-    private FinalExpression visitFunctionCall(IdentifierContext ctx) {
-        Expression ret;
-        final FinalExpression left = this.visitFuncCall(ctx.funcCall());
-        if (ctx.DOT() == null) {
-            ret = left;
-        } else {
-            ret = new IdentifierExpression(left, this.visit(ctx.identifier()));
-        }
-        return this.context.lookup(ret, FinalExpression.class);
+        return null;
     }
 
     private FinalExpression visitBasicIdentifier(final IdentifierContext ctx) {
+        // this will process basicIdentifier as well as basicIdentifier + arrayAccess
         return this.context.lookupByStrKey(ctx.getText(), FinalExpression.class, false);
     }
 
     @Override
     public FinalExpression visitFuncCall(final FuncCallContext ctx) {
-        final String functionName;
-        if (ctx.basic_identifier().size() > 1) {
-            functionName = ctx.basic_identifier(0).getText() + "." + ctx.basic_identifier(1).getText();
-        } else {
-            functionName = ctx.basic_identifier(0).getText();
-        }
-        final AbstractFunctionExpression functionExpression = this.context.lookupByStrKey(functionName, AbstractFunctionExpression.class);
+        final String functionName = ctx.basicIdentifier().getText();
+        final AbstractFunctionExpression functionExpression =
+                this.context.lookupByStrKey(functionName, AbstractFunctionExpression.class);
 
         final List<ExpressionContext> parameters;
         if (ctx.parameters != null) {
@@ -206,14 +213,12 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             throw new WrongNumberOfArguments(functionName, definedNbr, callerNbr);
         }
 
-
         final FinalExpression returnValue;
         if (functionExpression instanceof FunctionExpression) {
             returnValue = visitFunctionExpression((FunctionExpression) functionExpression, parameters);
         } else {
             returnValue = visitFunctionNativeExpression(functionName, functionExpression, parameters);
         }
-
 
         return returnValue;
     }
@@ -250,27 +255,25 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         return returnValue;
     }
 
-    private FinalExpression visitFunctionExpression(final FunctionExpression functionExpression, List<ExpressionContext> parameters) {
+    private FinalExpression visitFunctionExpression(final FunctionExpression funcExpr, List<ExpressionContext> parameters) {
         final Commands commands = new Commands();
-        final Context functionContext = new Context().setContext(functionExpression.context.getInheritedContext());
         int parameterCount = 0;
         for (final ExpressionContext expressionCtx : parameters) {
             final FinalExpression expression = this.visitExpression(expressionCtx);
-            final String parameterName = functionExpression.getParameter(parameterCount++);
-            functionContext.addExpression(parameterName, expression);
+            final String parameterName = funcExpr.getParameter(parameterCount++);
+            funcExpr.context.addExpression(parameterName, expression);
         }
 
-        final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(functionContext);
-        final FuncBodyContext functionBody = functionExpression.getFunctionBody();
-        for (final StatementContext a : functionBody.statement()) {
-            final Commands visit = kevscriptVisitor.visit(a);
-            commands.addAll(visit);
+        final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(funcExpr.context);
+        final FuncBodyContext functionBody = funcExpr.getFunctionBody();
+        for (final StatementContext stmt : functionBody.statement()) {
+            commands.addAll(kevscriptVisitor.visit(stmt));
         }
 
         final FinalExpression returnValue;
         if (functionBody.returnStatement() != null) {
             final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
-            final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
+            final FinalExpression returnRes = expressionVisitor.visitExpression(functionBody.returnStatement().expression());
             commands.addAll(expressionVisitor.aggregatedFunctionsCommands);
             returnValue = returnRes;
         } else {
@@ -278,87 +281,105 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
         this.aggregatedFunctionsCommands.addAll(commands);
-
         return returnValue;
     }
 
     @Override
-    public InstancePathExpression visitInstancePath(InstancePathContext ctx) {
-        final InstancePathExpression ret;
-        if (ctx.identifier().size() == 1) {
-            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(ctx.identifier(0)));
+    public InstanceExpression visitInstancePath(InstancePathContext ctx) {
+        String instanceName;
+        FinalExpression instanceExpr = this.visitIdentifier(ctx.identifier(0));
+        if (instanceExpr == null) {
+            // unable to find an already defined value for this instance path => using identifier name
+            instanceName = ctx.identifier(0).getText();
         } else {
-            ret = new InstancePathExpression(this.helper.getInstanceExpressionFromContext(ctx.identifier(0)),
-                    this.helper.getInstanceExpressionFromContext(ctx.identifier(1)));
+            instanceName = instanceExpr.toText();
         }
 
-        return ret;
+        FinalExpression childExpr = null;
+        if (ctx.identifier().size() == 2) {
+            // instance path is referring to a child instance
+            childExpr = this.visitIdentifier(ctx.identifier(1));
+            if (childExpr == null) {
+                instanceName += ":" + ctx.identifier(1).getText();
+            } else {
+                instanceName += ":" + childExpr.toText();
+            }
+        }
+        return new InstanceExpression(instanceName, null);
     }
 
     @Override
-    public FinalExpression visitPortPath(PortPathContext ctx) {
-        final FinalExpression ret;
-        final FinalExpression visit = this.visit(ctx.identifier());
+    public PortPathExpression visitPortPath(PortPathContext ctx) {
+        InstanceExpression instanceExpr = null;
         if (ctx.instancePath() != null) {
-            final String portName;
-            if (visit != null) {
-                portName = visit.toText();
-            } else {
-                portName = ctx.identifier().getText();
+            // its a full path (eg. node:comp<-port)
+            InstanceExpression chanExpr = this.visitInstancePath(ctx.instancePath());
+            FinalExpression portNameExpr = this.visitIdentifier(ctx.identifier());
+            if (portNameExpr == null) {
+                // unable to resolve expr => use identifier as name
+                portNameExpr = new InstanceExpression(ctx.identifier().getText(), null);
             }
-            ret = new PortPathExpression(this.visitInstancePath(ctx.instancePath()), ctx.LEFT_LIGHT_ARROW() != null, portName);
+
+            return new PortPathExpression(chanExpr, ctx.LEFT_ARROW() != null, portNameExpr.toText());
         } else {
-            ret = visit;
+            // its a reference to port with instancePath => instance must be found in context
+            FinalExpression portNameExpr = this.visitIdentifier(ctx.identifier());
+            if (portNameExpr instanceof PortPathExpression) {
+                return (PortPathExpression) portNameExpr;
+            } else {
+                if (portNameExpr != null) {
+                    throw new WrongTypeException(ctx.identifier().getText(), PortPathExpression.class, portNameExpr.getClass());
+                } else {
+                    throw new WrongTypeException(ctx.identifier().getText(), PortPathExpression.class, NullExpression.class);
+                }
+            }
         }
-        return ret;
     }
 
     @Override
     public VersionExpression visitVersion(VersionContext ctx) {
-        final VersionExpression ret;
-        if (ctx.NUMERIC_VALUE() != null) {
-            ret = new VersionExpression(Long.parseLong(ctx.NUMERIC_VALUE().getText()));
-        } else {
-            final FinalExpression lookup = this.context.lookup(this.visitIdentifier(ctx.identifier()), StringExpression.class);
-            if (lookup instanceof StringExpression) {
-                ret = new VersionExpression(Long.parseLong(((StringExpression) lookup).text));
+        if (ctx != null) {
+            final VersionExpression ret;
+            if (ctx.NUMERIC_VALUE() != null) {
+                ret = new VersionExpression(Long.parseLong(ctx.NUMERIC_VALUE().getText()));
             } else {
-                throw new VersionNotFound(lookup);
+                final FinalExpression lookup = this.context.lookup(this.visitIdentifier(ctx.identifier()), StringExpression.class);
+                if (lookup instanceof StringExpression) {
+                    ret = new VersionExpression(Long.parseLong(((StringExpression) lookup).text));
+                } else {
+                    throw new VersionNotFound(lookup);
+                }
             }
-        }
 
-        return ret;
+            return ret;
+        }
+        return null;
     }
 
 
     @Override
     public DictionaryPathExpression visitDictionaryPath(DictionaryPathContext ctx) {
-        final FinalExpression visit = this.visit(ctx.identifier(0));
-        final String dicoName;
-        if (visit != null) {
-            if (visit instanceof StringExpression) {
-                dicoName = visit.toText();
-            } else {
-                throw new WrongTypeException(ctx.identifier(0).getText(), StringExpression.class);
-            }
+        InstanceExpression instanceExpr = this.visitInstancePath(ctx.instancePath());
+        FinalExpression paramNameExpr = this.visitIdentifier(ctx.name);
+        String paramName;
+        if (paramNameExpr == null) {
+            // looks like ctx.name is not resolvable => try to use the name identifier as param name
+            paramName = ctx.name.getText();
         } else {
-            dicoName = ctx.identifier(0).getText();
+            paramName = paramNameExpr.toText();
         }
-
-        final String frag;
-        final IdentifierContext fragIdentifierContext = ctx.identifier(1);
-        if (fragIdentifierContext != null) {
-            final FinalExpression visit1 = this.visit(fragIdentifierContext);
-            if (visit1 != null) {
-                frag = visit1.toText();
+        if (ctx.fragmentName != null) {
+            FinalExpression fragExpr = this.visitIdentifier(ctx.fragmentName);
+            String fragName;
+            if (fragExpr == null) {
+                // looks like ctx.fragmentName is not resolvable => try to use the name identifier as fragment name
+                fragName = ctx.fragmentName.getText();
             } else {
-                frag = fragIdentifierContext.getText();
+                fragName = fragExpr.toText();
             }
-        } else {
-            frag = null;
+            return new DictionaryPathExpression(instanceExpr, paramName, fragName);
         }
-
-        return new DictionaryPathExpression(this.visitInstancePath(ctx.key), dicoName, frag);
+        return new DictionaryPathExpression(instanceExpr, paramName, null);
     }
 
     @Override
@@ -373,7 +394,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             if (res instanceof ArrayDeclExpression) {
                 ret = (ArrayDeclExpression) res;
             } else {
-                throw new WrongTypeException(ctx.contextIdentifier().getText(), ArrayDeclExpression.class);
+                throw new WrongTypeException(ctx.contextIdentifier().getText(), ArrayDeclExpression.class, res.getClass());
             }
         }
         return ret;

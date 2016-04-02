@@ -32,18 +32,28 @@ public class KevScriptTest {
     }
 
     @Test
-    public void testAttachDetachBindUnbind() throws Exception {
-        tester(getClass().getResourceAsStream("/attach_detach_bind_unbind.kevs"));
+    public void testBind() throws Exception {
+        tester(getClass().getResourceAsStream("/bind.kevs"));
     }
 
     @Test
-    public void testAttachModelConnector() throws Exception {
-        tester(getClass().getResourceAsStream("/attach_model_connector.kevs"));
+    public void testUnbind() throws Exception {
+        tester(getClass().getResourceAsStream("/unbind.kevs"));
     }
 
     @Test
-    public void testDetachModelConnector() throws Exception {
-        tester(getClass().getResourceAsStream("/detach_model_connector.kevs"));
+    public void testAttach() throws Exception {
+        tester(getClass().getResourceAsStream("/attach.kevs"));
+    }
+
+    @Test
+    public void testDetach() throws Exception {
+        tester(getClass().getResourceAsStream("/detach.kevs"));
+    }
+
+    @Test
+    public void testReattach() throws Exception {
+        tester(getClass().getResourceAsStream("/reattach.kevs"));
     }
 
     @Test
@@ -108,11 +118,6 @@ public class KevScriptTest {
     @Test
     public void testRemove() throws Exception {
         tester(getClass().getResourceAsStream("/remove.kevs"));
-    }
-
-    @Test
-    public void testReplaceModelConnector() throws Exception {
-        tester(getClass().getResourceAsStream("/replace_model_connector.kevs"));
     }
 
     @Test

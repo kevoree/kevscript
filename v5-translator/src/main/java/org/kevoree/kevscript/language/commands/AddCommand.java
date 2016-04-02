@@ -1,15 +1,30 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.InstanceElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 
 /**
- * Created by mleduc on 15/03/16.
+ *
+ *
  */
 public class AddCommand extends AbstractCommand {
 
-    public final InstanceElement instance;
+    public final InstanceExpression target;
+    public final InstanceExpression source;
 
-    public AddCommand(final InstanceElement instance) {
-        this.instance = instance;
+    public AddCommand(final InstanceExpression target, InstanceExpression source) {
+        this.target = target;
+        this.source = source;
+    }
+
+    @Override
+    public String toString() {
+        String ret = "add ";
+        if (target != null) {
+            ret += target.toText() + " ";
+        }
+        if (source != null) {
+            ret += source.toText();
+        }
+        return ret;
     }
 }

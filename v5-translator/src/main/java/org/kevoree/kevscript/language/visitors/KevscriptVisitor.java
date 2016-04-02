@@ -4,18 +4,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
 import org.kevoree.kevscript.language.commands.*;
-import org.kevoree.kevscript.language.commands.element.DictionaryElement;
-import org.kevoree.kevscript.language.commands.element.InstanceElement;
-import org.kevoree.kevscript.language.commands.element.PortElement;
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
-import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.excpt.ImportException;
-import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
-import org.kevoree.kevscript.language.excpt.PortPathNotFound;
-import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.function.FunctionNativeExpression;
@@ -67,33 +58,43 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitAdd(final AddContext ctx) {
-        final Commands ret = new Commands();
-        if (ctx.identifier(0) != null) {
-            final RootInstanceElement parent = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-            if (ctx.identifier(1) != null) {
-                final InstanceExpression child = context.lookup(new ExpressionVisitor(context).visitIdentifier(ctx.identifier(1)), InstanceExpression.class);
-                final RootInstanceElement childElement = new RootInstanceElement(child.instanceName, child.instanceTypeDefName);
-                ret.add(new AddCommand(new InstanceElement(parent, childElement)));
-            } else if (ctx.identifierList() != null && ctx.identifierList().identifiers != null) {
-                for (final IdentifierContext instance : ctx.identifierList().identifiers) {
-                    final RootInstanceElement nodeRootInstanceElement = this.helper.getInstanceFromIdentifierContext(instance);
-                    ret.addCommand(new AddCommand(new InstanceElement(nodeRootInstanceElement)));
-                }
+        final Commands cmds = new Commands();
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+        // target defaults to model root represented as '/'
+        InstanceExpression target = new InstanceExpression("/", null);
+
+        if (ctx.target != null) {
+            // a specific target as been given
+            InstanceExpression targetExpr = exprVisitor.visitInstancePath(ctx.target);
+            if (targetExpr == null) {
+                // unable to find a reference for this identifier => use it literally
+                target = new InstanceExpression(ctx.target.getText(), null);
             } else {
-                ret.add(new AddCommand(new InstanceElement(parent)));
+                if (targetExpr.instanceName.contains(":")) {
+                    // TODO create a dedicated exception
+                    throw new IllegalArgumentException("Cannot add instances to component " + targetExpr.toText());
+                } else {
+                    target = new InstanceExpression(targetExpr.toText(), null);
+                }
             }
 
-        } else if (ctx.LS_BRACKET() != null) {
-            for (IdentifierContext identifier : ctx.identifierList().identifier()) {
-                final RootInstanceElement root = helper.identifierContextToRootInstance(identifier);
-                ret.add(new AddCommand(new InstanceElement(root)));
+            for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
+                InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
+                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
             }
         } else {
-            for (final InstancePathContext instancePathContext : ctx.instanceList().instances) {
-                ret.addCommand(new AddCommand(helper.getInstanceElement(instancePathContext)));
+            for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
+                InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
+                if (sourceExpr.instanceName.contains(":")) {
+                    // TODO create a dedicated exception
+                    throw new IllegalArgumentException("Component " + sourceExpr.toText() + " must be added to node instances");
+                } else {
+                    cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
+                }
             }
         }
-        return ret;
+
+        return cmds;
     }
 
 
@@ -101,8 +102,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitRemove(final RemoveContext ctx) {
         final Commands commands = new Commands();
         final List<InstancePathContext> instancePathContextList = ctx.instanceList().instances;
-        for (final InstancePathContext instancePathContext : instancePathContextList) {
-            commands.addCommand(new RemoveCommand(helper.getInstanceElement(instancePathContext)));
+        for (final InstancePathContext iPath : instancePathContextList) {
+            InstanceExpression instanceExpr = new ExpressionVisitor(this.context).visitInstancePath(iPath);
+            commands.addCommand(new RemoveCommand(instanceExpr));
         }
         return commands;
     }
@@ -110,107 +112,81 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitInstance(final InstanceContext ctx) {
-        final String instanceTypeDefName = ctx.type().typeName().getText();
-        final VersionExpression instanceTypeDefVersion;
-        if (ctx.type().version() != null) {
-            instanceTypeDefVersion = new ExpressionVisitor(context).visitVersion(ctx.type().version());
-        } else {
-            instanceTypeDefVersion = null;
-        }
-        final Expression instanceDeployUnit;
-        if (ctx.type().duVersions() != null) {
-            instanceDeployUnit = new ExpressionVisitor(context).visit(ctx.type().duVersions());
-        } else {
-            instanceDeployUnit = null;
-        }
+        Commands cmds = new Commands();
+        InstanceExpression instanceExpr;
+        TypeExpression typeExpr = new ExpressionVisitor(context).visitType(ctx.type());
         if (ctx.varName != null) {
-            final String instanceVarName = ctx.varName.getText();
-            final FinalExpression instanceName;
+            // only one instance creation
             if (ctx.instanceName != null) {
-                final Expression tmp = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
-                final FinalExpression instanceName2 = this.context.lookup(tmp, FinalExpression.class);
-                if (instanceName2 != null) {
-                    if (instanceName2 instanceof StringExpression) { // || instanceName2 instanceof InstanceExpression
-                        instanceName = instanceName2;
-                    } else {
-                        throw new WrongTypeException(instanceName2.toText(), FinalExpression.class);
-                    }
-                } else {
-                    instanceName = null;
-                }
+                // instance creation using an expression for the name
+                FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
+                instanceExpr = new InstanceExpression(nameExpr.toText(), typeExpr);
+                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
+                cmds.addCommand(new InstanceCommand(nameExpr.toText(), typeExpr));
             } else {
-                instanceName = new StringExpression(instanceVarName);
+                // instance creation using the identifier name for the name
+                instanceExpr = new InstanceExpression(ctx.varName.getText(), typeExpr);
+                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
+                cmds.addCommand(new InstanceCommand(ctx.varName.getText(), typeExpr));
             }
-            final InstanceExpression addedInstance = new InstanceExpression(instanceName.toText(), instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit);
-            this.context.addExpression(instanceVarName, addedInstance);
         } else {
-            for (Basic_identifierContext varName : ctx.varIdentifierList().basic_identifier()) {
-                final String instanceVarName = varName.getText();
-                final FinalExpression instanceName = new StringExpression(varName.getText());
-                this.context.addExpression(instanceVarName, new InstanceExpression(instanceName.toText(), instanceTypeDefName, instanceTypeDefVersion, instanceDeployUnit));
+            // instance creation using the identifier name(s) for the name
+            for (BasicIdentifierContext id : ctx.varIdentifierList().basicIdentifier()) {
+                instanceExpr = new InstanceExpression(id.getText(), typeExpr);
+                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
+                cmds.addCommand(new InstanceCommand(id.getText(), typeExpr));
             }
         }
-        return new Commands();
+
+        return cmds;
     }
 
     @Override
     public Commands visitAttach(final AttachContext ctx) {
-        final RootInstanceElement group = this.helper.getInstanceFromIdentifierContext(ctx.identifier());
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+        InstanceExpression group;
+        InstanceExpression node;
 
-        // node conversion from expression to command element
-        final Commands ret = new Commands();
-        for (final IdentifierContext node : ctx.nodesId.identifier()) {
-            final RootInstanceElement nodeRootInstanceElement = this.helper.getInstanceFromIdentifierContext(node);
-
-            // command instanciation
-            ret.addCommand(new AttachCommand(group, nodeRootInstanceElement));
+        FinalExpression groupExpr = exprVisitor.visitIdentifier(ctx.groupId);
+        if (groupExpr == null) {
+            // unable to resolve reference => using identifier as name
+            group = new InstanceExpression(ctx.groupId.getText(), null);
+        } else {
+            group = new InstanceExpression(groupExpr.toText(), null);
         }
-        return ret;
+
+        FinalExpression nodeExpr = exprVisitor.visitIdentifier(ctx.nodeId);
+        if (nodeExpr == null) {
+            // unable to resolve reference => using identifier as name
+            node = new InstanceExpression(ctx.nodeId.getText(), null);
+        } else {
+            node = new InstanceExpression(nodeExpr.toText(), null);
+        }
+
+        return new Commands().addCommand(new AttachCommand(group, node));
     }
 
     @Override
     public Commands visitDetach(DetachContext ctx) {
-        final RootInstanceElement group = this.helper.getInstanceFromIdentifierContext(ctx.identifier());
-
-        // node conversion from expression to command element
-        final Commands ret = new Commands();
-        for (final IdentifierContext node : ctx.nodesId.identifier()) {
-            final RootInstanceElement nodeRootInstanceElement = this.helper.getInstanceFromIdentifierContext(node);
-            // command instanciation
-            ret.addCommand(new DetachCommand(group, nodeRootInstanceElement));
+        final Commands cmds = new Commands();
+        for (final InstancePathContext iPath : ctx.instanceList().instancePath()) {
+            InstanceExpression instance = new ExpressionVisitor(this.context).visitInstancePath(iPath);
+            cmds.addCommand(new DetachCommand(instance));
         }
-        return ret;
+        return cmds;
     }
 
     @Override
     public Commands visitMove(MoveContext ctx) {
         final Commands commands = new Commands();
-        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        if (!ctx.identifier().isEmpty()) {
-            // case with identifiers and possible array
-            final RootInstanceElement target = helper.identifierContextToRootInstance(ctx.identifier(0));
-            final InstanceElement targetInstance = new InstanceElement(target);
-            if (ctx.identifierList() != null) {
-                for (IdentifierContext a : ctx.identifierList().identifiers) {
-                    final RootInstanceElement source = helper.identifierContextToRootInstance(a);
-                    commands.addCommand(new MoveCommand(targetInstance, new InstanceElement(source)));
-                }
-            } else if (ctx.identifier().size() == 2) {
-                final RootInstanceElement source = helper.identifierContextToRootInstance(ctx.identifier(1));
-                commands.addCommand(new MoveCommand(targetInstance, new InstanceElement(source)));
-            } else {
-                for (InstancePathContext instancePath : ctx.instanceList().instances) {
-                    final InstanceElement instance1 = helper.instancePathToInstanceElement(expressionVisitor.visitInstancePath(instancePath));
-                    commands.addCommand(new MoveCommand(targetInstance, instance1));
-                }
-            }
-        } else {
-            // case with two direct references
-            final InstanceElement targetInstance = this.helper.getInstanceElement(ctx.instancePath(0));
-            final InstanceElement sourceInstance = this.helper.getInstanceElement(ctx.instancePath(1));
-            final MoveCommand e = new MoveCommand(targetInstance, sourceInstance);
-            commands.add(e);
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+
+        InstanceExpression target = exprVisitor.visitInstancePath(ctx.instancePath());
+        for (InstancePathContext sourceCtx : ctx.instanceList().instancePath()) {
+            InstanceExpression source = exprVisitor.visitInstancePath(sourceCtx);
+            commands.addCommand(new MoveCommand(target, source));
         }
+
         return commands;
     }
 
@@ -219,10 +195,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands commands = new Commands();
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         for (InstancePathContext instancePath : ctx.instanceList().instances) {
-            final InstanceElement instance = helper.instancePathToInstanceElement(expressionVisitor.visitInstancePath(instancePath));
-            commands.addCommand(new StartCommand(instance));
+            InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
+            commands.addCommand(new StartCommand(instanceExpr));
         }
-
         return commands;
     }
 
@@ -231,142 +206,80 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands commands = new Commands();
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         for (InstancePathContext instancePath : ctx.instanceList().instances) {
-            final InstanceElement instance = helper.instancePathToInstanceElement(expressionVisitor.visitInstancePath(instancePath));
-            commands.addCommand(new StopCommand(instance));
+            InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
+            commands.addCommand(new StopCommand(instanceExpr));
         }
-
         return commands;
     }
 
     @Override
     public Commands visitLetDecl(final LetDeclContext ctx) {
-        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final FinalExpression res = expressionVisitor.visit(ctx.val);
         final boolean isExported = ctx.EXPORT() != null;
-        this.context.addExpression(ctx.basic_identifier().getText(), res, isExported);
-        return expressionVisitor.aggregatedFunctionsCommands;
+        FinalExpression expr = new ExpressionVisitor(context).visitExpression(ctx.val);
+        this.context.addExpression(ctx.basicIdentifier().getText(), expr, isExported);
+        return new Commands();
     }
 
     @Override
     public Commands visitBind(BindContext ctx) {
-        final RootInstanceElement chan = this.helper.getInstanceFromIdentifierContext(ctx.chan);
-
-        final Commands ret = new Commands();
-        for (final PortPathContext portPath : ctx.nodes.instances) {
-            ret.addAll(visitBindNode(chan, portPath));
-        }
-
-        return ret;
-    }
-
-    private Commands visitBindNode(final RootInstanceElement chan, final PortPathContext portPath) {
-        final Commands ret;
-        final InstancePathContext instancePathContext = portPath.instancePath();
-        if (instancePathContext == null) {
-            // instance path is empty so identifier must be a reference to an instance path declared previously.
-            ret = visitBindNodeInstanceReference(chan, portPath);
+        final Commands cmds = new Commands();
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+        InstanceExpression chanInstance;
+        FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        if (chanExpr == null) {
+            chanInstance = new InstanceExpression(ctx.chan.getText(), null);
         } else {
-            ret = visitBindNodeInstancePath(chan, portPath, instancePathContext);
+            chanInstance = new InstanceExpression(chanExpr.toText(), null);
         }
-        return ret;
-    }
 
-    private Commands visitBindNodeInstancePath(final RootInstanceElement chan, final PortPathContext portPath, final InstancePathContext instancePathContext) {
-        final IdentifierContext identifier = portPath.identifier();
-        final String portName = helper.getPortPathFromIdentifier(identifier);
-        final boolean isInput = portPath.LEFT_LIGHT_ARROW() != null;
-        final InstanceElement instance = this.helper.getInstanceElement(instancePathContext);
-        final PortElement port = new PortElement(portName, instance, isInput);
-        return new Commands().addCommand(new BindCommand(chan, port));
-    }
-
-
-    private Commands visitBindNodeInstanceReference(RootInstanceElement chan, PortPathContext portPath) {
-        final Commands ret = new Commands();
-        final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
-        try {
-            if (result instanceof PortPathExpression) {
-                final PortPathExpression instance = (PortPathExpression) result;
-                final InstanceElement instance1 = helper.instancePathToInstanceElement(instance.instancePath);
-                final PortElement portElement = new PortElement(instance.portName, instance1, instance.isInput);
-                ret.addCommand(new BindCommand(chan, portElement));
-            } else {
-                throw new PortPathNotFound(portPath.identifier().getText());
-            }
-        } catch (InstanceNameNotFound e) {
-            throw new PortPathNotFound(result.toString());
+        for (PortPathContext pPath : ctx.portList().instances) {
+            PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
+            cmds.addCommand(new BindCommand(chanInstance, pExpr));
         }
-        return ret;
+
+        return cmds;
     }
 
     @Override
     public Commands visitUnbind(UnbindContext ctx) {
-        final RootInstanceElement chan = this.helper.getInstanceFromIdentifierContext(ctx.chan);
-
-        final Commands ret = new Commands();
-        for (final PortPathContext portPath : ctx.nodes.instances) {
-            final InstancePathContext instancePathContext = portPath.instancePath();
-            if (instancePathContext == null) {
-                // instance path is empty so identifier must be a reference to an instance path declared previously.
-                ret.addAll(visitUnbindInstanceRef(chan, portPath));
-            } else {
-                ret.addAll(visitUnbindInstancePath(chan, portPath, instancePathContext));
-            }
+        final Commands cmds = new Commands();
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+        InstanceExpression chanInstance;
+        FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        if (chanExpr == null) {
+            chanInstance = new InstanceExpression(ctx.chan.getText(), null);
+        } else {
+            chanInstance = new InstanceExpression(chanExpr.toText(), null);
         }
 
-        return ret;
-    }
-
-    private Commands visitUnbindInstancePath(final RootInstanceElement chan, final PortPathContext portPath, final InstancePathContext instancePathContext) {
-        final boolean isInput = portPath.LEFT_LIGHT_ARROW() != null;
-        final String portName = helper.getPortPathFromIdentifier(portPath.identifier());
-        final InstanceElement instanceElement = this.helper.getInstanceElement(instancePathContext);
-        final PortElement port = new PortElement(portName, instanceElement, isInput);
-        return new Commands().addCommand(new UnbindCommand(chan, port));
-    }
-
-    private Commands visitUnbindInstanceRef(RootInstanceElement chan, PortPathContext portPath) {
-        final Commands ret = new Commands();
-        final Expression result = new ExpressionVisitor(context).visit(portPath.identifier());
-        try {
-            final FinalExpression instanceB = this.context.lookup(result, FinalExpression.class);
-            if (instanceB instanceof PortPathExpression) {
-                final PortPathExpression instance = (PortPathExpression) instanceB;
-                final InstanceElement instance1 = helper.instancePathToInstanceElement(instance.instancePath);
-                final PortElement portElement = new PortElement(instance.portName, instance1, instance.isInput);
-                ret.addCommand(new UnbindCommand(chan, portElement));
-            } else {
-                throw new PortPathNotFound(portPath.identifier().getText());
-            }
-        } catch (InstanceNameNotFound e) {
-            throw new PortPathNotFound(result.toString());
+        for (PortPathContext pPath : ctx.portList().instances) {
+            PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
+            cmds.addCommand(new UnbindCommand(chanInstance, pExpr));
         }
-        return ret;
+
+        return cmds;
     }
 
     @Override
     public Commands visitFuncDecl(final FuncDeclContext ctx) {
-
         final boolean exported = ctx.EXPORT() != null;
         if (ctx.NATIVE() == null) {
-
-            /*
-            We snapshot the current context as the one in the scope of the function (for later call).
-             */
-            final Context context = new Context();
-            context.setContext(this.context.getInheritedContext());
-            final FunctionExpression functionExpression = new FunctionExpression(context);
+            // We snapshot the current context as the one in the scope of the function (for later call).
+            final Context funcCtx = new Context();
+            funcCtx.setContext(this.context.getInheritedContext());
+            final FunctionExpression functionExpression = new FunctionExpression(funcCtx);
             if (ctx.parameters != null) {
-                for (final Basic_identifierContext param : ctx.parameters.basic_identifier()) {
+                for (final BasicIdentifierContext param : ctx.parameters.basicIdentifier()) {
                     functionExpression.addParam(param.getText());
                 }
             }
             functionExpression.setFunctionBody(ctx.funcBody());
             this.context.addExpression(ctx.functionName.getText(), functionExpression, exported);
+
         } else {
             final FunctionNativeExpression functionNativeExpression = new FunctionNativeExpression();
             if (ctx.parameters != null) {
-                for (final Basic_identifierContext param : ctx.parameters.basic_identifier()) {
+                for (final BasicIdentifierContext param : ctx.parameters.basicIdentifier()) {
                     functionNativeExpression.addParam(param.getText());
                 }
             }
@@ -392,14 +305,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitSet(SetContext ctx) {
-        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final DictionaryPathExpression instanceDicoRef = expressionVisitor.visitDictionaryPath(ctx.dictionaryPath());
-        final RootInstanceElement node = helper.convertPortPathToNodeElement(instanceDicoRef.instancePathExpression);
-        final RootInstanceElement component = helper.convertPortPathToComponentElement(instanceDicoRef.instancePathExpression);
-        final FinalExpression value = expressionVisitor.visitExpression(ctx.val);
-        final DictionaryElement dictionaryElement = new DictionaryElement(instanceDicoRef.dicoName, instanceDicoRef.frag, new InstanceElement(node, component));
-        final SetCommand setCommand = new SetCommand(dictionaryElement, value.toText());
-        return new Commands().addCommand(setCommand);
+        ExpressionVisitor exprVisitor = new ExpressionVisitor(context);
+        DictionaryPathExpression dicPathExpr = exprVisitor.visitDictionaryPath(ctx.dictionaryPath());
+        FinalExpression valueExpr = exprVisitor.visitExpression(ctx.val);
+        return new Commands().addCommand(new SetCommand(dicPathExpr, valueExpr.toText()));
     }
 
     @Override
@@ -429,45 +338,67 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitNetinit(final NetinitContext ctx) {
-        final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ObjectElement network = helper.getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
-        return new Commands().addCommand(new NetInitCommand(node, network));
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        ObjectDeclExpression object = this.helper.getObjectByDeclOrIdentifier(ctx.objectDecl(), ctx.identifier(1));
+        return new Commands().addCommand(new NetInitCommand(instance, object));
     }
 
     @Override
     public Commands visitNetmerge(NetmergeContext ctx) {
-        final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ObjectElement network = helper.getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
-        return new Commands().addCommand(new NetMergeCommand(node, network));
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        ObjectDeclExpression object = this.helper.getObjectByDeclOrIdentifier(ctx.objectDecl(), ctx.identifier(1));
+        return new Commands().addCommand(new NetMergeCommand(instance, object));
     }
 
     @Override
     public Commands visitNetremove(final NetremoveContext ctx) {
-        final RootInstanceElement node = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final List<String> objectRefs = helper.getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
-        return new Commands().addCommand(new NetRemoveCommand(node, objectRefs));
+        final Commands cmds = new Commands();
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+
+        if (ctx.identifierList() != null) {
+            for (IdentifierContext idCtx : ctx.identifierList().identifiers) {
+                ObjectDeclExpression object = this.helper.getObjectDeclExpression(idCtx);
+                cmds.addCommand(new NetRemoveCommand(instance, object));
+            }
+        } else {
+            ObjectDeclExpression object = this.helper.getObjectDeclExpression(ctx.identifier(1));
+            cmds.addCommand(new NetRemoveCommand(instance, object));
+        }
+
+        return cmds;
     }
 
 
     @Override
     public Commands visitMetainit(final MetainitContext ctx) {
-        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ObjectElement metas = helper.getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
-        return new Commands().addCommand(new MetaInitCommand(instance, metas));
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        ObjectDeclExpression object = this.helper.getObjectByDeclOrIdentifier(ctx.objectDecl(), ctx.identifier(1));
+        return new Commands().addCommand(new MetaInitCommand(instance, object));
     }
 
     @Override
     public Commands visitMetamerge(final MetamergeContext ctx) {
-        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final ObjectElement metas = helper.getObjectByDeclOrIdentifier(ctx.identifier(1), ctx.objectDecl());
-        return new Commands().addCommand(new MetaMergeCommand(instance, metas));
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        ObjectDeclExpression object = this.helper.getObjectByDeclOrIdentifier(ctx.objectDecl(), ctx.identifier(1));
+        return new Commands().addCommand(new MetaMergeCommand(instance, object));
     }
 
     @Override
     public Commands visitMetaremove(final MetaremoveContext ctx) {
-        final RootInstanceElement instance = this.helper.getInstanceFromIdentifierContext(ctx.identifier(0));
-        final List<String> objectRefs = helper.getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
-        return new Commands().addCommand(new MetaRemoveCommand(instance, objectRefs));
+        final Commands cmds = new Commands();
+        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+
+        if (ctx.identifierList() != null) {
+            for (IdentifierContext idCtx : ctx.identifierList().identifiers) {
+                ObjectDeclExpression object = this.helper.getObjectDeclExpression(idCtx);
+                cmds.addCommand(new MetaRemoveCommand(instance, object));
+            }
+        } else {
+            ObjectDeclExpression object = this.helper.getObjectDeclExpression(ctx.identifier(1));
+            cmds.addCommand(new MetaRemoveCommand(instance, object));
+        }
+
+        return cmds;
     }
 
     @Override
@@ -477,7 +408,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
         final String qualifier;
         if (ctx.AS() != null) {
-            final String root = ctx.basic_identifier().getText();
+            final String root = ctx.basicIdentifier().getText();
             this.context.addExpression(root, new NullExpression());
             qualifier = root + ".";
 
@@ -495,7 +426,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             }
         } else {
             // import only required elements
-            for (final Basic_identifierContext a : ctx.qualifiers.basic_identifier()) {
+            for (final BasicIdentifierContext a : ctx.qualifiers.basicIdentifier()) {
                 final String key = a.getText();
                 if (inheritedContext.containsKey(key)) {
                     final FinalExpression expression = inheritedContext.get(key);

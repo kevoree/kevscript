@@ -1,16 +1,22 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 
 /**
- * Created by mleduc on 17/03/16.
+ *
+ *
  */
 public class AttachCommand extends AbstractCommand {
-    public final RootInstanceElement group;
-    public final RootInstanceElement node;
+    public final InstanceExpression group;
+    public final InstanceExpression node;
 
-    public AttachCommand(final RootInstanceElement group, final RootInstanceElement node) {
+    public AttachCommand(final InstanceExpression group, final InstanceExpression node) {
         this.group = group;
         this.node = node;
+    }
+
+    @Override
+    public String toString() {
+        return "attach " + group.toText() + " " + node.toText();
     }
 }

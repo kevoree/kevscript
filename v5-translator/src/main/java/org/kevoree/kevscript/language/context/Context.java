@@ -1,6 +1,6 @@
 package org.kevoree.kevscript.language.context;
 
-import org.kevoree.kevscript.language.excpt.InstanceNameNotFound;
+import org.kevoree.kevscript.language.excpt.UnknownIdentifier;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
@@ -62,11 +62,11 @@ public class Context {
         if (mapIdentifiers.containsKey(key)) {
             final FinalExpression expression = mapIdentifiers.get(key);
             if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
-                throw new WrongTypeException(key, clazz);
+                throw new WrongTypeException(key, clazz, expression.getClass());
             }
             return (T) expression;
         } else if (throwException) {
-            throw new InstanceNameNotFound(key);
+            throw new UnknownIdentifier(key);
         }
         return null;
     }
@@ -81,7 +81,7 @@ public class Context {
     }
 
     public void addExpression(final String identifier, final FinalExpression expression, final boolean isExported) {
-
+        //this.mapIdentifiers.put(identifier, expression);
         if (expression instanceof ArrayDeclExpression) {
             final ArrayDeclExpression arr = (ArrayDeclExpression) expression;
             int i = 0;
@@ -102,14 +102,16 @@ public class Context {
     }
 
     protected void basicAddExpression(final String identifier, final FinalExpression expression, final boolean isExported) {
-        if (this.mapIdentifiers.containsKey(identifier)) {
-            throw new NameCollisionException(identifier);
-        }
+        if (expression != null) {
+            if (this.mapIdentifiers.containsKey(identifier)) {
+                throw new NameCollisionException(identifier);
+            }
 
-        this.mapIdentifiers.put(identifier, expression);
+            this.mapIdentifiers.put(identifier, expression);
 
-        if (isExported) {
-            this.localyExportedContext.put(identifier, expression);
+            if (isExported) {
+                this.localyExportedContext.put(identifier, expression);
+            }
         }
     }
 

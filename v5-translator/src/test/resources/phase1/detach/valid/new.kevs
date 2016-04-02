@@ -2,4 +2,4 @@ instance node0 = JavaNode
 instance group0 = WSGroup
 
 add [node0, group0]
-detach group0 node0
+detach group0

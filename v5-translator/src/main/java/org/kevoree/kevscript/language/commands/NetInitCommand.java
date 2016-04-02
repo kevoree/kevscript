@@ -1,17 +1,24 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
-import org.kevoree.kevscript.language.commands.element.object.ObjectElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 
 /**
- * Created by mleduc on 25/03/16.
+ *
+ *
  */
 public class NetInitCommand extends AbstractCommand {
-    public final RootInstanceElement node;
-    public final ObjectElement network;
 
-    public NetInitCommand(final RootInstanceElement node, final ObjectElement network) {
-        this.node = node;
+    public final InstanceExpression instance;
+    public final ObjectDeclExpression network;
+
+    public NetInitCommand(final InstanceExpression instance, final ObjectDeclExpression network) {
+        this.instance = instance;
         this.network = network;
+    }
+
+    @Override
+    public String toString() {
+        return "net-init " + instance.toText() + " " + network.toText();
     }
 }

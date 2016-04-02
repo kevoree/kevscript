@@ -1,16 +1,20 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 
 /**
- * Created by mleduc on 17/03/16.
+ *
+ *
  */
 public class DetachCommand extends AbstractCommand {
-    public final RootInstanceElement group;
-    public final RootInstanceElement node;
+    public final InstanceExpression instance;
 
-    public DetachCommand(final RootInstanceElement group, final RootInstanceElement node) {
-        this.group = group;
-        this.node = node;
+    public DetachCommand(final InstanceExpression instance) {
+        this.instance = instance;
+    }
+
+    @Override
+    public String toString() {
+        return "detach " + instance.toText();
     }
 }

@@ -29,4 +29,13 @@ public class IdentifierExpression implements NonFinalExpression {
         }
         return ret;
     }
+
+    @Override
+    public String toText() {
+        if (this.right != null) {
+            return left.toText() + "." + right.toText();
+        } else {
+            return left.toText();
+        }
+    }
 }

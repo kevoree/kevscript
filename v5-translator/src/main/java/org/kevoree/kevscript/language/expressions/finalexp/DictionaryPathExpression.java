@@ -4,12 +4,12 @@ package org.kevoree.kevscript.language.expressions.finalexp;
  * Created by mleduc on 23/03/16.
  */
 public class DictionaryPathExpression implements FinalExpression {
-    public final InstancePathExpression instancePathExpression;
+    public final InstanceExpression instance;
     public final String dicoName;
     public final String frag;
 
-    public DictionaryPathExpression(InstancePathExpression instancePathExpression, String dicoName, String frag) {
-        this.instancePathExpression = instancePathExpression;
+    public DictionaryPathExpression(InstanceExpression instance, String dicoName, String frag) {
+        this.instance = instance;
         this.dicoName = dicoName;
         this.frag = frag;
     }
@@ -18,9 +18,9 @@ public class DictionaryPathExpression implements FinalExpression {
     public String toText() {
         final String ret;
         if (this.frag == null) {
-            ret = this.instancePathExpression.toText() + "#" + this.dicoName;
+            ret = this.instance.toText() + "#" + this.dicoName;
         } else {
-            ret = this.instancePathExpression.toText() + "#" + this.dicoName + "/" + frag;
+            ret = this.instance.toText() + "#" + this.dicoName + "/" + frag;
         }
         return ret;
     }

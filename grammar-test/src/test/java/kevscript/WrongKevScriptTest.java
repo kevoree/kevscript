@@ -87,7 +87,17 @@ public class WrongKevScriptTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testAddInstancesPathToIdentifier() throws IllegalStateException {
-        tester("add a [a:b, b:c]");
+    public void testAttachMultipleNodes() throws IllegalStateException {
+        tester("attach a [b, c]");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDetachMultipleNodes() throws IllegalStateException {
+        tester("detach a b");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testReattachMultipleNodes() throws IllegalStateException {
+        tester("reattach a [b, c]");
     }
 }

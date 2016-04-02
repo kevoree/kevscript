@@ -1,18 +1,23 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
-
-import java.util.List;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 
 /**
- * Created by mleduc on 29/03/16.
+ *
+ *
  */
 public class MetaRemoveCommand extends AbstractCommand {
-    public final RootInstanceElement instance;
-    public final List<String> objectRefs;
+    public final InstanceExpression instance;
+    public final ObjectDeclExpression object;
 
-    public MetaRemoveCommand(RootInstanceElement instance, List<String> objectRefs) {
+    public MetaRemoveCommand(final InstanceExpression instance, final ObjectDeclExpression object) {
         this.instance = instance;
-        this.objectRefs = objectRefs;
+        this.object = object;
+    }
+
+    @Override
+    public String toString() {
+        return "meta-remove " + instance.toText() + " " + object.toText();
     }
 }

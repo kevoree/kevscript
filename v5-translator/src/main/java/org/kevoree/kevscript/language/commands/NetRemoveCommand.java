@@ -1,18 +1,23 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
-
-import java.util.List;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 
 /**
- * Created by mleduc on 25/03/16.
+ *
+ *
  */
 public class NetRemoveCommand extends AbstractCommand {
-    public final RootInstanceElement node;
-    public final List<String> objectRefs;
+    public final InstanceExpression instance;
+    public final ObjectDeclExpression network;
 
-    public NetRemoveCommand(final RootInstanceElement node, final List<String> objectRefs) {
-        this.node = node;
-        this.objectRefs = objectRefs;
+    public NetRemoveCommand(final InstanceExpression instance, final ObjectDeclExpression network) {
+        this.instance = instance;
+        this.network = network;
+    }
+
+    @Override
+    public String toString() {
+        return "net-remove " + instance.toText() + " " + network.toText();
     }
 }

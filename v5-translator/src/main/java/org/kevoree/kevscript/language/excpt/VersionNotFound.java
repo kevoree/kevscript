@@ -7,6 +7,6 @@ import org.kevoree.kevscript.language.expressions.Expression;
  */
 public class VersionNotFound extends RuntimeException {
     public VersionNotFound(Expression expression) {
-
+        super(expression.toText());
     }
 }

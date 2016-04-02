@@ -35,7 +35,7 @@ public abstract class AbstractFunctionExpression<U> implements FinalExpression {
 
     @Override
     public String toText() {
-        return null;
+        return "";
     }
 
     public List<String> getParameters() {

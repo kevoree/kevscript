@@ -1,17 +1,23 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.commands.element.PortElement;
-import org.kevoree.kevscript.language.commands.element.RootInstanceElement;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.PortPathExpression;
 
 /**
- * Created by mleduc on 17/03/16.
+ *
+ *
  */
 public class BindCommand extends AbstractCommand {
-    public final RootInstanceElement chan;
-    public final PortElement port;
+    public final InstanceExpression chan;
+    public final PortPathExpression port;
 
-    public BindCommand(final RootInstanceElement chan, final PortElement port) {
+    public BindCommand(final InstanceExpression chan, final PortPathExpression port) {
         this.chan = chan;
         this.port = port;
+    }
+
+    @Override
+    public String toString() {
+        return "bind " + chan.toText() + " " + port.toText();
     }
 }

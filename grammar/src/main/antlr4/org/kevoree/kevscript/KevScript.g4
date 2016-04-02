@@ -9,6 +9,7 @@ statement
     | remove
     | attach
     | detach
+    | reattach
     | move
     | start
     | stop
@@ -26,20 +27,15 @@ statement
     | forDecl
     | funcCall
     | importDecl
-    | attachModelConnector
-    | detachModelConnector
-    | replaceModelConnector
     | timeDecl
     | worldDecl
     ;
 instance
-    : INSTANCE varName=basic_identifier ASSIGN (instanceName=expression?) type
+    : INSTANCE varName=basicIdentifier ASSIGN (instanceName=expression)? type
     | INSTANCE varIdentifierList ASSIGN type
     ;
 add
-    : ADD identifier (LS_BRACKET identifierList RS_BRACKET | identifier)? // attach a list of components to a node. if the list is empty the node is added to the model
-    | ADD LS_BRACKET identifierList RS_BRACKET                            // add a list of instances at the root of the model
-    | ADD instanceList                                                    // add a list of instances path (add a:b = add component b to node a)
+    : ADD (target=instancePath)? sources=instanceList
     ;
 remove
     : REMOVE instanceList
@@ -54,20 +50,16 @@ set
     : SET dictionaryPath ASSIGN val=expression
     ;
 attach
-    : ATTACH groupId=identifier nodesId=identifierList
+    : ATTACH groupId=identifier nodeId=identifier
     ;
 detach
-    : DETACH groupId=identifier nodesId=identifierList
+    : DETACH instanceList
     ;
-
-attachModelConnector : ATTACH_MODEL_CONNECTOR nodeId=identifier modelConnectorId=identifier;
-detachModelConnector : DETACH_MODEL_CONNECTOR nodeId=identifier ;
-replaceModelConnector : REPLACE_MODEL_CONNECTOR nodeId=identifier modelConnectorId=identifier;
-
-
+reattach
+    : REATTACH groupId=identifier nodeId=identifier
+    ;
 move
-    : MOVE identifier (LS_BRACKET identifierList RS_BRACKET | identifier | instanceList)            // move a list of instances to a targeted node ; if instanceList is a single element, this element is renamed)
-    | MOVE instancePath instancePath                                                                // move an instance path to another instance path
+    : MOVE instancePath instanceList
     ;
 bind
     : BIND chan=identifier nodes=portList
@@ -76,7 +68,7 @@ unbind
     : UNBIND chan=identifier nodes=portList
     ;
 letDecl
-    : EXPORT? LET basic_identifier ASSIGN val=expression
+    : EXPORT? LET basicIdentifier ASSIGN val=expression
     ;
 netinit
     : NETINIT identifier (objectDecl|identifier)
@@ -99,10 +91,10 @@ metaremove
     | METAREMOVE identifier LS_BRACKET identifierList RS_BRACKET
     ;
 varIdentifierList
-    : basic_identifier (COMMA basic_identifier)*
+    : basicIdentifier (COMMA basicIdentifier)*
     ;
 forDecl
-    : FOR L_BRACKET (index=basic_identifier COMMA)? val=basic_identifier IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
+    : FOR L_BRACKET (index=basicIdentifier COMMA)? val=basicIdentifier IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
     ;
 iterable
     : arrayDecl
@@ -116,31 +108,27 @@ objectDecl
     : LC_BRACKET (values+=keyAndValue (COMMA values+=keyAndValue)*)? RC_BRACKET
     ;
 keyAndValue
-    : key=basic_identifier COLON value=expression
+    : key=basicIdentifier COLON value=expression
     ;
 arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : basic_identifier (DOT basic_identifier)? L_BRACKET parameters=expressionList? R_BRACKET // replace ID by a namespace+fonction reference.
+    : basicIdentifier L_BRACKET parameters=expressionList? R_BRACKET
     ;
 funcDecl
-    : EXPORT? FUNCTION functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
-    | EXPORT? FUNCTION NATIVE functionName=basic_identifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
+    : EXPORT? FUNCTION functionName=basicIdentifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
+    | EXPORT? FUNCTION NATIVE functionName=basicIdentifier L_BRACKET parameters=varIdentifierList? R_BRACKET SOURCE_CODE
     ;
-
 timeDecl
     : TIME (NUMERIC_VALUE|identifier) LC_BRACKET statement* RC_BRACKET
     ;
-
 worldDecl
     : WORLD (NUMERIC_VALUE|identifier) LC_BRACKET statement* RC_BRACKET
     ;
-
 importDecl
-    : IMPORT (qualifiers=varIdentifierList FROM)? resource=string (AS basic_identifier)?
+    : IMPORT (qualifiers=varIdentifierList FROM)? resource=string (AS basicIdentifier)?
     ;
-
 funcBody
     : (statement*) returnStatement?
     ;
@@ -150,12 +138,10 @@ returnStatement
 expression
     : string                        // a raw string
     | objectDecl                    // a object declaration
-    | contextIdentifier             // a context reference
+    | contextRef                    // a context reference
     | expression CONCAT expression  // a concatenation of expressions
     | arrayDecl                     // a list of values declaration
-    | arrayAccess
     | identifier
-    | funcCall
     | instancePath
     | portPath
     ;
@@ -163,22 +149,23 @@ expressionList
     : expression (COMMA expression)*
     ;
 arrayAccess
-    : basic_identifier LS_BRACKET NUMERIC_VALUE RS_BRACKET // IMPLEM : can numeric value be replaced by a variable ?
+    : LS_BRACKET NUMERIC_VALUE RS_BRACKET // TODO handle identifier instead of only NUMERIC_VALUE
     ;
 contextIdentifier
-    : basic_identifier
+    : basicIdentifier
     | contextRef
-    | arrayAccess
+    | basicIdentifier arrayAccess (DOT contextIdentifier)?
     | contextIdentifier DOT contextIdentifier
     ;
 contextRef
     : AMPERSAND contextIdentifier
     ;
 identifier
-    : basic_identifier (DOT identifier) ?
+    : basicIdentifier (DOT identifier)?
     | contextRef
-    | funcCall (DOT identifier) ?
-    | arrayAccess (DOT identifier) ?
+    | funcCall (DOT identifier)?
+    | basicIdentifier arrayAccess (DOT identifier)?
+    | funcCall arrayAccess (DOT identifier)?
     ;
 identifierList
     : identifiers+=identifier (COMMA identifiers+=identifier)*
@@ -187,12 +174,11 @@ instancePath
     : identifier (COLON identifier)?
     ;
 portPath
-    : (instancePath (LEFT_LIGHT_ARROW|RIGHT_LIGHT_ARROW))? identifier
+    : (instancePath (LEFT_ARROW|RIGHT_ARROW))? identifier
     ;
 dictionaryPath
-    : key=instancePath SHARP identifier (SLASH frag=identifier)?
+    : instancePath SHARP name=identifier (SLASH fragmentName=identifier)?
     ;
-
 instanceList
     : instances+=instancePath
     | LS_BRACKET instances+=instancePath (COMMA instances+=instancePath)* RS_BRACKET
@@ -205,7 +191,7 @@ type
     : typeName (SLASH version duVersions?)?
     ;
 typeName
-    : (basic_identifier DOT)? basic_identifier
+    : (basicIdentifier DOT)? basicIdentifier
     ;
 version
     : NUMERIC_VALUE
@@ -220,7 +206,7 @@ string
     | value=DQ_STR
     ;
 
-basic_identifier : ID ;
+basicIdentifier : ID ;
 
 FROM : 'from' ;
 IMPORT : 'import' ;
@@ -240,8 +226,8 @@ LC_BRACKET : '{' ;
 RC_BRACKET : '}' ;
 R_BRACKET : ')' ;
 L_BRACKET : '(' ;
-RIGHT_LIGHT_ARROW : '<-' ;
-LEFT_LIGHT_ARROW : '->' ;
+LEFT_ARROW : '<-' ;
+RIGHT_ARROW : '->' ;
 FOR : 'for' ;
 IN : 'in' ;
 INSTANCE: 'instance';
@@ -254,6 +240,7 @@ START : 'start' ;
 STOP : 'stop' ;
 SET : 'set' ;
 DETACH : 'detach' ;
+REATTACH : 'reattach' ;
 MOVE : 'move' ;
 ATTACH : 'attach' ;
 BIND : 'bind' ;
@@ -267,10 +254,6 @@ NETREMOVE : 'net-remove' ;
 METAINIT : 'meta-init' ;
 METAMERGE : 'meta-merge' ;
 METAREMOVE : 'meta-remove' ;
-ATTACH_MODEL_CONNECTOR : 'attach-model-connector' ;
-DETACH_MODEL_CONNECTOR : 'detach-model-connector' ;
-REPLACE_MODEL_CONNECTOR : 'replace-model-connector' ;
-
 SOURCE_CODE : '{{{' .*? '}}}';
 COMMENT
     : '/*' .*? '*/' -> skip
