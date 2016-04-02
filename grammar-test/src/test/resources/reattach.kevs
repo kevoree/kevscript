@@ -1,0 +1,2 @@
+reattach wsConnector node1
+reattach some.connector to.some.node

@@ -1,0 +1,2 @@
+attach wsConnector node
+attach some.connector to.someNode

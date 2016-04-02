@@ -1,0 +1,2 @@
+detach connector1
+detach [wsCon, node0:connector]
