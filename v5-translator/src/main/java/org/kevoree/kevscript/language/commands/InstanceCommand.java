@@ -18,6 +18,28 @@ public class InstanceCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "instance " + this.name + " " + typeExpr.toText();
+        return "InstanceCommand{" +
+                "name='" + name + '\'' +
+                ", typeExpr=" + typeExpr +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InstanceCommand that = (InstanceCommand) o;
+
+        if (!name.equals(that.name)) return false;
+        return typeExpr.equals(that.typeExpr);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + typeExpr.hashCode();
+        return result;
     }
 }

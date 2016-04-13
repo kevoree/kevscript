@@ -15,4 +15,26 @@ public class VersionExpression implements FinalExpression {
         return String.valueOf(version);
     }
 
+    @Override
+    public String toString() {
+        return "VersionExpression{" +
+                "version=" + version +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VersionExpression that = (VersionExpression) o;
+
+        return version == that.version;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (version ^ (version >>> 32));
+    }
 }

@@ -1,5 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
+import org.kevoree.kevscript.language.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -11,5 +13,13 @@ public class Commands extends ArrayList<AbstractCommand> {
     public Commands addCommand(final AbstractCommand command) {
         this.add(command);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Commands{");
+        sb.append(StringUtils.join(this, "\n"));
+        sb.append('}');
+        return sb.toString();
     }
 }
