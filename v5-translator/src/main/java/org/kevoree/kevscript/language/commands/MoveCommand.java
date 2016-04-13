@@ -17,6 +17,9 @@ public class MoveCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "move " + target.toText() + " " + source.toText();
+        return "MoveCommand{" +
+                "source=" + source +
+                ", target=" + target +
+                '}';
     }
 }

@@ -16,6 +16,9 @@ public class SetCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "set " + dicPathExpr.toText() + " = " + value;
+        return "SetCommand{" +
+                "dicPathExpr=" + dicPathExpr +
+                ", value='" + value + '\'' +
+                '}';
     }
 }

@@ -15,6 +15,8 @@ public class RemoveCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "remove " + instance.toText();
+        return "RemoveCommand{" +
+                "instance=" + instance +
+                '}';
     }
 }

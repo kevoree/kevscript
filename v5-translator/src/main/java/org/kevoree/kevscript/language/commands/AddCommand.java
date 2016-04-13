@@ -16,18 +16,6 @@ public class AddCommand extends AbstractCommand {
         this.source = source;
     }
 
-    /*@Override
-    public String toString() {
-        String ret = "add ";
-        if (target != null) {
-            ret += target.toText() + " ";
-        }
-        if (source != null) {
-            ret += source.toText();
-        }
-        return ret;
-    }*/
-
     @Override
     public String toString() {
         return "AddCommand{" +

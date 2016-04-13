@@ -19,6 +19,9 @@ public class NetInitCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "net-init " + instance.toText() + " " + network.toText();
+        return "NetInitCommand{" +
+                "instance=" + instance +
+                ", network=" + network +
+                '}';
     }
 }

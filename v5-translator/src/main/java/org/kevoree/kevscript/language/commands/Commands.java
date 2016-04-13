@@ -17,9 +17,9 @@ public class Commands extends ArrayList<AbstractCommand> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Commands{");
-        sb.append(StringUtils.join(this, "\n"));
-        sb.append('}');
+        final StringBuilder sb = new StringBuilder("Commands{\n\t");
+        sb.append(StringUtils.join(this, "\n\t"));
+        sb.append("\n}");
         return sb.toString();
     }
 }

@@ -18,6 +18,9 @@ public class MetaInitCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "meta-init " + instance.toText() + " " + object.toText();
+        return "MetaInitCommand{" +
+                "instance=" + instance +
+                ", object=" + object +
+                '}';
     }
 }

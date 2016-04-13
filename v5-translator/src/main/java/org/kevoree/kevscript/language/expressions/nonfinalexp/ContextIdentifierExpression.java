@@ -29,4 +29,11 @@ public class ContextIdentifierExpression implements NonFinalExpression {
     public String toText() {
         return "&" + this.toPath();
     }
+
+    @Override
+    public String toString() {
+        return "ContextIdentifierExpression{" +
+                "elems=" + elems +
+                '}';
+    }
 }

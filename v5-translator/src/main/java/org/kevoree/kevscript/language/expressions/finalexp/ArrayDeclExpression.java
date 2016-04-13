@@ -25,4 +25,11 @@ public class ArrayDeclExpression implements FinalExpression {
         }
         return "[" + StringUtils.join(sb, ", ") + "]";
     }
+
+    @Override
+    public String toString() {
+        return "ArrayDeclExpression{" +
+                "expressionList=" + expressionList +
+                '}';
+    }
 }

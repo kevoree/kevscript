@@ -19,6 +19,13 @@ public class ObjectDeclExpression implements FinalExpression {
     }
 
     @Override
+    public String toString() {
+        return "ObjectDeclExpression{" +
+                "values=" + values +
+                '}';
+    }
+
+    @Override
     public String toText() {
         final StringBuilder sb = new StringBuilder();
         sb.append('{');

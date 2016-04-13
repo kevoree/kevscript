@@ -15,6 +15,8 @@ public class StopCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "stop " + instance.toText();
+        return "StopCommand{" +
+                "instance=" + instance +
+                '}';
     }
 }

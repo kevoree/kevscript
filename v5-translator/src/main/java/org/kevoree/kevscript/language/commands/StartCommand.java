@@ -15,6 +15,8 @@ public class StartCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "start " + instance.toText();
+        return "StartCommand{" +
+                "instance=" + instance +
+                '}';
     }
 }

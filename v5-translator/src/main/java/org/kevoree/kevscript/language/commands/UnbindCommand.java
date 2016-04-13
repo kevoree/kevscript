@@ -18,6 +18,9 @@ public class UnbindCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "unbind " + chan.toText() + " " + port.toText();
+        return "UnbindCommand{" +
+                "chan=" + chan +
+                ", port=" + port +
+                '}';
     }
 }

@@ -18,6 +18,9 @@ public class NetRemoveCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "net-remove " + instance.toText() + " " + network.toText();
+        return "NetRemoveCommand{" +
+                "instance=" + instance +
+                ", network=" + network +
+                '}';
     }
 }

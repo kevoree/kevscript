@@ -17,6 +17,9 @@ public class AttachCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "attach " + group.toText() + " " + node.toText();
+        return "AttachCommand{" +
+                "group=" + group +
+                ", node=" + node +
+                '}';
     }
 }

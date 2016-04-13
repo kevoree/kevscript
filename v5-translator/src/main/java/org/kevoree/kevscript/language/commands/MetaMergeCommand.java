@@ -18,6 +18,9 @@ public class MetaMergeCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "meta-merge " + instance.toText() + " " + object.toText();
+        return "MetaMergeCommand{" +
+                "instance=" + instance +
+                ", object=" + object +
+                '}';
     }
 }

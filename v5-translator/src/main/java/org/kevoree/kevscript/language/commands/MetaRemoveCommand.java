@@ -18,6 +18,9 @@ public class MetaRemoveCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "meta-remove " + instance.toText() + " " + object.toText();
+        return "MetaRemoveCommand{" +
+                "instance=" + instance +
+                ", object=" + object +
+                '}';
     }
 }

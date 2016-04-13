@@ -15,6 +15,8 @@ public class DetachCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "detach " + instance.toText();
+        return "DetachCommand{" +
+                "instance=" + instance +
+                '}';
     }
 }

@@ -18,6 +18,9 @@ public class BindCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "bind " + chan.toText() + " " + port.toText();
+        return "BindCommand{" +
+                "chan=" + chan +
+                ", port=" + port +
+                '}';
     }
 }

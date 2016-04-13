@@ -9,4 +9,8 @@ public class NullExpression implements FinalExpression {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "NullExpression{}";
+    }
 }

@@ -8,4 +8,9 @@ public class ContextRefExpression extends ContextIdentifierExpression {
     public String toPath() {
         return '&' + super.toPath();
     }
+
+    @Override
+    public String toString() {
+        return "ContextRefExpression{"+super.toString()+"}";
+    }
 }

@@ -21,5 +21,14 @@ public class PortPathExpression implements FinalExpression {
         String arrow = isInput ? "<-" : "->";
         return instance.toText() + arrow + portName;
     }
+
+    @Override
+    public String toString() {
+        return "PortPathExpression{" +
+                "instance=" + instance +
+                ", isInput=" + isInput +
+                ", portName='" + portName + '\'' +
+                '}';
+    }
 }
 

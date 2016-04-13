@@ -19,6 +19,9 @@ public class NetMergeCommand extends AbstractCommand {
 
     @Override
     public String toString() {
-        return "net-merge " + instance.toText() + " " + network.toText();
+        return "NetMergeCommand{" +
+                "instance=" + instance +
+                ", network=" + network +
+                '}';
     }
 }

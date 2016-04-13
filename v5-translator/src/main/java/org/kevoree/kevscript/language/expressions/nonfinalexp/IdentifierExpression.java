@@ -38,4 +38,12 @@ public class IdentifierExpression implements NonFinalExpression {
             return left.toText();
         }
     }
+
+    @Override
+    public String toString() {
+        return "IdentifierExpression{" +
+                "left=" + left +
+                ", right=" + right +
+                '}';
+    }
 }

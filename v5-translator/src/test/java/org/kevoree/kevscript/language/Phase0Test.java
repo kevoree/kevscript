@@ -26,6 +26,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class Phase0Test {
 
+    private final static InstanceExpression MODEL_ROOT = new InstanceExpression("/", null);
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -33,7 +35,7 @@ public class Phase0Test {
     public void testAdd0() throws Exception {
         final Commands commands = new Commands()
                 .addCommand(new InstanceCommand("nodeName", new TypeExpression(null, "DotnetNode", new VersionExpression(1), null)))
-                .addCommand(new AddCommand(new InstanceExpression("nodeName", null), null));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("nodeName", null)));
         test(commands, "phase0/test1/new.kevs");
     }
 

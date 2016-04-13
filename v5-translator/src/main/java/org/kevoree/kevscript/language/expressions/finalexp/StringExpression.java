@@ -14,4 +14,11 @@ public class StringExpression implements FinalExpression {
     public String toText() {
         return text;
     }
+
+    @Override
+    public String toString() {
+        return "StringExpression{" +
+                "text='" + text + '\'' +
+                '}';
+    }
 }

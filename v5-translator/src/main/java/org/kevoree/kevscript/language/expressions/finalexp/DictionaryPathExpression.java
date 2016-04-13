@@ -25,4 +25,12 @@ public class DictionaryPathExpression implements FinalExpression {
         return ret;
     }
 
+    @Override
+    public String toString() {
+        return "DictionaryPathExpression{" +
+                "dicoName='" + dicoName + '\'' +
+                ", instance=" + instance +
+                ", frag='" + frag + '\'' +
+                '}';
+    }
 }
