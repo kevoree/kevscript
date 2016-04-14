@@ -292,25 +292,16 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public InstanceExpression visitInstancePath(final InstancePathContext ctx) {
-        final FinalExpression instanceExpr = this.visitIdentifier(ctx.identifier(0));
-        String instanceName;
-        if (instanceExpr == null) {
-            // unable to find an already defined value for this instance path => using identifier name
-            instanceName = ctx.identifier(0).getText();
+        final InstanceExpression ret;
+        if (ctx.identifier().size() == 1) {
+            ret = this.helper.getInstanceExpressionFromContext(ctx.identifier(0));
         } else {
-            instanceName = instanceExpr.toText();
+            final InstanceExpression parent = this.helper.getInstanceExpressionFromContext(ctx.identifier(0));
+            final InstanceExpression children = this.helper.getInstanceExpressionFromContext(ctx.identifier(1));
+            return new InstanceExpression(parent.instanceName+":"+children.instanceName, children.typeExpr);
         }
 
-        if (ctx.identifier().size() == 2) {
-            // instance path is referring to a child instance
-            final FinalExpression childExpr = this.visitIdentifier(ctx.identifier(1));
-            if (childExpr == null) {
-                instanceName += ":" + ctx.identifier(1).getText();
-            } else {
-                instanceName += ":" + childExpr.toText();
-            }
-        }
-        return new InstanceExpression(instanceName, null);
+        return ret;
     }
 
     @Override
@@ -363,7 +354,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
 
     @Override
-    public DictionaryPathExpression visitDictionaryPath(DictionaryPathContext ctx) {
+    public DictionaryPathExpression visitDictionaryPath(final DictionaryPathContext ctx) {
         final InstanceExpression instanceExpr = this.visitInstancePath(ctx.instancePath());
         final FinalExpression paramNameExpr = this.visitIdentifier(ctx.name);
         final String paramName;
@@ -374,8 +365,8 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             paramName = paramNameExpr.toText();
         }
         if (ctx.fragmentName != null) {
-            FinalExpression fragExpr = this.visitIdentifier(ctx.fragmentName);
-            String fragName;
+            final FinalExpression fragExpr = this.visitIdentifier(ctx.fragmentName);
+            final String fragName;
             if (fragExpr == null) {
                 // looks like ctx.fragmentName is not resolvable => try to use the name identifier as fragment name
                 fragName = ctx.fragmentName.getText();

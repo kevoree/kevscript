@@ -19,6 +19,16 @@ public class WrongTypeException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return this.identifier + " is expected to be of type " + this.expectedClass.getSimpleName() + " but is " + this.currentClass.getSimpleName();
+        final StringBuilder sb = new StringBuilder();
+        sb.append(this.identifier);
+        sb.append(" is expected to be of type ");
+        if(expectedClass != null) {
+            sb.append(this.expectedClass.getSimpleName());
+        }
+        sb.append(" but is ");
+        if(currentClass != null) {
+            sb.append(this.currentClass.getSimpleName());
+        }
+        return sb.toString();
     }
 }

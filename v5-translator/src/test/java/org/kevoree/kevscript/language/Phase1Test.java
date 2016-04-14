@@ -51,9 +51,8 @@ public class Phase1Test {
 
     @Test
     public void testLetRec1() throws Exception {
-        // FIXME : unable to represent x
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("g", null), "c", null), "a"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:g", null), "c", null), "a"));
         analyzeDirectory(expected, "phase1/let/rec1");
     }
 
@@ -74,73 +73,97 @@ public class Phase1Test {
     @Test
     public void testLetArray() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "b"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "b"));
         analyzeDirectory(expected, "phase1/let/array");
     }
 
     @Test
     public void testLetObjects() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "2"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "e", null), "3"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "e", null), "3"));
         analyzeDirectory(expected, "phase1/let/objects");
     }
 
     @Test
     public void testLetArrayObject() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "2"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "e", null), "a"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "f", null), "1"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "e", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "f", null), "1"));
         analyzeDirectory(expected, "phase1/let/array_object");
     }
 
 
     @Test
     public void testMoveTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b", null)))
+                .addCommand(new MoveCommand(new InstanceExpression("a:b", null), new InstanceExpression("b:b", null)));
         analyzeDirectory(expected, "phase1/move/test1");
     }
 
     @Test
     public void testMoveTest2() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b", null)))
+                .addCommand(new MoveCommand(new InstanceExpression("a:b", null), new InstanceExpression("test:b", null)));
         analyzeDirectory(expected, "phase1/move/test2");
     }
 
     @Test
     public void testMoveTest3() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "Ticker", null, null)))
+                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b:b", null)))
+                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("test", null)));
         analyzeDirectory(expected, "phase1/move/test3");
     }
 
     @Test
     public void testNativeFunctionReturnArray() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "0.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "10.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "20.0"));
         analyzeDirectory(expected, "phase1/native_function/return_array");
     }
 
     @Test
     public void testNativeFunctionReturnObject() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "0.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "x", null), "100"));
         analyzeDirectory(expected, "phase1/native_function/return_object");
     }
 
     @Test
     public void testNativeFunctionTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("a", null), "b", null), "81.0"));
         analyzeDirectory(expected, "phase1/native_function/test1");
     }
 
     @Test
     public void testNetInitTest1() throws Exception {
-        Commands expected = null; // TODO
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new NetInitCommand(new InstanceExpression("node0", null), network));
         analyzeDirectory(expected, "phase1/net-init/test1");
     }
 
     @Test
     public void testNetInitTest2() throws Exception {
-        Commands expected = null; // TODO
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new NetInitCommand(new InstanceExpression("node0", null), network));
         analyzeDirectory(expected, "phase1/net-init/test2");
     }
 
@@ -160,13 +183,23 @@ public class Phase1Test {
 
     @Test
     public void testNetMergeTest1() throws Exception {
-        Commands expected = null; // TODO
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new NetMergeCommand(new InstanceExpression("node0", null), network));
         analyzeDirectory(expected, "phase1/net-merge/test1");
     }
 
     @Test
     public void testNetMergeTest2() throws Exception {
-        Commands expected = null; // TODO
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new NetMergeCommand(new InstanceExpression("node0", null), network));
         analyzeDirectory(expected, "phase1/net-merge/test2");
     }
 
@@ -186,7 +219,8 @@ public class Phase1Test {
 
     @Test
     public void testNetRemoveTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new NetRemoveCommand(new InstanceExpression("node0", null), new ));
         analyzeDirectory(expected, "phase1/net-remove/test1");
     }
 

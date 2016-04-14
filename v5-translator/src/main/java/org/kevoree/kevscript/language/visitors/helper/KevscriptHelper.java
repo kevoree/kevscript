@@ -7,6 +7,7 @@ import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
+import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
 import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.utils.UrlDownloader;
 import org.kevoree.kevscript.language.visitors.ExpressionVisitor;
@@ -187,5 +188,26 @@ public class KevscriptHelper {
             versionValue = null;
         }
         return versionValue;
+    }
+
+    public InstanceExpression getInstanceExpressionFromContext(IdentifierContext node) {
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visitIdentifier(node);
+        final InstanceExpression nodeInstance;
+        if (nodeExpression instanceof IdentifierExpression) {
+            nodeInstance = (InstanceExpression) nodeExpression;
+        } else if (nodeExpression instanceof InstanceExpression) {
+            nodeInstance = (InstanceExpression) nodeExpression;
+        } else if (nodeExpression == null) {
+            nodeInstance = new InstanceExpression(node.getText(), null);
+        } else {
+            throw new WrongTypeException(node.getText(), InstanceExpression.class, null);
+        }
+        final InstanceExpression nodeInstanceExpression;
+        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
+            nodeInstanceExpression = new InstanceExpression(node.basicIdentifier().getText(), null);
+        } else {
+            nodeInstanceExpression = nodeInstance;
+        }
+        return nodeInstanceExpression;
     }
 }

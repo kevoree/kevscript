@@ -180,14 +180,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     @Override
-    public Commands visitMove(MoveContext ctx) {
+    public Commands visitMove(final MoveContext ctx) {
         final Commands commands = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
 
-        InstanceExpression target = exprVisitor.visitInstancePath(ctx.instancePath());
-        for (InstancePathContext sourceCtx : ctx.instanceList().instancePath()) {
-            InstanceExpression source = exprVisitor.visitInstancePath(sourceCtx);
-            commands.addCommand(new MoveCommand(target, source));
+        final InstanceExpression target = exprVisitor.visitInstancePath(ctx.instancePath());
+        for (final InstancePathContext sourceCtx : ctx.instanceList().instancePath()) {
+            final InstanceExpression source = exprVisitor.visitInstancePath(sourceCtx);
+            commands.addCommand(new MoveCommand(target, new InstanceExpression(source.instanceName, null)));
         }
 
         return commands;
