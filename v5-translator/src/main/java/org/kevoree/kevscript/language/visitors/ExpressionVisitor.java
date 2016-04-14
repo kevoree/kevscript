@@ -255,7 +255,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         return returnValue;
     }
 
-    private FinalExpression visitFunctionExpression(final FunctionExpression funcExpr, List<ExpressionContext> parameters) {
+    private FinalExpression visitFunctionExpression(final FunctionExpression funcExpr, final List<ExpressionContext> parameters) {
         final Commands commands = new Commands();
         int parameterCount = 0;
         for (final ExpressionContext expressionCtx : parameters) {

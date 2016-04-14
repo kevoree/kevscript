@@ -203,7 +203,17 @@ public class Phase1Test {
 
     @Test
     public void testFor() throws Exception {
-        Commands expected = null; // TODO
+        final InstanceExpression nodeInstance = new InstanceExpression("node", null);
+        Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node", new TypeExpression(null, "JavaNode", new VersionExpression(0), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, nodeInstance))
+                .addCommand(new SetCommand(new DictionaryPathExpression(nodeInstance, "conf", null), "a"))
+                .addCommand(new InstanceCommand("node", new TypeExpression(null, "JavaNode", new VersionExpression(1), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, nodeInstance))
+                .addCommand(new SetCommand(new DictionaryPathExpression(nodeInstance, "conf", null), "b"))
+                .addCommand(new InstanceCommand("node", new TypeExpression(null, "JavaNode", new VersionExpression(2), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, nodeInstance))
+                .addCommand(new SetCommand(new DictionaryPathExpression(nodeInstance, "conf", null), "c"));
         analyzeDirectory(expected, "phase1/for");
     }
 
@@ -485,7 +495,8 @@ public class Phase1Test {
 
     @Test
     public void testFirstOrderFunction() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "d"));
         analyzeDirectory(expected, "phase1/first_order_function");
     }
 
