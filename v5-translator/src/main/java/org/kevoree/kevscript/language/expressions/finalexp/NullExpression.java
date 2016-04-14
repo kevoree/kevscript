@@ -13,4 +13,7 @@ public class NullExpression implements FinalExpression {
     public String toString() {
         return "NullExpression{}";
     }
+
+
+
 }

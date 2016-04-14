@@ -30,5 +30,26 @@ public class PortPathExpression implements FinalExpression {
                 ", portName='" + portName + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PortPathExpression that = (PortPathExpression) o;
+
+        if (isInput != that.isInput) return false;
+        if (instance != null ? !instance.equals(that.instance) : that.instance != null) return false;
+        return portName != null ? portName.equals(that.portName) : that.portName == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = instance != null ? instance.hashCode() : 0;
+        result = 31 * result + (isInput ? 1 : 0);
+        result = 31 * result + (portName != null ? portName.hashCode() : 0);
+        return result;
+    }
 }
 

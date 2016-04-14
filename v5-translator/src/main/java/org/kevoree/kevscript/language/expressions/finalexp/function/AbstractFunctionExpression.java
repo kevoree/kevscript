@@ -42,4 +42,22 @@ public abstract class AbstractFunctionExpression<U> implements FinalExpression {
         return params;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractFunctionExpression<?> that = (AbstractFunctionExpression<?>) o;
+
+        if (params != null ? !params.equals(that.params) : that.params != null) return false;
+        return functionBody != null ? functionBody.equals(that.functionBody) : that.functionBody == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = params != null ? params.hashCode() : 0;
+        result = 31 * result + (functionBody != null ? functionBody.hashCode() : 0);
+        return result;
+    }
 }

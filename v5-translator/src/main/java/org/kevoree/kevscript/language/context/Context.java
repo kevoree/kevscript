@@ -131,4 +131,27 @@ public class Context {
         this.mapIdentifiers.putAll(inheritedContext);
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Context context = (Context) o;
+
+        if (mapIdentifiers != null ? !mapIdentifiers.equals(context.mapIdentifiers) : context.mapIdentifiers != null)
+            return false;
+        if (parentContext != null ? !parentContext.equals(context.parentContext) : context.parentContext != null)
+            return false;
+        return localyExportedContext != null ? localyExportedContext.equals(context.localyExportedContext) : context.localyExportedContext == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mapIdentifiers != null ? mapIdentifiers.hashCode() : 0;
+        result = 31 * result + (parentContext != null ? parentContext.hashCode() : 0);
+        result = 31 * result + (localyExportedContext != null ? localyExportedContext.hashCode() : 0);
+        return result;
+    }
 }

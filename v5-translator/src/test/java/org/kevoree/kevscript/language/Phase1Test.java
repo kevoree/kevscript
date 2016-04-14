@@ -420,15 +420,15 @@ public class Phase1Test {
 
     @Test
     public void testBindError1() throws Exception {
-        exception.expect(PortPathNotFound.class);
-        exception.expectMessage("portPath y not found");
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("y is expected to be of type PortPathExpression but is NullExpression");
         interpretPhase1(pathToString("/phase1/bind/error1.kevs"));
     }
 
     @Test
     public void testBindError2() throws Exception {
-        exception.expect(PortPathNotFound.class);
-        exception.expectMessage("portPath node1 not found");
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage("node1 is expected to be of type PortPathExpression but is InstanceExpression");
         interpretPhase1(pathToString("/phase1/bind/error2.kevs"));
     }
 
@@ -454,7 +454,14 @@ public class Phase1Test {
 
     @Test
     public void testDetach() throws Exception {
-        Commands expected = null; // TODO
+        final InstanceExpression node0 = new InstanceExpression("node0", null);
+        final InstanceExpression group0 = new InstanceExpression("group0", null);
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new InstanceCommand("group0", new TypeExpression(null, "WSGroup", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, node0))
+                .addCommand(new AddCommand(MODEL_ROOT, group0))
+                .addCommand(new DetachCommand(group0));
         analyzeDirectory(expected, "phase1/detach/valid");
     }
 
@@ -473,8 +480,7 @@ public class Phase1Test {
 
     @Test
     public void testEmptyScript() throws Exception {
-        Commands expected = null; // TODO
-        analyzeDirectory(expected, "phase1/empty_script");
+        analyzeDirectory(new Commands(), "phase1/empty_script");
     }
 
     @Test

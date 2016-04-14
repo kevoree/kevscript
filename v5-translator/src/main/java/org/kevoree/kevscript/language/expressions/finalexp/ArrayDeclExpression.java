@@ -32,4 +32,20 @@ public class ArrayDeclExpression implements FinalExpression {
                 "expressionList=" + expressionList +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArrayDeclExpression that = (ArrayDeclExpression) o;
+
+        return expressionList != null ? expressionList.equals(that.expressionList) : that.expressionList == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return expressionList != null ? expressionList.hashCode() : 0;
+    }
 }

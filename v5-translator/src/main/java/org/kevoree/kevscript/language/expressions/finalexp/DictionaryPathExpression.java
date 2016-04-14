@@ -33,4 +33,25 @@ public class DictionaryPathExpression implements FinalExpression {
                 ", frag='" + frag + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DictionaryPathExpression that = (DictionaryPathExpression) o;
+
+        if (instance != null ? !instance.equals(that.instance) : that.instance != null) return false;
+        if (dicoName != null ? !dicoName.equals(that.dicoName) : that.dicoName != null) return false;
+        return frag != null ? frag.equals(that.frag) : that.frag == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = instance != null ? instance.hashCode() : 0;
+        result = 31 * result + (dicoName != null ? dicoName.hashCode() : 0);
+        result = 31 * result + (frag != null ? frag.hashCode() : 0);
+        return result;
+    }
 }
