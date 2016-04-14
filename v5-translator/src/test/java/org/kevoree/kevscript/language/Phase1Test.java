@@ -35,9 +35,9 @@ public class Phase1Test {
     public void testAdd0() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", new VersionExpression(1), null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", new TypeExpression(null, "JavaNode", new VersionExpression(1), null))))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)))
                 .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", new TypeExpression(null, "JavaNode", null, null))));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node2", null)));
         analyzeDirectory(expected, "phase1/add_0");
     }
 
@@ -50,7 +50,9 @@ public class Phase1Test {
 
     @Test
     public void testLetRec1() throws Exception {
-        Commands expected = null; // TODO
+        // FIXME : unable to represent x
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("g", null), "c", null), "a"));
         analyzeDirectory(expected, "phase1/let/rec1");
     }
 
@@ -70,19 +72,25 @@ public class Phase1Test {
 
     @Test
     public void testLetArray() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "b"));
         analyzeDirectory(expected, "phase1/let/array");
     }
 
     @Test
     public void testLetObjects() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "e", null), "3"));
         analyzeDirectory(expected, "phase1/let/objects");
     }
 
     @Test
     public void testLetArrayObject() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "e", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("y", null), "f", null), "1"));
         analyzeDirectory(expected, "phase1/let/array_object");
     }
 
@@ -353,12 +361,12 @@ public class Phase1Test {
         final TypeExpression typeJavaNodeV42 = new TypeExpression(null, "JavaNode", new VersionExpression(42), null);
         final TypeExpression typeWSGroup = new TypeExpression(null, "WSGroup", null, null);
         final TypeExpression typeWSGroup2 = new TypeExpression(null, "WSGroup", new VersionExpression(2), new ObjectDeclExpression());
-        final InstanceExpression instanceNode0 = new InstanceExpression("node0", typeJavaNode);
-        final InstanceExpression instanceNode1 = new InstanceExpression("node1", typeJavaNode);
-        final InstanceExpression instanceNode3 = new InstanceExpression("node3", typeJavaNodeV42);
-        final InstanceExpression instanceGroup0 = new InstanceExpression("group0", typeWSGroup);
-        final InstanceExpression instanceGroup1 = new InstanceExpression("group1", typeWSGroup2);
-        final InstanceExpression instanceGroup2 = new InstanceExpression("group2", typeWSGroup2);
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
+        final InstanceExpression instanceNode1 = new InstanceExpression("node1", null);
+        final InstanceExpression instanceNode3 = new InstanceExpression("node3", null);
+        final InstanceExpression instanceGroup0 = new InstanceExpression("group0", null);
+        final InstanceExpression instanceGroup1 = new InstanceExpression("group1", null);
+        final InstanceExpression instanceGroup2 = new InstanceExpression("group2", null);
         Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", typeJavaNode))
                 .addCommand(new InstanceCommand("node1", typeJavaNode))
@@ -528,7 +536,7 @@ public class Phase1Test {
         analyzeDirectory(expected, "/phase1/variable_scope");
     }
 
-    private void analyzeDirectory(Commands expected, final String path) throws IOException {
+    private void analyzeDirectory(final Commands expected, final String path) throws IOException {
         final String pathB;
         if (path.startsWith("/")) {
             pathB = path.substring(1);

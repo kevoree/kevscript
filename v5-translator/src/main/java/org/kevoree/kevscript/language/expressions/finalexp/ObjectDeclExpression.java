@@ -50,4 +50,19 @@ public class ObjectDeclExpression implements FinalExpression {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ObjectDeclExpression that = (ObjectDeclExpression) o;
+
+        return values != null ? values.equals(that.values) : that.values == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return values != null ? values.hashCode() : 0;
+    }
 }

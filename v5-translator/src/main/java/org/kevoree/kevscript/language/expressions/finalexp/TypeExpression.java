@@ -11,7 +11,7 @@ public class TypeExpression implements FinalExpression {
     public final VersionExpression versionExpr;
     public final ObjectDeclExpression duVersionsExpr;
 
-    public TypeExpression(String namespace, String name, VersionExpression versionExpr, ObjectDeclExpression duVersionsExpr) {
+    public TypeExpression(final String namespace, final String name, final VersionExpression versionExpr, final ObjectDeclExpression duVersionsExpr) {
         this.name = name;
         this.namespace = namespace;
         this.versionExpr = versionExpr;

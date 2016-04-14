@@ -8,8 +8,8 @@ import org.kevoree.kevscript.language.expressions.finalexp.TypeExpression;
  */
 public class InstanceCommand extends AbstractCommand {
 
-    private String name;
-    private TypeExpression typeExpr;
+    public final  String name;
+    public final  TypeExpression typeExpr;
 
     public InstanceCommand(String name, TypeExpression typeExpr) {
         this.name = name;
@@ -31,15 +31,15 @@ public class InstanceCommand extends AbstractCommand {
 
         InstanceCommand that = (InstanceCommand) o;
 
-        if (!name.equals(that.name)) return false;
-        return typeExpr.equals(that.typeExpr);
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return typeExpr != null ? typeExpr.equals(that.typeExpr) : that.typeExpr == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + typeExpr.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (typeExpr != null ? typeExpr.hashCode() : 0);
         return result;
     }
 }
