@@ -104,8 +104,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands commands = new Commands();
         final List<InstancePathContext> instancePathContextList = ctx.instanceList().instances;
         for (final InstancePathContext iPath : instancePathContextList) {
-            InstanceExpression instanceExpr = new ExpressionVisitor(this.context).visitInstancePath(iPath);
-            commands.addCommand(new RemoveCommand(instanceExpr));
+            final InstanceExpression instanceExpr = new ExpressionVisitor(this.context).visitInstancePath(iPath);
+            commands.addCommand(new RemoveCommand(new InstanceExpression(instanceExpr.instanceName, null)));
         }
         return commands;
     }
@@ -174,7 +174,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands cmds = new Commands();
         for (final InstancePathContext iPath : ctx.instanceList().instancePath()) {
             InstanceExpression instance = new ExpressionVisitor(this.context).visitInstancePath(iPath);
-            cmds.addCommand(new DetachCommand(instance));
+            cmds.addCommand(new DetachCommand(new InstanceExpression(instance.instanceName, null)));
         }
         return cmds;
     }
@@ -309,10 +309,11 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitSet(final SetContext ctx) {
-        final ExpressionVisitor exprVisitor = new ExpressionVisitor(context);
-        final DictionaryPathExpression dicPathExpr = exprVisitor.visitDictionaryPath(ctx.dictionaryPath());
-        final FinalExpression valueExpr = exprVisitor.visitExpression(ctx.val);
-        return new Commands().addCommand(new SetCommand(dicPathExpr, valueExpr.toText()));
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final DictionaryPathExpression instanceDicoRef = expressionVisitor.visitDictionaryPath(ctx.dictionaryPath());
+        final FinalExpression value = expressionVisitor.visitExpression(ctx.val);
+        final SetCommand setCommand = new SetCommand(instanceDicoRef, value.toText());
+        return new Commands().addCommand(setCommand);
     }
 
     @Override

@@ -355,15 +355,21 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public DictionaryPathExpression visitDictionaryPath(final DictionaryPathContext ctx) {
-        final InstanceExpression instanceExpr = this.visitInstancePath(ctx.instancePath());
         final FinalExpression paramNameExpr = this.visitIdentifier(ctx.name);
         final String paramName;
-        if (paramNameExpr == null) {
-            // looks like ctx.name is not resolvable => try to use the name identifier as param name
-            paramName = ctx.name.getText();
+        if (paramNameExpr != null) {
+            if (paramNameExpr instanceof StringExpression) {
+                paramName = paramNameExpr.toText();
+            } else {
+                throw new WrongTypeException(ctx.name.getText(), StringExpression.class, null);
+            }
         } else {
-            paramName = paramNameExpr.toText();
+            paramName = ctx.identifier(0).getText();
         }
+
+        final InstanceExpression instanceExprTmp = this.visitInstancePath(ctx.instancePath());
+        final InstanceExpression instanceExpr = new InstanceExpression(instanceExprTmp.instanceName, null);
+        final DictionaryPathExpression ret;
         if (ctx.fragmentName != null) {
             final FinalExpression fragExpr = this.visitIdentifier(ctx.fragmentName);
             final String fragName;
@@ -373,9 +379,11 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             } else {
                 fragName = fragExpr.toText();
             }
-            return new DictionaryPathExpression(instanceExpr, paramName, fragName);
+            ret = new DictionaryPathExpression(instanceExpr, paramName, fragName);
+        } else {
+            ret = new DictionaryPathExpression(instanceExpr, paramName, null);
         }
-        return new DictionaryPathExpression(instanceExpr, paramName, null);
+        return ret;
     }
 
     @Override

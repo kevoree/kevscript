@@ -550,13 +550,24 @@ public class Phase1Test {
 
     @Test
     public void testRemoveManyInstances() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", new VersionExpression(2), null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("test", null)));
         analyzeDirectory(expected, "phase1/remove/many_instances");
     }
 
     @Test
     public void testRemoveSingleInstance() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("test", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("test", null)));
         analyzeDirectory(expected, "phase1/remove/single_instance");
     }
 
