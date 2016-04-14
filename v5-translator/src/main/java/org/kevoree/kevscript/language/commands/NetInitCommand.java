@@ -21,7 +21,7 @@ public class NetInitCommand extends AbstractCommand {
     public String toString() {
         return "NetInitCommand{" +
                 "instance=" + instance +
-                ", network=" + network +
+                ", keys=" + network +
                 '}';
     }
 

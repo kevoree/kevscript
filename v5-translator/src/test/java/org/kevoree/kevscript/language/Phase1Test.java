@@ -14,6 +14,8 @@ import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -219,8 +221,15 @@ public class Phase1Test {
 
     @Test
     public void testNetRemoveTest1() throws Exception {
+        final List<String> keys = new ArrayList<>();
+        keys.add("a.b");
+        final List<String> keys2 = new ArrayList<>();
+        keys2.add("c");
+        keys2.add("d.e.f");
         final Commands expected = new Commands()
-                .addCommand(new NetRemoveCommand(new InstanceExpression("node0", null), new ));
+                .addCommand(new NetRemoveCommand(new InstanceExpression("node0", null), keys))
+                .addCommand(new InstanceCommand("node2", new TypeExpression(null, "DotnetNode", null, null)))
+                .addCommand(new NetRemoveCommand(new InstanceExpression("node2", null), keys2));
         analyzeDirectory(expected, "phase1/net-remove/test1");
     }
 

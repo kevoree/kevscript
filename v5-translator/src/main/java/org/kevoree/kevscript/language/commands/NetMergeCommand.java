@@ -21,7 +21,7 @@ public class NetMergeCommand extends AbstractCommand {
     public String toString() {
         return "NetMergeCommand{" +
                 "instance=" + instance +
-                ", network=" + network +
+                ", keys=" + network +
                 '}';
     }
 

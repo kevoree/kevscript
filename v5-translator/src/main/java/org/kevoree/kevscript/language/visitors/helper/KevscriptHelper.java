@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.kevoree.kevscript.KevScriptParser.IdentifierContext;
@@ -209,5 +211,17 @@ public class KevscriptHelper {
             nodeInstanceExpression = nodeInstance;
         }
         return nodeInstanceExpression;
+    }
+
+    public List<String> getListObjectRefs(KevScriptParser.IdentifierListContext identifierListContext, IdentifierContext identifierContext) {
+        final List<String> objectRefs = new ArrayList<>();
+        if (identifierListContext != null) {
+            for (final IdentifierContext identifier : identifierListContext.identifier()) {
+                objectRefs.add(identifier.getText());
+            }
+        } else {
+            objectRefs.add(identifierContext.getText());
+        }
+        return objectRefs;
     }
 }

@@ -356,20 +356,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitNetremove(final NetremoveContext ctx) {
-        final Commands cmds = new Commands();
-        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
-
-        if (ctx.identifierList() != null) {
-            for (IdentifierContext idCtx : ctx.identifierList().identifiers) {
-                ObjectDeclExpression object = this.helper.getObjectDeclExpression(idCtx);
-                cmds.addCommand(new NetRemoveCommand(instance, object));
-            }
-        } else {
-            ObjectDeclExpression object = this.helper.getObjectDeclExpression(ctx.identifier(1));
-            cmds.addCommand(new NetRemoveCommand(instance, object));
-        }
-
-        return cmds;
+        final InstanceExpression node = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        final List<String> objectRefs = helper.getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
+        return new Commands().addCommand(new NetRemoveCommand(node, objectRefs));
     }
 
 
