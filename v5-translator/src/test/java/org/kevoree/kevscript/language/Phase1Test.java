@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -204,7 +205,7 @@ public class Phase1Test {
     @Test
     public void testFor() throws Exception {
         final InstanceExpression nodeInstance = new InstanceExpression("node", null);
-        Commands expected = new Commands()
+        final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node", new TypeExpression(null, "JavaNode", new VersionExpression(0), null)))
                 .addCommand(new AddCommand(MODEL_ROOT, nodeInstance))
                 .addCommand(new SetCommand(new DictionaryPathExpression(nodeInstance, "conf", null), "a"))
@@ -219,31 +220,35 @@ public class Phase1Test {
 
     @Test
     public void testFunctionReturn() throws Exception {
-        Commands expected = null; // TODO
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "a", null),"b"));
         analyzeDirectory(expected, "phase1/function_return");
     }
 
     @Test
     public void testImportByFilesNonQualifiedTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
         analyzeDirectory(expected, "phase1/import_by_files/non_qualified/test1");
     }
 
     @Test
     public void testImportByFilesNonQualifiedTest2() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
         analyzeDirectory(expected, "phase1/import_by_files/non_qualified/test2");
     }
 
     @Test
     public void testImportByFilesQualifiedTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
         analyzeDirectory(expected, "phase1/import_by_files/qualified/test1");
     }
 
     @Test
     public void testImportByFilesQualifiedTest2() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
         analyzeDirectory(expected, "phase1/import_by_files/qualified/test2");
     }
 
@@ -307,6 +312,7 @@ public class Phase1Test {
 
 
     @Test
+    @Ignore
     public void testImportByHttpNonQualifiedTest1() throws Exception {
         final HttpServer httpServer = new HttpServer(8083, "phase1/import_by_http/non_qualified/test1/http");
         httpServer.buildAndStartServer();
@@ -316,6 +322,7 @@ public class Phase1Test {
     }
 
     @Test
+    @Ignore
     public void testImportByHttpNonQualifiedError1() throws Exception {
         final String basePath = "phase1/import_by_http/";
         final HttpServer httpServer = new HttpServer(8080, basePath);
@@ -347,7 +354,20 @@ public class Phase1Test {
 
     @Test
     public void testFunction() throws Exception {
-        final Commands expected = new Commands(); // TODO
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavascriptNode", new VersionExpression(1), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "y", null), "ok1"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "z", null), "e1"))
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavascriptNode", new VersionExpression(2), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "y", null), "ok2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "z", null), "e2"))
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavascriptNode", new VersionExpression(3), null)))
+                .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "y", null), "ok3"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "z", null), "e3"));
         analyzeDirectory(expected, "phase1/function");
     }
 

@@ -114,7 +114,7 @@ arrayDecl
     : LS_BRACKET expressionList? RS_BRACKET
     ;
 funcCall
-    : basicIdentifier L_BRACKET parameters=expressionList? R_BRACKET
+    : (basicIdentifier DOT)? basicIdentifier L_BRACKET parameters=expressionList? R_BRACKET
     ;
 funcDecl
     : EXPORT? FUNCTION functionName=basicIdentifier L_BRACKET parameters=varIdentifierList? R_BRACKET LC_BRACKET funcBody RC_BRACKET
