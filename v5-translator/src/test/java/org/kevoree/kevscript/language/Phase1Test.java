@@ -401,9 +401,11 @@ public class Phase1Test {
         final TypeExpression typeJavaNode = new TypeExpression(null, "JavaNode", null, null);
         final TypeExpression typeJsNode = new TypeExpression(null, "JsNode", null, null);
         final TypeExpression typeWSChan = new TypeExpression(null, "WSChan", null, null);
-        final InstanceExpression chanInstance = new InstanceExpression("chan0", typeWSChan);
-        final InstanceExpression node0Instance = new InstanceExpression("node0", typeJavaNode);
-        final InstanceExpression node1Instance = new InstanceExpression("node1", typeJsNode);
+        final InstanceExpression chanInstance = new InstanceExpression("chan0", null);
+        final InstanceExpression node0Instance = new InstanceExpression("node0", null);
+        final InstanceExpression node1Instance = new InstanceExpression("node1", null);
+        final InstanceExpression node0CompInstance = new InstanceExpression("node0:comp1", null);
+        final InstanceExpression node1CompInstance = new InstanceExpression("node1:comp1", null);
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", typeJavaNode))
                 .addCommand(new InstanceCommand("node1", typeJsNode))
@@ -411,8 +413,8 @@ public class Phase1Test {
                 .addCommand(new AddCommand(MODEL_ROOT, node0Instance))
                 .addCommand(new AddCommand(MODEL_ROOT, node1Instance))
                 .addCommand(new AddCommand(MODEL_ROOT, chanInstance))
-                .addCommand(new BindCommand(chanInstance, new PortPathExpression(node0Instance, true, "input")))
-                .addCommand(new BindCommand(chanInstance, new PortPathExpression(node1Instance, true, "input")));
+                .addCommand(new BindCommand(chanInstance, new PortPathExpression(node0CompInstance, true, "input")))
+                .addCommand(new BindCommand(chanInstance, new PortPathExpression(node1CompInstance, true, "input")));
         analyzeDirectory(expected, "phase1/bind/valid");
     }
 

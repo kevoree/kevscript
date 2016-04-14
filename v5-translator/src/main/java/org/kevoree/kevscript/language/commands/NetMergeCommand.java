@@ -24,4 +24,25 @@ public class NetMergeCommand extends AbstractCommand {
                 ", network=" + network +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NetMergeCommand that = (NetMergeCommand) o;
+
+        if (instance != null ? !instance.equals(that.instance) : that.instance != null) return false;
+        if (network != null ? !network.equals(that.network) : that.network != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = instance != null ? instance.hashCode() : 0;
+        result = 31 * result + (network != null ? network.hashCode() : 0);
+        return result;
+    }
 }

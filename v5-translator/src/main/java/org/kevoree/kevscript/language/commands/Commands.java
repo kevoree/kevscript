@@ -25,7 +25,7 @@ public class Commands extends ArrayList<AbstractCommand> {
         return sb.toString();
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -45,5 +45,5 @@ public class Commands extends ArrayList<AbstractCommand> {
             i++;
         }
         return !(e1.hasNext() || e2.hasNext());
-    }
+    }*/
 }

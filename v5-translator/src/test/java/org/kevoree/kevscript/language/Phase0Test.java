@@ -35,7 +35,7 @@ public class Phase0Test {
     public void testAdd0() throws Exception {
         final Commands commands = new Commands()
                 .addCommand(new InstanceCommand("nodeName", new TypeExpression(null, "DotnetNode", new VersionExpression(1), null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("nodeName", null)));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", null)));
         test(commands, "phase0/test1/new.kevs");
     }
 
