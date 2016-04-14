@@ -61,11 +61,11 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands cmds = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
         // target defaults to model root represented as '/'
-        InstanceExpression target = new InstanceExpression("/", null);
+        final InstanceExpression target;
 
         if (ctx.target != null) {
             // a specific target as been given
-            InstanceExpression targetExpr = exprVisitor.visitInstancePath(ctx.target);
+            final InstanceExpression targetExpr = exprVisitor.visitInstancePath(ctx.target);
             if (targetExpr == null) {
                 // unable to find a reference for this identifier => use it literally
                 target = new InstanceExpression(ctx.target.getText(), null);
@@ -77,14 +77,15 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                     target = new InstanceExpression(targetExpr.toText(), null);
                 }
             }
-
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
                 InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
                 cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
             }
         } else {
+            target = new InstanceExpression("/", null);
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
-                InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
+                //final InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
+                final InstanceExpression sourceExpr = helper.getInstanceElement(sourcesCtx);
                 if (sourceExpr.instanceName.contains(":")) {
                     // TODO create a dedicated exception
                     throw new IllegalArgumentException("Component " + sourceExpr.toText() + " must be added to node instances");
@@ -112,26 +113,28 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitInstance(final InstanceContext ctx) {
-        Commands cmds = new Commands();
-        InstanceExpression instanceExpr;
-        TypeExpression typeExpr = new ExpressionVisitor(context).visitType(ctx.type());
+        final Commands cmds = new Commands();
+        final TypeExpression typeExpr = new ExpressionVisitor(context).visitType(ctx.type());
         if (ctx.varName != null) {
             // only one instance creation
+            final String instanceVarName = ctx.varName.getText();
             if (ctx.instanceName != null) {
                 // instance creation using an expression for the name
-                FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
-                instanceExpr = new InstanceExpression(nameExpr.toText(), typeExpr);
-                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
-                cmds.addCommand(new InstanceCommand(nameExpr.toText(), typeExpr));
+                final FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
+                final String instanceName = nameExpr.toText();
+                final InstanceExpression instanceExpr = new InstanceExpression(instanceName, typeExpr);
+                this.context.addExpression(instanceVarName, instanceExpr);
+                cmds.addCommand(new InstanceCommand(instanceName, typeExpr));
             } else {
                 // instance creation using the identifier name for the name
-                instanceExpr = new InstanceExpression(ctx.varName.getText(), typeExpr);
+                final InstanceExpression instanceExpr = new InstanceExpression(instanceVarName, typeExpr);
                 this.context.addExpression(instanceExpr.instanceName, instanceExpr);
-                cmds.addCommand(new InstanceCommand(ctx.varName.getText(), typeExpr));
+                cmds.addCommand(new InstanceCommand(instanceVarName, typeExpr));
             }
         } else {
             // instance creation using the identifier name(s) for the name
             for (BasicIdentifierContext id : ctx.varIdentifierList().basicIdentifier()) {
+                final InstanceExpression instanceExpr;
                 instanceExpr = new InstanceExpression(id.getText(), typeExpr);
                 this.context.addExpression(instanceExpr.instanceName, instanceExpr);
                 cmds.addCommand(new InstanceCommand(id.getText(), typeExpr));
@@ -215,9 +218,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitLetDecl(final LetDeclContext ctx) {
         final boolean isExported = ctx.EXPORT() != null;
-        FinalExpression expr = new ExpressionVisitor(context).visitExpression(ctx.val);
+        final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
+        final FinalExpression expr = expressionVisitor.visitExpression(ctx.val);
         this.context.addExpression(ctx.basicIdentifier().getText(), expr, isExported);
-        return new Commands();
+        return expressionVisitor.aggregatedFunctionsCommands;
     }
 
     @Override
@@ -304,10 +308,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     @Override
-    public Commands visitSet(SetContext ctx) {
-        ExpressionVisitor exprVisitor = new ExpressionVisitor(context);
-        DictionaryPathExpression dicPathExpr = exprVisitor.visitDictionaryPath(ctx.dictionaryPath());
-        FinalExpression valueExpr = exprVisitor.visitExpression(ctx.val);
+    public Commands visitSet(final SetContext ctx) {
+        final ExpressionVisitor exprVisitor = new ExpressionVisitor(context);
+        final DictionaryPathExpression dicPathExpr = exprVisitor.visitDictionaryPath(ctx.dictionaryPath());
+        final FinalExpression valueExpr = exprVisitor.visitExpression(ctx.val);
         return new Commands().addCommand(new SetCommand(dicPathExpr, valueExpr.toText()));
     }
 

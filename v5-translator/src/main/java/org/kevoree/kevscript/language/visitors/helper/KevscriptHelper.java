@@ -5,6 +5,7 @@ import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
+import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.utils.UrlDownloader;
@@ -121,5 +122,70 @@ public class KevscriptHelper {
             throw new ResourceNotFoundException(pathText);
         }
         return res;
+    }
+
+    public InstanceExpression getInstanceElement(KevScriptParser.InstancePathContext instancePathContext) {
+
+        final InstanceExpression instance;
+        if (instancePathContext.identifier().size() == 1) {
+            // direct reference to a component, must be in the current scope
+            final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
+            instance = componentInstance;
+
+        } else {
+            // reference to a component via its node, might be found in the context or later in the CDN
+            final InstanceExpression nodeInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
+            final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(1));
+            instance = new InstanceExpression(nodeInstance.instanceName+":"+componentInstance.instanceName, componentInstance.typeExpr);
+        }
+        return instance;
+    }
+
+    public InstanceExpression getInstanceFromIdentifierContext(final IdentifierContext node) {
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
+        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
+        final InstanceExpression nodeRootInstanceElement;
+
+        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
+            nodeRootInstanceElement = new InstanceExpression(node.basicIdentifier().getText(), null);
+        } else {
+            final String nodeName = nodeInstance.instanceName;
+            final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr);
+            final String instanceTypeDefName = nodeInstance.typeExpr.name;
+            final VersionExpression versionExpr;
+            if(nodeVersion != null) {
+                versionExpr = new VersionExpression(nodeVersion);
+            } else {
+                versionExpr = null;
+            }
+            final TypeExpression typeExpr = new TypeExpression(null, instanceTypeDefName, versionExpr, null);
+            nodeRootInstanceElement = new InstanceExpression(nodeName, typeExpr);
+        }
+        return nodeRootInstanceElement;
+    }
+
+    public Long convertVersionToLong(final Expression expression) {
+
+        final Long versionValue;
+        if (expression instanceof VersionExpression) {
+            versionValue = ((VersionExpression) expression).version;
+        } else if (expression != null) {
+            final FinalExpression version = context.lookup(expression, FinalExpression.class);
+            if (version instanceof StringExpression) {
+                versionValue = Long.parseLong(((StringExpression) version).text);
+            } else if (version instanceof InstanceExpression) {
+                final VersionExpression instanceTypeDefVersion = ((InstanceExpression) version).typeExpr.versionExpr;
+                if (instanceTypeDefVersion != null) {
+                    versionValue = instanceTypeDefVersion.version;
+                } else {
+                    versionValue = null;
+                }
+            } else {
+                throw new WrongTypeException(expression.toString(), FinalExpression.class, null);
+            }
+        } else {
+            versionValue = null;
+        }
+        return versionValue;
     }
 }

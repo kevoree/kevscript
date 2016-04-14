@@ -286,9 +286,9 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public InstanceExpression visitInstancePath(InstancePathContext ctx) {
+    public InstanceExpression visitInstancePath(final InstancePathContext ctx) {
+        final FinalExpression instanceExpr = this.visitIdentifier(ctx.identifier(0));
         String instanceName;
-        FinalExpression instanceExpr = this.visitIdentifier(ctx.identifier(0));
         if (instanceExpr == null) {
             // unable to find an already defined value for this instance path => using identifier name
             instanceName = ctx.identifier(0).getText();
@@ -296,10 +296,9 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             instanceName = instanceExpr.toText();
         }
 
-        FinalExpression childExpr = null;
         if (ctx.identifier().size() == 2) {
             // instance path is referring to a child instance
-            childExpr = this.visitIdentifier(ctx.identifier(1));
+            final FinalExpression childExpr = this.visitIdentifier(ctx.identifier(1));
             if (childExpr == null) {
                 instanceName += ":" + ctx.identifier(1).getText();
             } else {
@@ -360,9 +359,9 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public DictionaryPathExpression visitDictionaryPath(DictionaryPathContext ctx) {
-        InstanceExpression instanceExpr = this.visitInstancePath(ctx.instancePath());
-        FinalExpression paramNameExpr = this.visitIdentifier(ctx.name);
-        String paramName;
+        final InstanceExpression instanceExpr = this.visitInstancePath(ctx.instancePath());
+        final FinalExpression paramNameExpr = this.visitIdentifier(ctx.name);
+        final String paramName;
         if (paramNameExpr == null) {
             // looks like ctx.name is not resolvable => try to use the name identifier as param name
             paramName = ctx.name.getText();

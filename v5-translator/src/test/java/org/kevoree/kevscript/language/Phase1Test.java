@@ -35,9 +35,9 @@ public class Phase1Test {
     public void testAdd0() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", new VersionExpression(1), null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", null)))
                 .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node2", null)));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)));
         analyzeDirectory(expected, "phase1/add_0");
     }
 
@@ -331,13 +331,23 @@ public class Phase1Test {
 
     @Test
     public void testForFunctionReturn() throws Exception {
-        final Commands expected = new Commands(); // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", null)))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node0", null), "dico", null), "1"))
+                .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node1", null), "dico", null), "1"))
+                .addCommand(new InstanceCommand("node2", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node2", null)))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node2", null), "dico", null), "1"));
+
         analyzeDirectory(expected, "phase1/for_function_return");
     }
 
     @Test
     public void testFunction() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands(); // TODO
         analyzeDirectory(expected, "phase1/function");
     }
 
