@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.kevoree.kevscript.KevScriptLexer;
 import org.kevoree.kevscript.KevScriptParser;
 
-import java.io.InputStream;
-
 public class WrongKevScriptTest {
 
     private void tester(final String str) throws IllegalStateException {

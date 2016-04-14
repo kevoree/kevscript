@@ -100,6 +100,7 @@ public class KevScriptTest {
     public void testMetaRemove() throws Exception {
         tester(getClass().getResourceAsStream("/meta-remove.kevs"));
     }
+
     @Test
     public void testNetInit() throws Exception {
         tester(getClass().getResourceAsStream("/net-init.kevs"));

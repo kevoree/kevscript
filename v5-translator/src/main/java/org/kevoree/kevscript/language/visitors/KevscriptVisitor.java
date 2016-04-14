@@ -194,23 +194,23 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     @Override
-    public Commands visitStart(StartContext ctx) {
+    public Commands visitStart(final StartContext ctx) {
         final Commands commands = new Commands();
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        for (InstancePathContext instancePath : ctx.instanceList().instances) {
-            InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
-            commands.addCommand(new StartCommand(instanceExpr));
+        for (final InstancePathContext instancePath : ctx.instanceList().instances) {
+            final InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
+            commands.addCommand(new StartCommand(new InstanceExpression(instanceExpr.instanceName, null)));
         }
         return commands;
     }
 
     @Override
-    public Commands visitStop(StopContext ctx) {
+    public Commands visitStop(final StopContext ctx) {
         final Commands commands = new Commands();
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        for (InstancePathContext instancePath : ctx.instanceList().instances) {
-            InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
-            commands.addCommand(new StopCommand(instanceExpr));
+        for (final InstancePathContext instancePath : ctx.instanceList().instances) {
+            final InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
+            commands.addCommand(new StopCommand(new InstanceExpression(instanceExpr.instanceName, null)));
         }
         return commands;
     }
@@ -245,20 +245,20 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     @Override
-    public Commands visitUnbind(UnbindContext ctx) {
+    public Commands visitUnbind(final UnbindContext ctx) {
         final Commands cmds = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        InstanceExpression chanInstance;
-        FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final InstanceExpression chanInstance;
         if (chanExpr == null) {
             chanInstance = new InstanceExpression(ctx.chan.getText(), null);
         } else {
             chanInstance = new InstanceExpression(chanExpr.toText(), null);
         }
 
-        for (PortPathContext pPath : ctx.portList().instances) {
-            PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
-            cmds.addCommand(new UnbindCommand(chanInstance, pExpr));
+        for (final PortPathContext pPath : ctx.portList().instances) {
+            final PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
+            cmds.addCommand(new UnbindCommand(new InstanceExpression(chanInstance.instanceName, null), pExpr));
         }
 
         return cmds;

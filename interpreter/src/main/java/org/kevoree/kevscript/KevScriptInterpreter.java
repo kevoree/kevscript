@@ -3,7 +3,8 @@ package org.kevoree.kevscript;
 import org.KevoreeModel;
 import org.KevoreeView;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.kevoree.Model;
@@ -14,14 +15,8 @@ import org.kevoree.modeling.scheduler.impl.DirectScheduler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
 
 /**
- *
  * Created by leiko on 3/1/16.
  */
 public class KevScriptInterpreter {

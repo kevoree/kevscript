@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.commands;
 import org.kevoree.kevscript.language.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -34,12 +33,12 @@ public class Commands extends ArrayList<AbstractCommand> {
 
         ListIterator<AbstractCommand> e1 = listIterator();
         ListIterator e2 = ((List) o).listIterator();
-        int i =0;
+        int i = 0;
         while (e1.hasNext() && e2.hasNext()) {
             AbstractCommand o1 = e1.next();
             Object o2 = e2.next();
-            if (!(o1==null ? o2==null : o1.equals(o2))) {
-                System.out.println("index "+i+" failed !");
+            if (!(o1 == null ? o2 == null : o1.equals(o2))) {
+                System.out.println("index " + i + " failed !");
                 return false;
             }
             i++;

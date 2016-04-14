@@ -3,13 +3,12 @@ package org.kevoree.kevscript.language.commands;
 import org.kevoree.kevscript.language.expressions.finalexp.TypeExpression;
 
 /**
- *
  * Created by leiko on 4/1/16.
  */
 public class InstanceCommand extends AbstractCommand {
 
-    public final  String name;
-    public final  TypeExpression typeExpr;
+    public final String name;
+    public final TypeExpression typeExpr;
 
     public InstanceCommand(String name, TypeExpression typeExpr) {
         this.name = name;

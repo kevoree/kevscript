@@ -28,11 +28,9 @@ import static org.kevoree.kevscript.KevScriptParser.*;
  *
  */
 public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
+    public final Commands aggregatedFunctionsCommands = new Commands();
     private final Context context;
     private final KevscriptHelper helper;
-
-
-    public final Commands aggregatedFunctionsCommands = new Commands();
 
     public ExpressionVisitor(final Context context) {
         this.context = context;
@@ -197,7 +195,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     @Override
     public FinalExpression visitFuncCall(final FuncCallContext ctx) {
         final String functionName;
-        if(ctx.basicIdentifier().size() == 1) {
+        if (ctx.basicIdentifier().size() == 1) {
             functionName = ctx.basicIdentifier(0).getText();
         } else {
             functionName = ctx.basicIdentifier(0).getText() + "." + ctx.basicIdentifier(1).getText();
@@ -298,30 +296,30 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else {
             final InstanceExpression parent = this.helper.getInstanceExpressionFromContext(ctx.identifier(0));
             final InstanceExpression children = this.helper.getInstanceExpressionFromContext(ctx.identifier(1));
-            return new InstanceExpression(parent.instanceName+":"+children.instanceName, children.typeExpr);
+            return new InstanceExpression(parent.instanceName + ":" + children.instanceName, children.typeExpr);
         }
 
         return ret;
     }
 
     @Override
-    public PortPathExpression visitPortPath(PortPathContext ctx) {
-        InstanceExpression instanceExpr = null;
+    public PortPathExpression visitPortPath(final PortPathContext ctx) {
+        final PortPathExpression ret;
         if (ctx.instancePath() != null) {
             // its a full path (eg. node:comp<-port)
-            InstanceExpression chanExpr = this.visitInstancePath(ctx.instancePath());
+            final InstanceExpression chanExpr = this.visitInstancePath(ctx.instancePath());
             FinalExpression portNameExpr = this.visitIdentifier(ctx.identifier());
             if (portNameExpr == null) {
                 // unable to resolve expr => use identifier as name
                 portNameExpr = new InstanceExpression(ctx.identifier().getText(), null);
             }
 
-            return new PortPathExpression(chanExpr, ctx.LEFT_ARROW() != null, portNameExpr.toText());
+            ret = new PortPathExpression(new InstanceExpression(chanExpr.instanceName, null), ctx.LEFT_ARROW() != null, portNameExpr.toText());
         } else {
             // its a reference to port with instancePath => instance must be found in context
-            FinalExpression portNameExpr = this.visitIdentifier(ctx.identifier());
+            final FinalExpression portNameExpr = this.visitIdentifier(ctx.identifier());
             if (portNameExpr instanceof PortPathExpression) {
-                return (PortPathExpression) portNameExpr;
+                ret = (PortPathExpression) portNameExpr;
             } else {
                 if (portNameExpr != null) {
                     throw new WrongTypeException(ctx.identifier().getText(), PortPathExpression.class, portNameExpr.getClass());
@@ -330,6 +328,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
                 }
             }
         }
+        return ret;
     }
 
     @Override

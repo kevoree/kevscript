@@ -1,7 +1,6 @@
 package org.kevoree.kevscript.language.expressions.finalexp;
 
 /**
- *
  * Created by leiko on 4/1/16.
  */
 public class TypeExpression implements FinalExpression {

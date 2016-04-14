@@ -1,7 +1,7 @@
 package org.kevoree.kevscript.language.context;
 
-import org.kevoree.kevscript.language.excpt.UnknownIdentifier;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
+import org.kevoree.kevscript.language.excpt.UnknownIdentifier;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
 import org.kevoree.kevscript.language.expressions.Expression;
 import org.kevoree.kevscript.language.expressions.finalexp.ArrayDeclExpression;

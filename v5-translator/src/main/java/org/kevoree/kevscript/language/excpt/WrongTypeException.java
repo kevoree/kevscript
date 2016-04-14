@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.excpt;
 import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
 
 /**
- *
  * Created by mleduc on 16/03/16.
  */
 public class WrongTypeException extends RuntimeException {
@@ -22,11 +21,11 @@ public class WrongTypeException extends RuntimeException {
         final StringBuilder sb = new StringBuilder();
         sb.append(this.identifier);
         sb.append(" is expected to be of type ");
-        if(expectedClass != null) {
+        if (expectedClass != null) {
             sb.append(this.expectedClass.getSimpleName());
         }
         sb.append(" but is ");
-        if(currentClass != null) {
+        if (currentClass != null) {
             sb.append(this.currentClass.getSimpleName());
         }
         return sb.toString();

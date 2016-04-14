@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- *
  * Created by mleduc on 02/03/16.
  */
 public class ObjectDeclExpression implements FinalExpression {

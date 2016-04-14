@@ -11,6 +11,6 @@ public class ContextRefExpression extends ContextIdentifierExpression {
 
     @Override
     public String toString() {
-        return "ContextRefExpression{"+super.toString()+"}";
+        return "ContextRefExpression{" + super.toString() + "}";
     }
 }

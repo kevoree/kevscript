@@ -139,7 +139,7 @@ public class KevscriptHelper {
             // reference to a component via its node, might be found in the context or later in the CDN
             final InstanceExpression nodeInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
             final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(1));
-            instance = new InstanceExpression(nodeInstance.instanceName+":"+componentInstance.instanceName, componentInstance.typeExpr);
+            instance = new InstanceExpression(nodeInstance.instanceName + ":" + componentInstance.instanceName, componentInstance.typeExpr);
         }
         return instance;
     }
@@ -156,7 +156,7 @@ public class KevscriptHelper {
             final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr);
             final String instanceTypeDefName = nodeInstance.typeExpr.name;
             final VersionExpression versionExpr;
-            if(nodeVersion != null) {
+            if (nodeVersion != null) {
                 versionExpr = new VersionExpression(nodeVersion);
             } else {
                 versionExpr = null;

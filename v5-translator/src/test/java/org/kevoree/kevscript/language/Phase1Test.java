@@ -267,7 +267,7 @@ public class Phase1Test {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
                 .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
-                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "a", null),"b"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(instanceNode0, "a", null), "b"));
         analyzeDirectory(expected, "phase1/function_return");
     }
 
@@ -598,19 +598,38 @@ public class Phase1Test {
 
     @Test
     public void testStartTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
+                .addCommand(new StartCommand(new InstanceExpression("a", null)))
+                .addCommand(new StartCommand(new InstanceExpression("b:c", null)))
+                .addCommand(new StartCommand(new InstanceExpression("test", null)));
         analyzeDirectory(expected, "phase1/start/test1");
     }
 
     @Test
     public void testStopTest1() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
+                .addCommand(new StopCommand(new InstanceExpression("a", null)))
+                .addCommand(new StopCommand(new InstanceExpression("b:c", null)))
+                .addCommand(new StopCommand(new InstanceExpression("test", null)));
         analyzeDirectory(expected, "phase1/stop/test1");
     }
 
     @Test
     public void testUnbind() throws Exception {
-        Commands expected = null; // TODO
+        final InstanceExpression node0 = new InstanceExpression("node0", null);
+        final InstanceExpression node1 = new InstanceExpression("node1", null);
+        final InstanceExpression chan0 = new InstanceExpression("chan0", null);
+        final Commands expected = new Commands()
+                .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
+                .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JSNode", null, null)))
+                .addCommand(new InstanceCommand("chan0", new TypeExpression(null, "WSChan", null, null)))
+                .addCommand(new AddCommand(MODEL_ROOT, node0))
+                .addCommand(new AddCommand(MODEL_ROOT, node1))
+                .addCommand(new AddCommand(MODEL_ROOT, chan0))
+                .addCommand(new UnbindCommand(chan0, new PortPathExpression(node0, true, "port0")))
+                .addCommand(new UnbindCommand(chan0, new PortPathExpression(node1, false, "port1")));
         analyzeDirectory(expected, "phase1/unbind/valid");
     }
 

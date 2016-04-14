@@ -56,8 +56,8 @@ public class Phase0Test {
 
     private String addTrailingSlash(final String file) {
         final String ret;
-        if(file.startsWith("/")) {
-           ret = file;
+        if (file.startsWith("/")) {
+            ret = file;
         } else {
             ret = "/" + file;
         }

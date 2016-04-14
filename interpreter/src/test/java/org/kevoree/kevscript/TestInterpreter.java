@@ -1,6 +1,5 @@
 package org.kevoree.kevscript;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.kevoree.Model;
 import org.kevoree.modeling.KCallback;
@@ -8,14 +7,9 @@ import org.kevoree.modeling.KCallback;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
 //import java.util.function.Consumer;
 
 /**
- *
  * Created by leiko on 3/1/16.
  */
 public class TestInterpreter {
@@ -37,7 +31,7 @@ public class TestInterpreter {
     }
 
     private void testKevScript(File file) throws IOException {
-        System.out.println("Testing: "+file.getName());
+        System.out.println("Testing: " + file.getName());
         KevScriptInterpreter kevs = new KevScriptInterpreter();
         kevs.parse(file, new KCallback<Model>() {
             @Override

@@ -4,7 +4,6 @@ import org.KevoreeView;
 import org.kevoree.Model;
 
 /**
- *
  * Created by leiko on 3/1/16.
  */
 public class KevScriptWalker extends KevScriptBaseListener {
