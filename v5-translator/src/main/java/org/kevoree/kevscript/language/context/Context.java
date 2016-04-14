@@ -81,7 +81,6 @@ public class Context {
     }
 
     public void addExpression(final String identifier, final FinalExpression expression, final boolean isExported) {
-        //this.mapIdentifiers.put(identifier, expression);
         if (expression instanceof ArrayDeclExpression) {
             final ArrayDeclExpression arr = (ArrayDeclExpression) expression;
             int i = 0;

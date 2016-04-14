@@ -331,7 +331,7 @@ public class Phase1Test {
 
     @Test
     public void testForFunctionReturn() throws Exception {
-        Commands expected = null; // TODO
+        final Commands expected = new Commands(); // TODO
         analyzeDirectory(expected, "phase1/for_function_return");
     }
 

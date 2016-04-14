@@ -258,13 +258,14 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     private FinalExpression visitFunctionExpression(final FunctionExpression funcExpr, final List<ExpressionContext> parameters) {
         final Commands commands = new Commands();
         int parameterCount = 0;
+        final Context context = new Context(funcExpr.context);
         for (final ExpressionContext expressionCtx : parameters) {
             final FinalExpression expression = this.visitExpression(expressionCtx);
             final String parameterName = funcExpr.getParameter(parameterCount++);
-            funcExpr.context.addExpression(parameterName, expression);
+            context.addExpression(parameterName, expression);
         }
 
-        final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(funcExpr.context);
+        final KevscriptVisitor kevscriptVisitor = new KevscriptVisitor(context);
         final FuncBodyContext functionBody = funcExpr.getFunctionBody();
         for (final StatementContext stmt : functionBody.statement()) {
             commands.addAll(kevscriptVisitor.visit(stmt));
