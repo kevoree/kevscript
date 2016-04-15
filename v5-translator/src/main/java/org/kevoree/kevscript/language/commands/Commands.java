@@ -23,26 +23,4 @@ public class Commands extends ArrayList<AbstractCommand> {
         sb.append("\n}");
         return sb.toString();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof List))
-            return false;
-
-        ListIterator<AbstractCommand> e1 = listIterator();
-        ListIterator e2 = ((List) o).listIterator();
-        int i = 0;
-        while (e1.hasNext() && e2.hasNext()) {
-            AbstractCommand o1 = e1.next();
-            Object o2 = e2.next();
-            if (!(o1 == null ? o2 == null : o1.equals(o2))) {
-                System.out.println("index " + i + " failed !");
-                return false;
-            }
-            i++;
-        }
-        return !(e1.hasNext() || e2.hasNext());
-    }
 }
