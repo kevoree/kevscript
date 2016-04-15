@@ -27,10 +27,10 @@ export function initEdison(nodeName, group, nodeVersion) {
     attach group edison
 }
 
-export function bindByChan(port0, port1, chanName, host, uuid) {
+export function bindByChan(port0, port1, chanName, hostVal, uuidVal) {
     instance chan = chanName RemoteWSChan/5
     add chan
-    set chan#host = host
-    set chan#uuid = uuid
+    set chan#host = hostVal
+    set chan#uuid = uuidVal
     bind chan [port0, port1]
 }

@@ -88,7 +88,13 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public ObjectDeclExpression visitObjectDecl(ObjectDeclContext ctx) {
         final ObjectDeclExpression ret = new ObjectDeclExpression();
         for (KeyAndValueContext value : ctx.values) {
-            ret.put(value.key.getText(), this.visit(value.value));
+            final FinalExpression visit = this.visit(value.value);
+            if(visit != null) {
+                ret.put(value.key.getText(), visit);
+            }
+            else {
+                ret.put(value.key.getText(), new InstanceExpression(value.value.getText(), null));
+            }
         }
         return ret;
     }

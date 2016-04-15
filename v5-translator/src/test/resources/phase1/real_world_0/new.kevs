@@ -17,7 +17,7 @@ function initWebNode(nodeName, group, nodeVersion) {
     instance web = nodeName JavascriptNode/nodeVersion
     instance chart1, chart2, chart3 = Chart/2
     add web
-    add web:chart1
+    add web:chart1 //
     add web:chart2
     add web:chart3
     attach group web
@@ -42,11 +42,11 @@ function initEdison(nodeName, group, nodeVersion) {
     attach group edison
 }
 
-function bindByChan(port0, port1, chanName, host, uuid) {
+function bindByChan(port0, port1, chanName, hostVal, uuidVal) {
     instance chan = chanName RemoteWSChan/5
     add chan
-    set chan#host = host
-    set chan#uuid = uuid
+    set chan#host = hostVal
+    set chan#uuid = uuidVal
     bind chan [port0, port1]
 }
 

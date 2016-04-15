@@ -86,12 +86,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
                 //final InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
                 final InstanceExpression sourceExpr = helper.getInstanceElement(sourcesCtx);
-                if (sourceExpr.instanceName.contains(":")) {
-                    // TODO create a dedicated exception
-                    throw new IllegalArgumentException("Component " + sourceExpr.toText() + " must be added to node instances");
-                } else {
-                    cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
-                }
+                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
             }
         }
 
