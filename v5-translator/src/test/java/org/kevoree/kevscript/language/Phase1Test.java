@@ -273,9 +273,9 @@ public class Phase1Test {
                 .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart2", null)))
                 .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart3", null)))
                 .addCommand(new AttachCommand(mainGroupInstance, webInstance));
-        final Commands ret = bindByChan(initWebNode, new PortPathExpression(new InstanceExpression(webInstance.instanceName+":chart2", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName+":temp", null), false, "out"), "chan", "edison1Temp");
-        final Commands ret1 = bindByChan(ret, new PortPathExpression(new InstanceExpression(webInstance.instanceName+":chart3", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName+":light", null), false, "out"), "chan1", "edison1Light");
-        final Commands ret2 = bindByChan(ret1, new PortPathExpression(new InstanceExpression(webInstance.instanceName+":chart1", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName+":noise", null), false, "out"), "chan2", "edison1Noise");
+        final Commands ret = bindByChan(initWebNode, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart2", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":temp", null), false, "out"), "chan", "edison1Temp");
+        final Commands ret1 = bindByChan(ret, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart3", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":light", null), false, "out"), "chan1", "edison1Light");
+        final Commands ret2 = bindByChan(ret1, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart1", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":noise", null), false, "out"), "chan2", "edison1Noise");
         return ret2;
     }
 

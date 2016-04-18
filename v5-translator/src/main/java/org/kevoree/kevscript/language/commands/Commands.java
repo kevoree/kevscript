@@ -3,8 +3,6 @@ package org.kevoree.kevscript.language.commands;
 import org.kevoree.kevscript.language.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by mleduc on 15/03/16.

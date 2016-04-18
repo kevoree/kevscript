@@ -23,6 +23,9 @@ The interpretation is done through a few steps :
 
 # TODO
 List of missing features :
+ * test meta merge + meta remove
+ * test concat
+ * test context identifier
  * time and world integration in the interpretor
  * allowing variable as index of an array access
  * allowing a function as an array on the grammar (e.g myFunc()[12] should be allowed)
