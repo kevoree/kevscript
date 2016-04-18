@@ -1,7 +1,9 @@
 package org.kevoree.kevscript.language.visitors;
 
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
+import org.kevoree.kevscript.language.commands.TimeCommand;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.ArrayIndexOutOfBoundException;
 import org.kevoree.kevscript.language.excpt.VersionNotFound;
@@ -419,20 +421,25 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     }
 
     @Override
-    public ArrayDeclExpression visitIterable(final IterableContext ctx) {
+    public FinalExpression visitIterableArrayDecl(final IterableArrayDeclContext ctx) {
+        return this.visitArrayDecl(ctx.arrayDecl());
+    }
+
+    @Override
+    public FinalExpression visitIterableContextIdentifier(final IterableContextIdentifierContext ctx) {
         final ArrayDeclExpression ret;
-        if (ctx.arrayDecl() != null) {
-            ret = this.visitArrayDecl(ctx.arrayDecl());
-        } else if (ctx.identifier() != null) {
-            ret = this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class);
+        final FinalExpression res = new ExpressionVisitor(context).visitContextIdentifier(ctx.contextIdentifier());
+        if (res instanceof ArrayDeclExpression) {
+            ret = (ArrayDeclExpression) res;
         } else {
-            final FinalExpression res = new ExpressionVisitor(context).visitContextIdentifier(ctx.contextIdentifier());
-            if (res instanceof ArrayDeclExpression) {
-                ret = (ArrayDeclExpression) res;
-            } else {
-                throw new WrongTypeException(ctx.contextIdentifier().getText(), ArrayDeclExpression.class, res.getClass());
-            }
+            throw new WrongTypeException(ctx.contextIdentifier().getText(), ArrayDeclExpression.class, res.getClass());
         }
+
         return ret;
+    }
+
+    @Override
+    public FinalExpression visitIterableIdentifier(final IterableIdentifierContext ctx) {
+        return this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class);
     }
 }

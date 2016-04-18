@@ -31,8 +31,8 @@ statement
     | worldDecl
     ;
 instance
-    : INSTANCE varName=basicIdentifier ASSIGN (instanceName=expression)? type
-    | INSTANCE varIdentifierList ASSIGN type
+    : INSTANCE varName=basicIdentifier ASSIGN (instanceName=expression)? type   #InstanceSingleIdentifier
+    | INSTANCE varIdentifierList ASSIGN type                                    #InstanceManyIdentifiers
     ;
 add
     : ADD (target=instancePath)? sources=instanceList
@@ -97,9 +97,9 @@ forDecl
     : FOR L_BRACKET (index=basicIdentifier COMMA)? val=basicIdentifier IN iterable R_BRACKET LC_BRACKET forBody RC_BRACKET
     ;
 iterable
-    : arrayDecl
-    | identifier
-    | contextIdentifier
+    : arrayDecl             #IterableArrayDecl
+    | identifier            #IterableIdentifier
+    | contextIdentifier     #IterableContextIdentifier
     ;
 forBody
     : statement*

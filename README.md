@@ -33,7 +33,6 @@ List of missing features :
  * model-connector implem (+ renaming ?);
  * registry retrieving
  * KMF integration (and consistency validation steps);
- * hability to define kevscript time of executions (might be in the future);
  * typechecking
  * runtime error reporting
  * ergonomic CLI interface

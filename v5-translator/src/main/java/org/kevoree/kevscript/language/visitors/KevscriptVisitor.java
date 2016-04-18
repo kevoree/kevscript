@@ -3,6 +3,7 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
@@ -44,9 +45,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
     private Commands loopOverChildren(ParserRuleContext ctx) {
+        final List<ParseTree> children = ctx.children;
+        return loopOverChildren(children);
+    }
+
+    private Commands loopOverChildren(List<? extends ParseTree> children) {
         final Commands c = new Commands();
-        if (ctx.children != null) {
-            for (ParseTree child : ctx.children) {
+        if (children != null) {
+            for (ParseTree child : children) {
                 final Commands visit = this.visit(child);
                 if (visit != null) {
                     c.addAll(visit);
@@ -107,37 +113,47 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
 
     @Override
-    public Commands visitInstance(final InstanceContext ctx) {
+    public Commands visitInstanceManyIdentifiers(InstanceManyIdentifiersContext ctx) {
         final Commands cmds = new Commands();
         final TypeExpression typeExpr = new ExpressionVisitor(context).visitType(ctx.type());
-        if (ctx.varName != null) {
-            // only one instance creation
-            final String instanceVarName = ctx.varName.getText();
-            if (ctx.instanceName != null) {
-                // instance creation using an expression for the name
-                final FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
-                final String instanceName = nameExpr.toText();
-                final InstanceExpression instanceExpr = new InstanceExpression(instanceName, typeExpr);
-                this.context.addExpression(instanceVarName, instanceExpr);
-                cmds.addCommand(new InstanceCommand(instanceName, typeExpr));
-            } else {
-                // instance creation using the identifier name for the name
-                final InstanceExpression instanceExpr = new InstanceExpression(instanceVarName, typeExpr);
-                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
-                cmds.addCommand(new InstanceCommand(instanceVarName, typeExpr));
-            }
+
+        // instance creation using the identifier name(s) for the name
+        for (BasicIdentifierContext id : ctx.varIdentifierList().basicIdentifier()) {
+            final InstanceExpression instanceExpr;
+            instanceExpr = new InstanceExpression(id.getText(), typeExpr);
+            this.context.addExpression(instanceExpr.instanceName, instanceExpr);
+            cmds.addCommand(new InstanceCommand(id.getText(), typeExpr));
+        }
+
+
+        return cmds;
+    }
+
+    @Override
+    public Commands visitInstanceSingleIdentifier(InstanceSingleIdentifierContext ctx) {
+        final Commands cmds = new Commands();
+        final TypeExpression typeExpr = new ExpressionVisitor(context).visitType(ctx.type());
+
+        // only one instance creation
+        final String instanceVarName = ctx.varName.getText();
+        if (ctx.instanceName != null) {
+            // instance creation using an expression for the name
+            final FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
+            final String instanceName = nameExpr.toText();
+            final InstanceExpression instanceExpr = new InstanceExpression(instanceName, typeExpr);
+            this.context.addExpression(instanceVarName, instanceExpr);
+            cmds.addCommand(new InstanceCommand(instanceName, typeExpr));
         } else {
-            // instance creation using the identifier name(s) for the name
-            for (BasicIdentifierContext id : ctx.varIdentifierList().basicIdentifier()) {
-                final InstanceExpression instanceExpr;
-                instanceExpr = new InstanceExpression(id.getText(), typeExpr);
-                this.context.addExpression(instanceExpr.instanceName, instanceExpr);
-                cmds.addCommand(new InstanceCommand(id.getText(), typeExpr));
-            }
+            // instance creation using the identifier name for the name
+            final InstanceExpression instanceExpr = new InstanceExpression(instanceVarName, typeExpr);
+            this.context.addExpression(instanceExpr.instanceName, instanceExpr);
+            cmds.addCommand(new InstanceCommand(instanceVarName, typeExpr));
         }
 
         return cmds;
     }
+
+
 
     @Override
     public Commands visitAttach(final AttachContext ctx) {
@@ -314,7 +330,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitForDecl(ForDeclContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final ArrayDeclExpression iterable = expressionVisitor.visitIterable(ctx.iterable());
+        final ArrayDeclExpression iterable = (ArrayDeclExpression) expressionVisitor.visit(ctx.iterable());
         final Commands forCommands = new Commands();
 
         int i = 0;
@@ -375,7 +391,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitMetaremove(final MetaremoveContext ctx) {
         final Commands cmds = new Commands();
-        InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        final InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
 
         if (ctx.identifierList() != null) {
             for (IdentifierContext idCtx : ctx.identifierList().identifiers) {
@@ -408,7 +424,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         // look for required components in the parsed script.
         if (ctx.qualifiers == null) {
             // import everything
-            for (Map.Entry<String, FinalExpression> entry : inheritedContext.entrySet()) {
+            for (final Map.Entry<String, FinalExpression> entry : inheritedContext.entrySet()) {
                 final FinalExpression expression = entry.getValue();
                 final String key = qualifier + entry.getKey();
                 this.context.basicAddExpression(key, expression);
@@ -429,5 +445,29 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         return new Commands();
     }
 
+    @Override
+    public Commands visitTimeDecl(final TimeDeclContext ctx) {
+        final long time;
+        if(ctx.NUMERIC_VALUE() != null) {
+            time = Long.parseLong(ctx.NUMERIC_VALUE().getText());
+        } else {
+            time = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
+        }
+        final TimeCommand ret = new TimeCommand(time);
+        ret.addAll(loopOverChildren(ctx.statement()));
+        return ret;
+    }
 
+    @Override
+    public Commands visitWorldDecl(WorldDeclContext ctx) {
+        final long world;
+        if(ctx.NUMERIC_VALUE() != null) {
+            world = Long.parseLong(ctx.NUMERIC_VALUE().getText());
+        } else {
+            world = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
+        }
+        final WorldCommand ret = new WorldCommand(world);
+        ret.addAll(loopOverChildren(ctx.statement()));
+        return ret;
+    }
 }
