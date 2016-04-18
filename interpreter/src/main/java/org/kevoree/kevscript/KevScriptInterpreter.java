@@ -43,7 +43,7 @@ public class KevScriptInterpreter {
 
                     ParseTree tree = p.script();
                     ParseTreeWalker walker = new ParseTreeWalker();
-                    walker.walk(new KevScriptWalker(model, kView), tree);
+                    //walker.walk(new KevScriptWalker(model, kView), tree);
 
                     callback.on(model);
                 }

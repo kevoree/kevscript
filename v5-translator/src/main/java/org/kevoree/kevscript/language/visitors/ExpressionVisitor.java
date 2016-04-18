@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.visitors;
 
 import org.kevoree.kevscript.KevScriptBaseVisitor;
+import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.ArrayIndexOutOfBoundException;
@@ -20,6 +21,7 @@ import org.kevoree.kevscript.language.visitors.helper.KevscriptHelper;
 import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.kevoree.kevscript.KevScriptParser.*;
 
@@ -153,24 +155,49 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else if (ctx.funcCall() != null) {
             ret = visitFuncCall(ctx.funcCall());
             if (ctx.arrayAccess() != null) {
-                if (ret instanceof ArrayDeclExpression) {
-                    ArrayDeclExpression arrayDecl = (ArrayDeclExpression) ret;
-                    int arrayIndex = this.helper.convertArrayAccessToInt(ctx.arrayAccess());
-                    if (arrayDecl.expressionList.size() - 1 >= arrayIndex) {
-                        ret = arrayDecl.expressionList.get(arrayIndex);
-                    } else {
-                        throw new ArrayIndexOutOfBoundException(ctx.getText(), arrayIndex);
-                    }
-                } else {
-                    if (ret == null) {
-                        throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, NullExpression.class);
-                    } else {
-                        throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, ret.getClass());
-                    }
-                }
+                ret = visitPostFunctionArrayReference(ctx, ret);
+            } else if(ctx.DOT() != null) {
+                ret = visitPostFunctionObjectReference(ctx, ret);
             }
         } else {
             throw new NotImplementedException(ctx + "identifier unknown");
+        }
+        return ret;
+    }
+
+    private FinalExpression visitPostFunctionObjectReference(IdentifierContext ctx, FinalExpression ret) {
+        if(ret instanceof ObjectDeclExpression) {
+            final ObjectDeclExpression objDecl = (ObjectDeclExpression) ret;
+            final Context context = new Context();
+            for(Map.Entry<String, FinalExpression> lol: objDecl.values.entrySet()) {
+                context.addExpression(lol.getKey(), lol.getValue());
+            }
+            ret = new ExpressionVisitor(context).visitIdentifier(ctx.identifier());
+        } else {
+            if (ret == null) {
+                throw new WrongTypeException(ctx.getText(), ObjectDeclExpression.class, NullExpression.class);
+            } else {
+                throw new WrongTypeException(ctx.getText(), ObjectDeclExpression.class, ret.getClass());
+            }
+        }
+        return ret;
+    }
+
+    private FinalExpression visitPostFunctionArrayReference(IdentifierContext ctx, FinalExpression ret) {
+        if (ret instanceof ArrayDeclExpression) {
+            final ArrayDeclExpression arrayDecl = (ArrayDeclExpression) ret;
+            final int arrayIndex = this.helper.convertArrayAccessToInt(ctx.arrayAccess());
+            if (arrayDecl.expressionList.size() - 1 >= arrayIndex) {
+                ret = arrayDecl.expressionList.get(arrayIndex);
+            } else {
+                throw new ArrayIndexOutOfBoundException(ctx.getText(), arrayIndex);
+            }
+        } else {
+            if (ret == null) {
+                throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, NullExpression.class);
+            } else {
+                throw new WrongTypeException(ctx.getText(), ArrayDeclExpression.class, ret.getClass());
+            }
         }
         return ret;
     }

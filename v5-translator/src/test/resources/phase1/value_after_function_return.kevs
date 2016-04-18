@@ -1,0 +1,19 @@
+function returnArray() {
+    return ["a", "b", "c"]
+}
+
+function returnObject() {
+    return {
+        y: "a"
+    }
+}
+
+function returnBoth() {
+    return {
+        arr: ["a", "b"]
+    }
+}
+
+set u:v#w = returnArray()[0]
+set u:v#x = returnObject().y
+set u:v#z = returnBoth().arr[1]

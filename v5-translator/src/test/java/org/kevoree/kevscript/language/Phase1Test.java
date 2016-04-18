@@ -737,6 +737,18 @@ public class Phase1Test {
         analyzeDirectory(expected, "/phase1/variable_scope");
     }
 
+    @Test
+    public void testValueAfterFunctionReturn() throws Exception {
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "x", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "z", null), "b"));
+        final String dirPath = "/phase1";
+        final String filePath = dirPath + "/value_after_function_return.kevs";
+        final String fileContent = pathToString(filePath);
+        validate(expected, dirPath, fileContent);
+    }
+
     private void analyzeDirectory(final Commands expected, final String path) throws IOException {
         final String pathB;
         if (path.startsWith("/")) {
@@ -746,9 +758,14 @@ public class Phase1Test {
         }
 
         final String basePathStr = "/" + pathB;
-        final String basePath = getClass().getResource(basePathStr).getPath();
-        final String newStr = pathToString(basePathStr + "/new.kevs");
-        assertEquals(expected, interpretPhase1(basePath, newStr));
+        final String filePath = basePathStr + "/new.kevs";
+        final String dirPath = getClass().getResource(basePathStr).getPath();
+        final String fileContent = pathToString(filePath);
+        validate(expected, dirPath, fileContent);
+    }
+
+    private void validate(final Commands expected, final String dirPath, final String fileContent) {
+        assertEquals(expected, interpretPhase1(dirPath, fileContent));
     }
 
     private String pathToString(String name1) throws IOException {
@@ -760,7 +777,7 @@ public class Phase1Test {
         return this.interpretPhase1(null, expression);
     }
 
-    private Commands interpretPhase1(final String basePath, String expression) {
+    private Commands interpretPhase1(final String basePath, final String expression) {
         return new KevscriptInterpreter().interpret(expression, new KevscriptVisitor(new RootContext(basePath)));
     }
 }
