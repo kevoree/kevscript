@@ -23,20 +23,17 @@ The interpretation is done through a few steps :
 
 # TODO
 List of missing features :
- * test meta merge + meta remove
- * test concat
- * test context identifier
- * time and world integration in the interpretor
- * allowing variable as index of an array access
- * allowing a function as an array on the grammar (e.g myFunc()[12] should be allowed)
- * adding integers (double) as a primitive type of the language
- * model-connector implem (+ renaming ?);
+ * increasing coverage :
+     * test meta merge + meta remove
+     * test concat
+     * test context identifier
+     * test time and world
+     * test allowing variable as index of an array access
+     * test concat string + number (spoiler alter, the result is a string)
  * registry retrieving
  * KMF integration (and consistency validation steps);
- * typechecking
  * runtime error reporting
  * ergonomic CLI interface
  * transpiling
  * subnodes integration (at step 3);
  * b64 DU integration ?
-
