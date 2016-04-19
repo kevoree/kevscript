@@ -40,44 +40,32 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
 
     @Override
     public TypeExpression visitType(TypeContext ctx) {
-        String namespace = null;
-        String name;
-        if (ctx.typeName().basicIdentifier().size() > 1) {
-            namespace = ctx.typeName().basicIdentifier(0).getText();
-            name = ctx.typeName().basicIdentifier(1).getText();
+        final String namespace;
+        final String name;
+        final TypeNameContext typeNameContext = ctx.typeName();
+        final List<BasicIdentifierContext> basicIdentifierContexts = typeNameContext.basicIdentifier();
+        if (basicIdentifierContexts.size() > 1) {
+            namespace = typeNameContext.basicIdentifier(0).getText();
+            name = typeNameContext.basicIdentifier(1).getText();
         } else {
-            name = ctx.typeName().basicIdentifier(0).getText();
+            name = typeNameContext.basicIdentifier(0).getText();
+            namespace = null;
         }
-        VersionExpression versionExpr = this.visitVersion(ctx.version());
-        ObjectDeclExpression duVersions = this.visitDuVersions(ctx.duVersions());
+        final VersionExpression versionExpr = this.visitVersion(ctx.version());
+        final ObjectDeclExpression duVersions = this.visitDuVersions(ctx.duVersions());
         return new TypeExpression(namespace, name, versionExpr, duVersions);
     }
 
     @Override
-    public FinalExpression visitExpression(ExpressionContext ctx) {
-        final FinalExpression ret;
-        if (ctx.CONCAT() != null) {
-            final StringExpression left = this.context.lookup(this.visit(ctx.expression(0)), StringExpression.class, ctx);
-            final StringExpression right = this.context.lookup(this.visit(ctx.expression(1)), StringExpression.class, ctx);
-            ret = new StringExpression(left.toText() + right.toText());
-        } else if (ctx.string() != null) {
-            ret = this.visitString(ctx.string());
-        } else if (ctx.objectDecl() != null) {
-            ret = this.visitObjectDecl(ctx.objectDecl());
-        } else if (ctx.contextRef() != null) {
-            ret = this.visitContextRef(ctx.contextRef());
-        } else if (ctx.arrayDecl() != null) {
-            ret = this.visitArrayDecl(ctx.arrayDecl());
-        } else if (ctx.identifier() != null) {
-            ret = this.visitIdentifier(ctx.identifier());
-        } else if (ctx.instancePath() != null) {
-            ret = this.visitInstancePath(ctx.instancePath());
-        } else if (ctx.portPath() != null) {
-            ret = this.visitPortPath(ctx.portPath());
-        } else {
-            throw new NotImplementedException(ctx + " expression context unknown");
-        }
-        return ret;
+    public NumericExpression visitExpressionNumber(final ExpressionNumberContext ctx) {
+        return new NumericExpression(Integer.parseInt(ctx.getText()));
+    }
+
+    @Override
+    public StringExpression visitExpressionConcat(final ExpressionConcatContext ctx) {
+        final StringExpression left = this.context.lookup(this.visit(ctx.expression(0)), StringExpression.class, ctx);
+        final StringExpression right = this.context.lookup(this.visit(ctx.expression(1)), StringExpression.class, ctx);
+        return new StringExpression(left.toText() + right.toText());
     }
 
     @Override
@@ -186,11 +174,16 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         final FinalExpression ret;
         if (returnExpression instanceof ArrayDeclExpression) {
             final ArrayDeclExpression arrayDecl = (ArrayDeclExpression) returnExpression;
-            final int arrayIndex = this.helper.convertArrayAccessToInt(ctx.arrayAccess());
-            if (arrayDecl.expressionList.size() - 1 >= arrayIndex) {
-                ret = arrayDecl.expressionList.get(arrayIndex);
+            final FinalExpression arrayIndexExpr = this.visit(ctx.arrayAccess());
+            if (!(arrayIndexExpr instanceof NumericExpression)) {
+                throw new WrongTypeException(ctx.arrayAccess(), NumericExpression.class, arrayIndexExpr.getClass());
             } else {
-                throw new ArrayIndexOutOfBoundException(ctx.getText(), arrayIndex);
+                final int arrayIndex = ((NumericExpression) arrayIndexExpr).value;
+                if (arrayDecl.expressionList.size() - 1 >= arrayIndex) {
+                    ret = arrayDecl.expressionList.get(arrayIndex);
+                } else {
+                    throw new ArrayIndexOutOfBoundException(ctx.getText(), arrayIndex);
+                }
             }
         } else {
             if (returnExpression == null) {
@@ -300,7 +293,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         int parameterCount = 0;
         final Context context = new Context(funcExpr.context);
         for (final ExpressionContext expressionCtx : parameters) {
-            final FinalExpression expression = this.visitExpression(expressionCtx);
+            final FinalExpression expression = this.visit(expressionCtx);
             final String parameterName = funcExpr.getParameter(parameterCount++);
             context.addExpression(parameterName, expression);
         }
@@ -314,7 +307,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         final FinalExpression returnValue;
         if (functionBody.returnStatement() != null) {
             final ExpressionVisitor expressionVisitor = new ExpressionVisitor(kevscriptVisitor.getContext());
-            final FinalExpression returnRes = expressionVisitor.visitExpression(functionBody.returnStatement().expression());
+            final FinalExpression returnRes = expressionVisitor.visit(functionBody.returnStatement().expression());
             commands.addAll(expressionVisitor.aggregatedFunctionsCommands);
             returnValue = returnRes;
         } else {
@@ -447,5 +440,16 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     @Override
     public FinalExpression visitIterableIdentifier(final IterableIdentifierContext ctx) {
         return this.context.lookup(this.visitIdentifier(ctx.identifier()), ArrayDeclExpression.class, ctx);
+    }
+
+    @Override
+    public FinalExpression visitArrayAccessConst(ArrayAccessConstContext ctx) {
+        return new NumericExpression(Integer.parseInt(ctx.NUMERIC_VALUE().getText()));
+    }
+
+    @Override
+    public FinalExpression visitArrayAccessVariable(ArrayAccessVariableContext ctx) {
+        final FinalExpression res = this.visit(ctx);
+        return this.context.lookup(res, NumericExpression.class, ctx.expression());
     }
 }

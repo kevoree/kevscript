@@ -78,9 +78,6 @@ public class KevscriptHelper {
         return object;
     }
 
-    public int convertArrayAccessToInt(KevScriptParser.ArrayAccessContext ctx) {
-        return Integer.valueOf(ctx.NUMERIC_VALUE().getText());
-    }
 
     /**
      * Load the context for the required script.

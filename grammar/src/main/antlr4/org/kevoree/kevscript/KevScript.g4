@@ -136,20 +136,24 @@ returnStatement
     : RETURN expression
     ;
 expression
-    : string                        // a raw string
-    | objectDecl                    // a object declaration
-    | contextRef                    // a context reference
-    | expression CONCAT expression  // a concatenation of expressions
-    | arrayDecl                     // a list of values declaration
-    | identifier
-    | instancePath
-    | portPath
+    : string                        #ExpressionString
+    | number                        #ExpressionNumber
+    | objectDecl                    #ExpressionObjectDecl
+    | contextRef                    #ExpressionContextRef
+    | expression CONCAT expression  #ExpressionConcat
+    | arrayDecl                     #ExpressionArrayDecl
+    | identifier                    #ExpressionIdentifier
+    | instancePath                  #ExpressionInstancePath
+    | portPath                      #ExpressionPortPath
     ;
+number : NUMERIC_VALUE ;
+
 expressionList
     : expression (COMMA expression)*
     ;
 arrayAccess
-    : LS_BRACKET NUMERIC_VALUE RS_BRACKET // TODO handle identifier instead of only NUMERIC_VALUE
+    : LS_BRACKET NUMERIC_VALUE RS_BRACKET   #ArrayAccessConst
+    | LS_BRACKET expression RS_BRACKET      #ArrayAccessVariable
     ;
 contextIdentifier
     : basicIdentifier

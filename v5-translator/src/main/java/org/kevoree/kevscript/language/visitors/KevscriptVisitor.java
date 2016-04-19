@@ -137,7 +137,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final String instanceVarName = ctx.varName.getText();
         if (ctx.instanceName != null) {
             // instance creation using an expression for the name
-            final FinalExpression nameExpr = new ExpressionVisitor(context).visitExpression(ctx.instanceName);
+            final FinalExpression nameExpr = new ExpressionVisitor(context).visit(ctx.instanceName);
             final String instanceName = nameExpr.toText();
             final InstanceExpression instanceExpr = new InstanceExpression(instanceName, typeExpr);
             this.context.addExpression(instanceVarName, instanceExpr);
@@ -228,7 +228,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitLetDecl(final LetDeclContext ctx) {
         final boolean isExported = ctx.EXPORT() != null;
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
-        final FinalExpression expr = expressionVisitor.visitExpression(ctx.val);
+        final FinalExpression expr = expressionVisitor.visit(ctx.val);
         this.context.addExpression(ctx.basicIdentifier().getText(), expr, isExported);
         return expressionVisitor.aggregatedFunctionsCommands;
     }
@@ -320,7 +320,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitSet(final SetContext ctx) {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         final DictionaryPathExpression instanceDicoRef = expressionVisitor.visitDictionaryPath(ctx.dictionaryPath());
-        final FinalExpression value = expressionVisitor.visitExpression(ctx.val);
+        final FinalExpression value = expressionVisitor.visit(ctx.val);
         final SetCommand setCommand = new SetCommand(instanceDicoRef, value.toText());
         return new Commands().addCommand(setCommand);
     }
