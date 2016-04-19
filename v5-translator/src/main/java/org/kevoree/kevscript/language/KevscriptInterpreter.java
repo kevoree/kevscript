@@ -13,10 +13,6 @@ import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
  * Created by mleduc on 30/03/16.
  */
 public class KevscriptInterpreter {
-    /*public Commands interpret(final String expression) {
-        return interpret(expression, new KevscriptVisitor());
-    }*/
-
     public Commands interpret(final String expression, final KevscriptVisitor kevscriptVisitor) {
         final KevScriptLexer lexer = new KevScriptLexer(new ANTLRInputStream(expression));
         final KevScriptParser parser = new KevScriptParser(new CommonTokenStream(lexer));

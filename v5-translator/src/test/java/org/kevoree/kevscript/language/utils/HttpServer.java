@@ -30,7 +30,7 @@ public class HttpServer {
         final ResourceHandler resource = resource(resourceManager);
         final ResourceHandler handler = resource.setDirectoryListingEnabled(true);
         server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
+                .addHttpListener(port, "localhost")
                 .setHandler(handler)
                 .build();
         server.start();
