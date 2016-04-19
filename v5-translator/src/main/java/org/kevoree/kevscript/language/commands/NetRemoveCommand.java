@@ -8,7 +8,7 @@ import java.util.List;
  *
  *
  */
-public class NetRemoveCommand extends AbstractCommand {
+public class NetRemoveCommand implements ICommand {
     public final InstanceExpression instance;
     public final List<String> keys;
 

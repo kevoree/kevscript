@@ -5,7 +5,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 /**
  * Created by mleduc on 17/03/16.
  */
-public class RemoveCommand extends AbstractCommand {
+public class RemoveCommand implements ICommand {
     public final InstanceExpression instance;
 
     public RemoveCommand(final InstanceExpression instance) {

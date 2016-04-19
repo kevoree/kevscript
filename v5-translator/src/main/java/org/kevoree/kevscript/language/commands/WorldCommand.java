@@ -1,22 +1,22 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.utils.StringUtils;
-
 /**
  * Created by mleduc on 18/04/16.
  */
-public class WorldCommand extends Commands {
+public class WorldCommand implements ICommand {
     public final long world;
+    public final Commands commands;
 
-    public WorldCommand(final long world) {
+    public WorldCommand(long world, Commands commands) {
         this.world = world;
+        this.commands = commands;
     }
 
     @Override
     public String toString() {
-        return "TimeCommand{" +
-                "world=" + world +
-                StringUtils.join(this, "\n\t") +
+        return "WorldCommand{" +
+                "commands=" + commands +
+                ", world=" + world +
                 '}';
     }
 
@@ -24,18 +24,18 @@ public class WorldCommand extends Commands {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
         WorldCommand that = (WorldCommand) o;
 
-        return world == that.world;
+        if (world != that.world) return false;
+        return commands != null ? commands.equals(that.commands) : that.commands == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (int) (world ^ (world >>> 32));
+        int result = (int) (world ^ (world >>> 32));
+        result = 31 * result + (commands != null ? commands.hashCode() : 0);
         return result;
     }
 }

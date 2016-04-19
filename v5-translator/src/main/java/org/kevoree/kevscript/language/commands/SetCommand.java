@@ -5,7 +5,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.DictionaryPathExpress
 /**
  *
  */
-public class SetCommand extends AbstractCommand {
+public class SetCommand implements ICommand {
     public DictionaryPathExpression dicPathExpr;
     public String value;
 

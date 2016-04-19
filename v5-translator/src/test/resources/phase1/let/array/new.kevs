@@ -1,2 +1,9 @@
 let myArr = ["a", "b", "c"]
+let idx0 = "0"
+let idx2 = 2
+
+set x:y#d = myArr[idx0]
 set x:y#d = myArr[1]
+set x:y#d = myArr[idx2]
+
+

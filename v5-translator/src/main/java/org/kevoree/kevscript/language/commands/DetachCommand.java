@@ -6,7 +6,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
  *
  *
  */
-public class DetachCommand extends AbstractCommand {
+public class DetachCommand implements ICommand {
     public final InstanceExpression instance;
 
     public DetachCommand(final InstanceExpression instance) {

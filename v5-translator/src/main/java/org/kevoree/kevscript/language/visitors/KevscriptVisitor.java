@@ -156,10 +156,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitAttach(final AttachContext ctx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        InstanceExpression group;
-        InstanceExpression node;
 
-        FinalExpression groupExpr = exprVisitor.visitIdentifier(ctx.groupId);
+        final FinalExpression groupExpr = exprVisitor.visit(ctx.groupId);
+        InstanceExpression group;
         if (groupExpr == null) {
             // unable to resolve reference => using identifier as name
             group = new InstanceExpression(ctx.groupId.getText(), null);
@@ -167,7 +166,8 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             group = new InstanceExpression(groupExpr.toText(), null);
         }
 
-        FinalExpression nodeExpr = exprVisitor.visitIdentifier(ctx.nodeId);
+        final FinalExpression nodeExpr = exprVisitor.visit(ctx.nodeId);
+        final InstanceExpression node;
         if (nodeExpr == null) {
             // unable to resolve reference => using identifier as name
             node = new InstanceExpression(ctx.nodeId.getText(), null);
@@ -236,7 +236,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitBind(BindContext ctx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        final FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final FinalExpression chanExpr = exprVisitor.visit(ctx.chan);
         final InstanceExpression chanInstance;
         if (chanExpr == null) {
             chanInstance = new InstanceExpression(ctx.chan.getText(), null);
@@ -257,7 +257,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitUnbind(final UnbindContext ctx) {
         final Commands cmds = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        final FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final FinalExpression chanExpr = exprVisitor.visit(ctx.chan);
         final InstanceExpression chanInstance;
         if (chanExpr == null) {
             chanInstance = new InstanceExpression(ctx.chan.getText(), null);
@@ -388,20 +388,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitMetaremove(final MetaremoveContext ctx) {
-        final Commands cmds = new Commands();
-        final InstanceExpression instance = this.helper.processIdentifierAsInstance(ctx.identifier(0));
-
-        if (ctx.identifierList() != null) {
-            for (IdentifierContext idCtx : ctx.identifierList().identifiers) {
-                ObjectDeclExpression object = this.helper.getObjectDeclExpression(idCtx);
-                cmds.addCommand(new MetaRemoveCommand(instance, object));
-            }
-        } else {
-            ObjectDeclExpression object = this.helper.getObjectDeclExpression(ctx.identifier(1));
-            cmds.addCommand(new MetaRemoveCommand(instance, object));
-        }
-
-        return cmds;
+        final InstanceExpression node = this.helper.processIdentifierAsInstance(ctx.identifier(0));
+        final List<String> objectRefs = helper.getListObjectRefs(ctx.identifierList(), ctx.identifier(1));
+        return new Commands().addCommand(new MetaRemoveCommand(node, objectRefs));
     }
 
     @Override
@@ -449,11 +438,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         if (ctx.NUMERIC_VALUE() != null) {
             time = Long.parseLong(ctx.NUMERIC_VALUE().getText());
         } else {
-            time = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
+            time = Long.parseLong(new ExpressionVisitor(context).visit(ctx.identifier()).toText());
         }
-        final TimeCommand ret = new TimeCommand(time);
-        ret.addAll(loopOverChildren(ctx.statement()));
-        return ret;
+
+        return new Commands().addCommand(new TimeCommand(time, loopOverChildren(ctx.statement())));
     }
 
     @Override
@@ -462,10 +450,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         if (ctx.NUMERIC_VALUE() != null) {
             world = Long.parseLong(ctx.NUMERIC_VALUE().getText());
         } else {
-            world = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
+            world = Long.parseLong(new ExpressionVisitor(context).visit(ctx.identifier()).toText());
         }
-        final WorldCommand ret = new WorldCommand(world);
-        ret.addAll(loopOverChildren(ctx.statement()));
-        return ret;
+
+        return new Commands().addCommand(new WorldCommand(world, loopOverChildren(ctx.statement())));
     }
 }

@@ -6,7 +6,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
  *
  *
  */
-public class StopCommand extends AbstractCommand {
+public class StopCommand implements ICommand {
     public final InstanceExpression instance;
 
     public StopCommand(InstanceExpression instance) {

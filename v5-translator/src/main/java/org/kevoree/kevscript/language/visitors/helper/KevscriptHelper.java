@@ -2,6 +2,8 @@ package org.kevoree.kevscript.language.visitors.helper;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.kevoree.kevscript.KevScriptParser;
+import org.kevoree.kevscript.KevScriptParser.IdentifierBasicIdentifierContext;
+import org.kevoree.kevscript.KevScriptParser.ObjectDeclContext;
 import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
@@ -39,8 +41,8 @@ public class KevscriptHelper {
     }
 
     public InstanceExpression processIdentifierAsInstance(IdentifierContext ctx) {
+        final FinalExpression instanceExpr = new ExpressionVisitor(this.context).visit(ctx);
         InstanceExpression instance;
-        FinalExpression instanceExpr = new ExpressionVisitor(this.context).visitIdentifier(ctx);
         if (instanceExpr == null) {
             instance = new InstanceExpression(ctx.getText(), null);
         } else {
@@ -50,9 +52,9 @@ public class KevscriptHelper {
         return instance;
     }
 
-    public ObjectDeclExpression getObjectByDeclOrIdentifier(KevScriptParser.ObjectDeclContext objCtx, IdentifierContext idCtx) {
+    public ObjectDeclExpression getObjectByDeclOrIdentifier(final ObjectDeclContext objCtx, final IdentifierContext idCtx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        ObjectDeclExpression object;
+        final ObjectDeclExpression object;
         if (objCtx != null) {
             // statement directly defines an object
             object = exprVisitor.visitObjectDecl(objCtx);
@@ -66,8 +68,8 @@ public class KevscriptHelper {
 
     public ObjectDeclExpression getObjectDeclExpression(final IdentifierContext ctx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        final FinalExpression objRef = exprVisitor.visitIdentifier(ctx);
-        ObjectDeclExpression object;
+        final FinalExpression objRef = exprVisitor.visit(ctx);
+        final ObjectDeclExpression object;
         if (objRef instanceof ObjectDeclExpression) {
             object = (ObjectDeclExpression) objRef;
         } else if (objRef == null) {
@@ -145,8 +147,8 @@ public class KevscriptHelper {
         final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false, node);
         final InstanceExpression nodeRootInstanceElement;
 
-        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
-            nodeRootInstanceElement = new InstanceExpression(node.basicIdentifier().getText(), null);
+        if ((nodeInstance == null) && (node instanceof IdentifierBasicIdentifierContext)) {
+            nodeRootInstanceElement = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
         } else {
             final String nodeName = nodeInstance.instanceName;
             final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr, node);
@@ -189,7 +191,7 @@ public class KevscriptHelper {
     }
 
     public InstanceExpression getInstanceExpressionFromContext(IdentifierContext node) {
-        final FinalExpression nodeExpression = new ExpressionVisitor(context).visitIdentifier(node);
+        final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance;
         if (nodeExpression instanceof IdentifierExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
@@ -201,8 +203,8 @@ public class KevscriptHelper {
             throw new WrongTypeException(node, InstanceExpression.class, null);
         }
         final InstanceExpression nodeInstanceExpression;
-        if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
-            nodeInstanceExpression = new InstanceExpression(node.basicIdentifier().getText(), null);
+        if (nodeInstance == null && node instanceof IdentifierBasicIdentifierContext) {
+            nodeInstanceExpression = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
         } else {
             nodeInstanceExpression = nodeInstance;
         }

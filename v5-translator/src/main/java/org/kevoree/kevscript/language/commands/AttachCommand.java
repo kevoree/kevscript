@@ -6,7 +6,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
  *
  *
  */
-public class AttachCommand extends AbstractCommand {
+public class AttachCommand implements ICommand {
     public final InstanceExpression group;
     public final InstanceExpression node;
 

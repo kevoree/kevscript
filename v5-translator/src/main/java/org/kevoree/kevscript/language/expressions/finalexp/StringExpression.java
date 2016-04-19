@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.expressions.finalexp;
 /**
  *
  */
-public class StringExpression implements FinalExpression {
+public class StringExpression implements PrimitiveExpression {
     public final String text;
 
     public StringExpression(final String text) {

@@ -7,7 +7,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
  *
  *
  */
-public class NetMergeCommand extends AbstractCommand {
+public class NetMergeCommand implements ICommand {
 
     public final InstanceExpression instance;
     public final ObjectDeclExpression network;

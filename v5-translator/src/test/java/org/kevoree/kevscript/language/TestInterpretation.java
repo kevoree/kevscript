@@ -54,12 +54,12 @@ public class TestInterpretation {
 
     @Test
     public void testInstance4() {
-        StringBuilder script = new StringBuilder();
+        final StringBuilder script = new StringBuilder();
         script.append("let array = ['one', 'two']\n");
         script.append("instance node0 = array[1] JavascriptNode\n");
 
-        Commands cmds = new Commands();
-        TypeExpression typeExpr = new TypeExpression(null, "JavascriptNode", null, null);
+        final Commands cmds = new Commands();
+        final TypeExpression typeExpr = new TypeExpression(null, "JavascriptNode", null, null);
         cmds.addCommand(new InstanceCommand("two", typeExpr));
 
         this.test(script.toString(), cmds);

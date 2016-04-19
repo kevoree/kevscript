@@ -1,0 +1,12 @@
+let a = "a"
+let b = "b"
+let one = 1
+
+set u:v#w = "a" + "b"
+set u:v#w = a + "b"
+set u:v#w = "a" + "b"
+set u:v#w = "a" + b
+set u:v#w = a + b
+set u:v#w = a + one
+set u:v#w = one + b
+set u:v#w = one + one

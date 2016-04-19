@@ -4,6 +4,6 @@ package org.kevoree.kevscript.language.commands;
  *
  *
  */
-public abstract class AbstractCommand {
+public interface ICommand {
 
 }

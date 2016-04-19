@@ -6,7 +6,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
  *
  *
  */
-public class StartCommand extends AbstractCommand {
+public class StartCommand implements ICommand {
     public final InstanceExpression instance;
 
     public StartCommand(InstanceExpression instance) {

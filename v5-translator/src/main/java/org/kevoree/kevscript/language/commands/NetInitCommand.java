@@ -7,7 +7,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
  *
  *
  */
-public class NetInitCommand extends AbstractCommand {
+public class NetInitCommand implements ICommand {
 
     public final InstanceExpression instance;
     public final ObjectDeclExpression network;

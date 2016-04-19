@@ -3,7 +3,7 @@ package org.kevoree.kevscript.language.expressions.finalexp;
 /**
  *
  */
-public class NumericExpression implements FinalExpression {
+public class NumericExpression implements PrimitiveExpression {
     public final int value;
 
     public NumericExpression(final int value) {

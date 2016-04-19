@@ -165,11 +165,11 @@ contextRef
     : AMPERSAND contextIdentifier
     ;
 identifier
-    : basicIdentifier (DOT identifier)?
-    | contextRef
-    | funcCall (DOT identifier)?
-    | basicIdentifier arrayAccess (DOT identifier)?
-    | funcCall arrayAccess (DOT identifier)?
+    : basicIdentifier (DOT identifier)?                 #IdentifierBasicIdentifier
+    | contextRef                                        #IdentifierContextRef
+    | funcCall (DOT identifier)?                        #IdentifierFunCall
+    | basicIdentifier arrayAccess (DOT identifier)?     #IdentifierArrayAccess
+    | funcCall arrayAccess (DOT identifier)?            #IdentifierFuncCallArrayAccess
     ;
 identifierList
     : identifiers+=identifier (COMMA identifiers+=identifier)*

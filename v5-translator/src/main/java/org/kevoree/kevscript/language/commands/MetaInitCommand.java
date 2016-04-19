@@ -7,7 +7,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
  *
  *
  */
-public class MetaInitCommand extends AbstractCommand {
+public class MetaInitCommand implements ICommand {
     public final InstanceExpression instance;
     public final ObjectDeclExpression object;
 

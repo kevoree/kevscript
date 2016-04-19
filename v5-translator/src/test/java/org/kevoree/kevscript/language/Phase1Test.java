@@ -71,8 +71,11 @@ public class Phase1Test {
 
     @Test
     public void testLetArray() throws Exception {
+        final DictionaryPathExpression dicPathExpr = new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null);
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "b"));
+                .addCommand(new SetCommand(dicPathExpr, "a"))
+                .addCommand(new SetCommand(dicPathExpr, "b"))
+                .addCommand(new SetCommand(dicPathExpr, "c"));
         fileTestUtil.analyzeDirectory(expected, "phase1/let/array");
     }
 
@@ -191,6 +194,29 @@ public class Phase1Test {
         fileTestUtil.analyzeDirectory(expected, "phase1/net-merge/test1");
     }
 
+
+    @Test
+    public void testMetaMergeTest1() throws Exception {
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new MetaMergeCommand(new InstanceExpression("node0", null), network));
+        fileTestUtil.analyzeDirectory(expected, "phase1/meta-merge/test1");
+    }
+
+    @Test
+    public void testMetaMergeTest2() throws Exception {
+        final ObjectDeclExpression network = new ObjectDeclExpression();
+        final ObjectDeclExpression wlan0Value = new ObjectDeclExpression();
+        wlan0Value.put("ip", new StringExpression("192.168.1.1"));
+        network.put("wlan0", wlan0Value);
+        final Commands expected = new Commands()
+                .addCommand(new MetaMergeCommand(new InstanceExpression("node0", null), network));
+        fileTestUtil.analyzeDirectory(expected, "phase1/meta-merge/test2");
+    }
+
     @Test
     public void testNetMergeTest2() throws Exception {
         final ObjectDeclExpression network = new ObjectDeclExpression();
@@ -217,6 +243,20 @@ public class Phase1Test {
     }
 
     @Test
+    public void testmetaMergeError1() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is StringExpression [l: 2]"));
+        this.fileTestUtil.interpretPhase1(this.fileTestUtil.pathToString("/phase1/meta-merge/error1.kevs"));
+    }
+
+    @Test
+    public void testMetaMergeError2() throws Exception {
+        exception.expect(WrongTypeException.class);
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is InstanceExpression [l: 2]"));
+        this.fileTestUtil.interpretPhase1(this.fileTestUtil.pathToString("/phase1/meta-merge/error2.kevs"));
+    }
+
+    @Test
     public void testNetRemoveTest1() throws Exception {
         final List<String> keys = new ArrayList<>();
         keys.add("a.b");
@@ -228,6 +268,20 @@ public class Phase1Test {
                 .addCommand(new InstanceCommand("node2", new TypeExpression(null, "DotnetNode", null, null)))
                 .addCommand(new NetRemoveCommand(new InstanceExpression("node2", null), keys2));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-remove/test1");
+    }
+
+    @Test
+    public void testMetaRemoveTest1() throws Exception {
+        final List<String> keys = new ArrayList<>();
+        keys.add("a.b");
+        final List<String> keys2 = new ArrayList<>();
+        keys2.add("c");
+        keys2.add("d.e.f");
+        final Commands expected = new Commands()
+                .addCommand(new MetaRemoveCommand(new InstanceExpression("node0", null), keys))
+                .addCommand(new InstanceCommand("node2", new TypeExpression(null, "DotnetNode", null, null)))
+                .addCommand(new MetaRemoveCommand(new InstanceExpression("node2", null), keys2));
+        fileTestUtil.analyzeDirectory(expected, "phase1/meta-remove/test1");
     }
 
     @Test
@@ -650,9 +704,47 @@ public class Phase1Test {
                 .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "a"))
                 .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "x", null), "a"))
                 .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "z", null), "b"));
-        final String dirPath = "/phase1";
-        final String fileName = "value_after_function_return.kevs";
 
-        this.fileTestUtil.validateFile(expected, dirPath, fileName);
+        this.fileTestUtil.validateFile(expected, "/phase1", "value_after_function_return.kevs");
+    }
+
+    @Test
+    public void testTimeTest1() throws Exception {
+        final Commands expected = new Commands().addCommand(new TimeCommand(1, new Commands()));
+        this.fileTestUtil.validateFile(expected, "/phase1/time", "test1.kevs");
+    }
+
+    @Test
+    public void testTimeTest2() throws Exception {
+        final Commands expected = new Commands().addCommand(new TimeCommand(1, new Commands()));
+        this.fileTestUtil.validateFile(expected, "/phase1/time", "test2.kevs");
+    }
+
+    @Test
+    public void testWorldTest1() throws Exception {
+        final Commands expected = new Commands().addCommand(new WorldCommand(1, new Commands()));
+        this.fileTestUtil.validateFile(expected, "/phase1/world", "test1.kevs");
+    }
+
+    @Test
+    public void testWorldTest2() throws Exception {
+        final Commands expected = new Commands().addCommand(new WorldCommand(1, new Commands()));
+        this.fileTestUtil.validateFile(expected, "/phase1/world", "test2.kevs");
+    }
+
+    @Test
+    public void testConcat() throws Exception {
+        final InstanceExpression instance = new InstanceExpression("u:v", null);
+        final DictionaryPathExpression dicPathExpr = new DictionaryPathExpression(instance, "w", null);
+        final Commands expected = new Commands()
+                .addCommand(new SetCommand(dicPathExpr, "ab"))
+                .addCommand(new SetCommand(dicPathExpr, "ab"))
+                .addCommand(new SetCommand(dicPathExpr, "ab"))
+                .addCommand(new SetCommand(dicPathExpr, "ab"))
+                .addCommand(new SetCommand(dicPathExpr, "ab"))
+                .addCommand(new SetCommand(dicPathExpr, "a1"))
+                .addCommand(new SetCommand(dicPathExpr, "1b"))
+                .addCommand(new SetCommand(dicPathExpr, "11"));
+        this.fileTestUtil.validateFile(expected, "/phase1", "concat.kevs");
     }
 }

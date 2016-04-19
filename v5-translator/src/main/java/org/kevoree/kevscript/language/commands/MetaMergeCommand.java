@@ -7,7 +7,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
  *
  *
  */
-public class MetaMergeCommand extends AbstractCommand {
+public class MetaMergeCommand implements ICommand {
     public final InstanceExpression instance;
     public final ObjectDeclExpression object;
 

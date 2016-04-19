@@ -7,7 +7,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.PortPathExpression;
  *
  *
  */
-public class UnbindCommand extends AbstractCommand {
+public class UnbindCommand implements ICommand {
     public final InstanceExpression chan;
     public final PortPathExpression port;
 

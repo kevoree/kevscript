@@ -6,7 +6,7 @@ import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
  *
  *
  */
-public class MoveCommand extends AbstractCommand {
+public class MoveCommand implements ICommand {
     public final InstanceExpression target;
     public final InstanceExpression source;
 
