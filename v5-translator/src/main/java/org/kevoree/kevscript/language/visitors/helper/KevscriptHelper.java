@@ -1,5 +1,6 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.context.Context;
@@ -63,18 +64,16 @@ public class KevscriptHelper {
         return object;
     }
 
-    public ObjectDeclExpression getObjectDeclExpression(IdentifierContext ctx) {
+    public ObjectDeclExpression getObjectDeclExpression(final IdentifierContext ctx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
+        final FinalExpression objRef = exprVisitor.visitIdentifier(ctx);
         ObjectDeclExpression object;
-        FinalExpression objRef = exprVisitor.visitIdentifier(ctx);
         if (objRef instanceof ObjectDeclExpression) {
             object = (ObjectDeclExpression) objRef;
+        } else if (objRef == null) {
+            throw new WrongTypeException(ctx, ObjectDeclExpression.class, NullExpression.class);
         } else {
-            if (objRef == null) {
-                throw new WrongTypeException(ctx.getText(), ObjectDeclExpression.class, NullExpression.class);
-            } else {
-                throw new WrongTypeException(ctx.getText(), ObjectDeclExpression.class, objRef.getClass());
-            }
+            throw new WrongTypeException(ctx, ObjectDeclExpression.class, objRef.getClass());
         }
         return object;
     }
@@ -146,14 +145,14 @@ public class KevscriptHelper {
 
     public InstanceExpression getInstanceFromIdentifierContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
-        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false);
+        final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false, node);
         final InstanceExpression nodeRootInstanceElement;
 
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {
             nodeRootInstanceElement = new InstanceExpression(node.basicIdentifier().getText(), null);
         } else {
             final String nodeName = nodeInstance.instanceName;
-            final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr);
+            final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr, node);
             final String instanceTypeDefName = nodeInstance.typeExpr.name;
             final VersionExpression versionExpr;
             if (nodeVersion != null) {
@@ -167,13 +166,13 @@ public class KevscriptHelper {
         return nodeRootInstanceElement;
     }
 
-    public Long convertVersionToLong(final Expression expression) {
+    public Long convertVersionToLong(final Expression expression, ParserRuleContext ctx) {
 
         final Long versionValue;
         if (expression instanceof VersionExpression) {
             versionValue = ((VersionExpression) expression).version;
         } else if (expression != null) {
-            final FinalExpression version = context.lookup(expression, FinalExpression.class);
+            final FinalExpression version = context.lookup(expression, FinalExpression.class, ctx);
             if (version instanceof StringExpression) {
                 versionValue = Long.parseLong(((StringExpression) version).text);
             } else if (version instanceof InstanceExpression) {
@@ -184,7 +183,7 @@ public class KevscriptHelper {
                     versionValue = null;
                 }
             } else {
-                throw new WrongTypeException(expression.toString(), FinalExpression.class, null);
+                throw new WrongTypeException(ctx, FinalExpression.class, null);
             }
         } else {
             versionValue = null;
@@ -202,7 +201,7 @@ public class KevscriptHelper {
         } else if (nodeExpression == null) {
             nodeInstance = new InstanceExpression(node.getText(), null);
         } else {
-            throw new WrongTypeException(node.getText(), InstanceExpression.class, null);
+            throw new WrongTypeException(node, InstanceExpression.class, null);
         }
         final InstanceExpression nodeInstanceExpression;
         if (nodeInstance == null && node.DOT() == null && node.contextRef() == null) {

@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -582,7 +583,7 @@ public class Phase1Test {
     @Test
     public void testBindError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("y is expected to be of type PortPathExpression but is NullExpression");
+        exception.expectMessage(CoreMatchers.equalTo("y is expected to be of type PortPathExpression but is NullExpression [l: 1]"));
         interpretPhase1(pathToString("/phase1/bind/error1.kevs"));
     }
 

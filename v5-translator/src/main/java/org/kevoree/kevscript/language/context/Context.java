@@ -1,5 +1,6 @@
 package org.kevoree.kevscript.language.context;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.kevoree.kevscript.language.excpt.NameCollisionException;
 import org.kevoree.kevscript.language.excpt.UnknownIdentifier;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
@@ -30,39 +31,39 @@ public class Context {
         this.parentContext = parentContext;
     }
 
-    public FinalExpression lookup(final Expression identifier) {
-        return lookup(identifier, FinalExpression.class);
+    public FinalExpression lookup(final Expression identifier, ParserRuleContext ctx) {
+        return lookup(identifier, FinalExpression.class, ctx);
     }
 
-    public <T extends FinalExpression> T lookup(final Expression identifier, final Class<T> clazz) {
-        return lookup(identifier, clazz, true);
+    public <T extends FinalExpression> T lookup(final Expression identifier, final Class<T> clazz, ParserRuleContext ctx) {
+        return lookup(identifier, clazz, true, ctx);
     }
 
-    public <T extends FinalExpression> T lookupByStrKey(final String identifier, final Class<T> clazz) {
-        return lookupByStrKey(identifier, clazz, true);
+    public <T extends FinalExpression> T lookupByStrKey(final String identifier, final Class<T> clazz, ParserRuleContext ctx) {
+        return lookupByStrKey(identifier, clazz, true, ctx);
     }
 
-    public <T extends FinalExpression> T lookup(final Expression identifier, Class<T> clazz, boolean throwException) {
+    public <T extends FinalExpression> T lookup(final Expression identifier, Class<T> clazz, boolean throwException, ParserRuleContext ctx) {
         final T ret;
         if (identifier instanceof FinalExpression) {
             ret = (T) identifier;
         } else if (identifier != null) {
-            ret = lookupByStrKey(((NonFinalExpression) identifier).toPath(), clazz, throwException);
+            ret = lookupByStrKey(((NonFinalExpression) identifier).toPath(), clazz, throwException, ctx);
         } else {
             ret = null;
         }
         return ret;
     }
 
-    public <T extends FinalExpression> T lookupByStrKey(final String key, final Class<T> clazz, final boolean throwException) {
-        return lookupByStrKey(key, clazz, throwException, this.getInheritedContext());
+    public <T extends FinalExpression> T lookupByStrKey(final String key, final Class<T> clazz, final boolean throwException, ParserRuleContext ctx) {
+        return lookupByStrKey(key, clazz, throwException, this.getInheritedContext(), ctx);
     }
 
-    protected <T extends FinalExpression> T lookupByStrKey(String key, Class<T> clazz, boolean throwException, Map<String, FinalExpression> mapIdentifiers) {
+    protected <T extends FinalExpression> T lookupByStrKey(final String key, final Class<T> clazz, final boolean throwException, final Map<String, FinalExpression> mapIdentifiers, final ParserRuleContext ctx) {
         if (mapIdentifiers.containsKey(key)) {
             final FinalExpression expression = mapIdentifiers.get(key);
             if (clazz != null && !clazz.isAssignableFrom(expression.getClass())) {
-                throw new WrongTypeException(key, clazz, expression.getClass());
+                throw new WrongTypeException(ctx, clazz, expression.getClass());
             }
             return (T) expression;
         } else if (throwException) {

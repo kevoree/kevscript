@@ -3,7 +3,6 @@ package org.kevoree.kevscript.language.visitors;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.kevoree.kevscript.KevScriptBaseVisitor;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.context.RootContext;
@@ -154,7 +153,6 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     }
 
 
-
     @Override
     public Commands visitAttach(final AttachContext ctx) {
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
@@ -237,18 +235,18 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
     @Override
     public Commands visitBind(BindContext ctx) {
-        final Commands cmds = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        InstanceExpression chanInstance;
-        FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final FinalExpression chanExpr = exprVisitor.visitIdentifier(ctx.chan);
+        final InstanceExpression chanInstance;
         if (chanExpr == null) {
             chanInstance = new InstanceExpression(ctx.chan.getText(), null);
         } else {
             chanInstance = new InstanceExpression(chanExpr.toText(), null);
         }
 
-        for (PortPathContext pPath : ctx.portList().instances) {
-            PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
+        final Commands cmds = new Commands();
+        for (final PortPathContext pPath : ctx.portList().instances) {
+            final PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
             cmds.addCommand(new BindCommand(chanInstance, pExpr));
         }
 
@@ -448,7 +446,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitTimeDecl(final TimeDeclContext ctx) {
         final long time;
-        if(ctx.NUMERIC_VALUE() != null) {
+        if (ctx.NUMERIC_VALUE() != null) {
             time = Long.parseLong(ctx.NUMERIC_VALUE().getText());
         } else {
             time = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
@@ -461,7 +459,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     @Override
     public Commands visitWorldDecl(WorldDeclContext ctx) {
         final long world;
-        if(ctx.NUMERIC_VALUE() != null) {
+        if (ctx.NUMERIC_VALUE() != null) {
             world = Long.parseLong(ctx.NUMERIC_VALUE().getText());
         } else {
             world = Long.parseLong(new ExpressionVisitor(context).visitIdentifier(ctx.identifier()).toText());
