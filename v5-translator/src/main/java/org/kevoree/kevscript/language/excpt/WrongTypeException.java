@@ -26,8 +26,8 @@ public class WrongTypeException extends RuntimeException {
         if (expectedClass != null) {
             sb.append(this.expectedClass.getSimpleName());
         }
-        sb.append(" but is ");
         if (currentClass != null) {
+            sb.append(" but is ");
             sb.append(this.currentClass.getSimpleName());
         }
         sb.append(" [l: ");

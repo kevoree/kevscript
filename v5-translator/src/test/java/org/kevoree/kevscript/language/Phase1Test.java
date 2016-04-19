@@ -48,7 +48,7 @@ public class Phase1Test {
     @Test
     public void testInstance1Error1() throws Exception {
         exception.expect(NameCollisionException.class);
-        exception.expectMessage("node0 already declared in this scope");
+        exception.expectMessage(CoreMatchers.equalTo("node0 already declared in this scope"));
         interpretPhase1(pathToString("/phase1/instance_1/error1.kevs"));
     }
 
@@ -62,14 +62,14 @@ public class Phase1Test {
     @Test
     public void testLetError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("a is expected to be of type InstanceExpression");
+        exception.expectMessage(CoreMatchers.equalTo("a is expected to be of type InstanceExpression [l: 3]"));
         interpretPhase1(pathToString("/phase1/let/rec_error/error1.kevs"));
     }
 
     @Test
     public void testLetError2() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("b is expected to be of type InstanceExpression");
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type InstanceExpression [l: 3]"));
         interpretPhase1(pathToString("/phase1/let/rec_error/error2.kevs"));
     }
 
@@ -173,14 +173,14 @@ public class Phase1Test {
     @Test
     public void testNetInitError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is StringExpression [l: 2]"));
         interpretPhase1(pathToString("/phase1/net-init/error1.kevs"));
     }
 
     @Test
     public void testNetInitError2() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is InstanceExpression [l: 2]"));
         interpretPhase1(pathToString("/phase1/net-init/error2.kevs"));
     }
 
@@ -209,14 +209,14 @@ public class Phase1Test {
     @Test
     public void testNetMergeError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is StringExpression [l: 2]"));
         interpretPhase1(pathToString("/phase1/net-merge/error1.kevs"));
     }
 
     @Test
     public void testNetMergeError2() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("b is expected to be of type ObjectDeclExpression");
+        exception.expectMessage(CoreMatchers.equalTo("b is expected to be of type ObjectDeclExpression but is InstanceExpression [l: 2]"));
         interpretPhase1(pathToString("/phase1/net-merge/error2.kevs"));
     }
 
@@ -377,7 +377,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedError1() throws Exception {
         exception.expect(ResourceNotFoundException.class);
-        exception.expectMessage("doesnotexists.kevs not found");
+        exception.expectMessage(CoreMatchers.equalTo("doesnotexists.kevs not found"));
         final String basePath = "/phase1/import_by_files/";
         interpretPhase1(basePath, pathToString(basePath + "error1.kevs"));
     }
@@ -385,7 +385,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedNameColision1() throws Exception {
         exception.expect(NameCollisionException.class);
-        exception.expectMessage("a already declared in this scope");
+        exception.expectMessage(CoreMatchers.equalTo("a already declared in this scope"));
         final String basePath = "/phase1/import_by_files/non_qualified/name_colision_1";
         interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
     }
@@ -393,7 +393,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedNameColision2() throws Exception {
         exception.expect(NameCollisionException.class);
-        exception.expectMessage("a already declared in this scope");
+        exception.expectMessage(CoreMatchers.equalTo("a already declared in this scope"));
         final String basePath = "/phase1/import_by_files/non_qualified/name_colision_2";
         interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
     }
@@ -401,7 +401,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesQualifiedNameColision1() throws Exception {
         exception.expect(NameCollisionException.class);
-        exception.expectMessage("test already declared in this scope");
+        exception.expectMessage(CoreMatchers.equalTo("test already declared in this scope"));
         final String basePath = "/phase1/import_by_files/qualified/name_colision_1";
         interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
     }
@@ -409,7 +409,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesQualifiedNameColision2() throws Exception {
         exception.expect(NameCollisionException.class);
-        exception.expectMessage("test already declared in this scope");
+        exception.expectMessage(CoreMatchers.equalTo("test already declared in this scope"));
         final String basePath = "/phase1/import_by_files/qualified/name_colision_2";
         interpretPhase1(getClass().getResource(basePath).getPath(), pathToString(basePath + "/new.kevs"));
     }
@@ -417,7 +417,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedImportButDoesNotExists() throws Exception {
         exception.expect(ImportException.class);
-        exception.expectMessage("a not found in \"dep.kevs\"");
+        exception.expectMessage(CoreMatchers.equalTo("a not found in \"dep.kevs\""));
         final String basePathS = "/phase1/import_by_files/import_but_does_not_exists";
         final String basePath = getClass().getResource(basePathS).getPath();
         interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
@@ -426,7 +426,7 @@ public class Phase1Test {
     @Test
     public void testImportByFilesNonQualifiedImportButNotExported() throws Exception {
         exception.expect(ImportException.class);
-        exception.expectMessage("a not found in \"dep.kevs\"");
+        exception.expectMessage(CoreMatchers.equalTo("a not found in \"dep.kevs\""));
         final String basePathS = "/phase1/import_by_files/import_but_not_exported";
         final String basePath = getClass().getResource(basePathS).getPath();
         interpretPhase1(basePath, pathToString(basePathS + "/main.kevs"));
@@ -451,7 +451,7 @@ public class Phase1Test {
         try {
             httpServer.buildAndStartServer();
             exception.expect(ResourceNotFoundException.class);
-            exception.expectMessage("http:localhost:8080/doesnotexists.kevs not found");
+            exception.expectMessage(CoreMatchers.equalTo("http:localhost:8080/doesnotexists.kevs not found"));
             interpretPhase1(basePath, pathToString("/" + basePath + "error1.kevs"));
         } finally {
             httpServer.stop();
@@ -496,14 +496,14 @@ public class Phase1Test {
     @Test
     public void testFunctionError1() throws Exception {
         exception.expect(WrongNumberOfArguments.class);
-        exception.expectMessage("method a expected 0 arguments but got 1");
+        exception.expectMessage(CoreMatchers.equalTo("method a expected 0 arguments but got 1"));
         interpretPhase1(pathToString("/phase1/function_error/function_err_1.kevs"));
     }
 
     @Test
     public void testFunctionError2() throws Exception {
         exception.expect(WrongNumberOfArguments.class);
-        exception.expectMessage("method b expected 1 arguments but got 0");
+        exception.expectMessage(CoreMatchers.equalTo("method b expected 1 arguments but got 0"));
         interpretPhase1(pathToString("/phase1/function_error/function_err_2.kevs"));
     }
 
@@ -590,7 +590,7 @@ public class Phase1Test {
     @Test
     public void testBindError2() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("node1 is expected to be of type PortPathExpression but is InstanceExpression");
+        exception.expectMessage(CoreMatchers.equalTo("node1 is expected to be of type PortPathExpression but is InstanceExpression [l: 3]"));
         interpretPhase1(pathToString("/phase1/bind/error2.kevs"));
     }
 
@@ -666,7 +666,7 @@ public class Phase1Test {
     @Test
     public void testSetError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("conflict is expected to be of type StringExpression");
+        exception.expectMessage(CoreMatchers.equalTo("conflict is expected to be of type StringExpression [l: 5]"));
         interpretPhase1(pathToString("/phase1/set/error1.kevs"));
     }
 
@@ -715,14 +715,14 @@ public class Phase1Test {
     @Test
     public void testUnbindError1() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("node1 is expected to be of type PortPathExpression but is NullExpression");
+        exception.expectMessage(CoreMatchers.equalTo("node1 is expected to be of type PortPathExpression but is NullExpression [l: 3]"));
         interpretPhase1(pathToString("/phase1/unbind/error1.kevs"));
     }
 
     @Test
     public void testUnbindError2() throws Exception {
         exception.expect(WrongTypeException.class);
-        exception.expectMessage("node1 is expected to be of type PortPathExpression but is InstanceExpression");
+        exception.expectMessage(CoreMatchers.equalTo("node1 is expected to be of type PortPathExpression but is InstanceExpression [l: 3]"));
         interpretPhase1(pathToString("/phase1/unbind/error2.kevs"));
     }
 
