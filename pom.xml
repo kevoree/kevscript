@@ -18,7 +18,8 @@
         <module>grammar</module>
         <module>grammar-test</module>
         <module>interpreter</module>
-        <module>v5-translator</module>
+        <module>kevscript-language</module>
+        <module>interpreter-cli</module>
     </modules>
 
     <build>

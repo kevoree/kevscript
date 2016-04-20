@@ -49,11 +49,4 @@
             <version>1.7.7.1</version>
         </dependency>
     </dependencies>
-    <!--<repositories>
-        <repository>
-            <id>maven.java.net</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <url>https://maven.java.net/content/groups/public/</url>
-        </repository>
-    </repositories>-->
 </project>
