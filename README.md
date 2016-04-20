@@ -24,7 +24,7 @@ The interpretation is done through a few steps :
 # TODO
 List of missing features :
  * testing more advances result chaining operations (eg u.a().b.d[0].d.e[fgh])
- * registry retrieving
+ * registry retrieving and error/validation management
  * KMF integration (and consistency validation steps);
  * runtime error reporting
  * ergonomic CLI interface

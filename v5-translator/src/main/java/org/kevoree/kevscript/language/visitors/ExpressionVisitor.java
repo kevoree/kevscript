@@ -31,10 +31,12 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
     public final Commands aggregatedFunctionsCommands = new Commands();
     private final Context context;
     private final KevscriptHelper helper;
+    private final JsEngine jsEngine;
 
     public ExpressionVisitor(final Context context) {
         this.context = context;
         this.helper = new KevscriptHelper(this.context);
+        this.jsEngine = new JsEngine();
     }
 
     @Override
@@ -275,7 +277,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             sb.append('(');
             sb.append(StringUtils.join(parametersStr, ", "));
             sb.append(')');
-            returnValue = new JsEngine().evaluateFunction(sb.toString());
+            returnValue = jsEngine.evaluateFunction(sb.toString());
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {

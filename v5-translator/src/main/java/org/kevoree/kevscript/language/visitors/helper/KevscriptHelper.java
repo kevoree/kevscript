@@ -1,8 +1,9 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.kevoree.kevscript.KevScriptParser;
 import org.kevoree.kevscript.KevScriptParser.IdentifierBasicIdentifierContext;
+import org.kevoree.kevscript.KevScriptParser.IdentifierListContext;
+import org.kevoree.kevscript.KevScriptParser.InstancePathContext;
 import org.kevoree.kevscript.KevScriptParser.ObjectDeclContext;
 import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.context.Context;
@@ -35,12 +36,14 @@ import static org.kevoree.kevscript.KevScriptParser.IdentifierContext;
  */
 public class KevscriptHelper {
     private final Context context;
+    private final UrlDownloader urlDownloader;
 
     public KevscriptHelper(Context context) {
         this.context = context;
+        this.urlDownloader = new UrlDownloader();
     }
 
-    public InstanceExpression processIdentifierAsInstance(IdentifierContext ctx) {
+    public InstanceExpression processIdentifierAsInstance(final IdentifierContext ctx) {
         final FinalExpression instanceExpr = new ExpressionVisitor(this.context).visit(ctx);
         InstanceExpression instance;
         if (instanceExpr == null) {
@@ -88,7 +91,7 @@ public class KevscriptHelper {
      *
      * @param resourcePath
      */
-    public Map<String, FinalExpression> loadContext(String resourcePath, ImportsStore importsStore) {
+    public Map<String, FinalExpression> loadContext(final String resourcePath, final ImportsStore importsStore) {
         final Map<String, FinalExpression> importedContext;
         if (importsStore.containsKey(resourcePath)) {
             importedContext = importsStore.get(resourcePath);
@@ -102,12 +105,12 @@ public class KevscriptHelper {
         return importedContext;
     }
 
-    private String getScriptFromResourcePath(final String resourcePath, String basePath) {
+    private String getScriptFromResourcePath(final String resourcePath, final String basePath) {
         final String pathText = resourcePath.substring(1, resourcePath.length() - 1);
         String res;
         try {
             final URL url = new URL(pathText);
-            res = new UrlDownloader().saveUrl(url);
+            res = urlDownloader.saveUrl(url);
         } catch (MalformedURLException e) {
             final File file = new File(new File(basePath), pathText);
             if (file.exists()) {
@@ -125,30 +128,30 @@ public class KevscriptHelper {
         return res;
     }
 
-    public InstanceExpression getInstanceElement(KevScriptParser.InstancePathContext instancePathContext) {
+    public InstanceExpression getInstanceElement(final InstancePathContext instancePathContext) {
 
-        final InstanceExpression instance;
+        final InstanceExpression ret;
         if (instancePathContext.identifier().size() == 1) {
             // direct reference to a component, must be in the current scope
             final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
-            instance = componentInstance;
+            ret = componentInstance;
 
         } else {
             // reference to a component via its node, might be found in the context or later in the CDN
             final InstanceExpression nodeInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
             final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(1));
-            instance = new InstanceExpression(nodeInstance.instanceName + ":" + componentInstance.instanceName, componentInstance.typeExpr);
+            ret = new InstanceExpression(nodeInstance.instanceName + ":" + componentInstance.instanceName, componentInstance.typeExpr);
         }
-        return instance;
+        return ret;
     }
 
     public InstanceExpression getInstanceFromIdentifierContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance = context.lookup(nodeExpression, InstanceExpression.class, false, node);
-        final InstanceExpression nodeRootInstanceElement;
+        final InstanceExpression ret;
 
         if ((nodeInstance == null) && (node instanceof IdentifierBasicIdentifierContext)) {
-            nodeRootInstanceElement = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
+            ret = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
         } else {
             final String nodeName = nodeInstance.instanceName;
             final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr, node);
@@ -160,12 +163,12 @@ public class KevscriptHelper {
                 versionExpr = null;
             }
             final TypeExpression typeExpr = new TypeExpression(null, instanceTypeDefName, versionExpr, null);
-            nodeRootInstanceElement = new InstanceExpression(nodeName, typeExpr);
+            ret = new InstanceExpression(nodeName, typeExpr);
         }
-        return nodeRootInstanceElement;
+        return ret;
     }
 
-    public Long convertVersionToLong(final Expression expression, ParserRuleContext ctx) {
+    public Long convertVersionToLong(final Expression expression, final ParserRuleContext ctx) {
 
         final Long versionValue;
         if (expression instanceof VersionExpression) {
@@ -190,7 +193,7 @@ public class KevscriptHelper {
         return versionValue;
     }
 
-    public InstanceExpression getInstanceExpressionFromContext(IdentifierContext node) {
+    public InstanceExpression getInstanceExpressionFromContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance;
         if (nodeExpression instanceof IdentifierExpression) {
@@ -211,7 +214,7 @@ public class KevscriptHelper {
         return nodeInstanceExpression;
     }
 
-    public List<String> getListObjectRefs(KevScriptParser.IdentifierListContext identifierListContext, IdentifierContext identifierContext) {
+    public List<String> getListObjectRefs(final IdentifierListContext identifierListContext, final IdentifierContext identifierContext) {
         final List<String> objectRefs = new ArrayList<>();
         if (identifierListContext != null) {
             for (final IdentifierContext identifier : identifierListContext.identifier()) {

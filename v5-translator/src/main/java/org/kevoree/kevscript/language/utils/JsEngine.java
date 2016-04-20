@@ -16,14 +16,12 @@ import java.util.Map;
  * Created by mleduc on 30/03/16.
  */
 public class JsEngine {
-
-
+    
     public FinalExpression evaluateFunction(final String expression) throws ScriptException, NoSuchMethodException {
         final Context cx = Context.enter();
         final Scriptable scope = cx.initStandardObjects();
         final Object result = cx.evaluateString(scope, expression, "<cmd>", 1, null);
-        final FinalExpression finalExpression = toFinalExpression(result);
-        return finalExpression;
+        return toFinalExpression(result);
     }
 
     private FinalExpression toFinalExpression(final Object result) {
