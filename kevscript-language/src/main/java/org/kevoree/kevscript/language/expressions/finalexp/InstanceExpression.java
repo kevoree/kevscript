@@ -7,11 +7,9 @@ package org.kevoree.kevscript.language.expressions.finalexp;
 public class InstanceExpression implements FinalExpression {
 
     public final String instanceName;
-    public final TypeExpression typeExpr;
 
-    public InstanceExpression(final String instanceName, final TypeExpression typeExpr) {
+    public InstanceExpression(final String instanceName) {
         this.instanceName = instanceName;
-        this.typeExpr = typeExpr;
     }
 
     @Override
@@ -23,7 +21,6 @@ public class InstanceExpression implements FinalExpression {
     public String toString() {
         return "InstanceExpression{" +
                 "instanceName='" + instanceName + '\'' +
-                ", typeExpr=" + typeExpr +
                 '}';
     }
 
@@ -34,15 +31,12 @@ public class InstanceExpression implements FinalExpression {
 
         InstanceExpression that = (InstanceExpression) o;
 
-        if (instanceName != null ? !instanceName.equals(that.instanceName) : that.instanceName != null) return false;
-        return typeExpr != null ? typeExpr.equals(that.typeExpr) : that.typeExpr == null;
+        return instanceName != null ? instanceName.equals(that.instanceName) : that.instanceName == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = instanceName != null ? instanceName.hashCode() : 0;
-        result = 31 * result + (typeExpr != null ? typeExpr.hashCode() : 0);
-        return result;
+        return instanceName != null ? instanceName.hashCode() : 0;
     }
 }

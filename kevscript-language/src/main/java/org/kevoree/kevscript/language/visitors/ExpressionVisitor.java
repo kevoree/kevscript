@@ -82,7 +82,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             if (visit != null) {
                 ret.put(value.key.getText(), visit);
             } else {
-                ret.put(value.key.getText(), new InstanceExpression(value.value.getText(), null));
+                ret.put(value.key.getText(), new InstanceExpression(value.value.getText()));
             }
         }
         return ret;
@@ -324,7 +324,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         } else {
             final InstanceExpression parent = this.helper.getInstanceExpressionFromContext(ctx.identifier(0));
             final InstanceExpression children = this.helper.getInstanceExpressionFromContext(ctx.identifier(1));
-            return new InstanceExpression(parent.instanceName + ":" + children.instanceName, children.typeExpr);
+            return new InstanceExpression(parent.instanceName + ":" + children.instanceName);
         }
 
         return ret;
@@ -340,10 +340,10 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
             FinalExpression portNameExpr = this.visit(identifier);
             if (portNameExpr == null) {
                 // unable to resolve expr => use identifier as name
-                portNameExpr = new InstanceExpression(identifier.getText(), null);
+                portNameExpr = new InstanceExpression(identifier.getText());
             }
 
-            ret = new PortPathExpression(new InstanceExpression(chanExpr.instanceName, null), ctx.LEFT_ARROW() != null, portNameExpr.toText());
+            ret = new PortPathExpression(new InstanceExpression(chanExpr.instanceName), ctx.LEFT_ARROW() != null, portNameExpr.toText());
         } else {
             // its a reference to port with instancePath => instance must be found in context
             final FinalExpression portNameExpr = this.visit(identifier);
@@ -397,7 +397,7 @@ public class ExpressionVisitor extends KevScriptBaseVisitor<FinalExpression> {
         }
 
         final InstanceExpression instanceExprTmp = this.visitInstancePath(ctx.instancePath());
-        final InstanceExpression instanceExpr = new InstanceExpression(instanceExprTmp.instanceName, null);
+        final InstanceExpression instanceExpr = new InstanceExpression(instanceExprTmp.instanceName);
         final DictionaryPathExpression ret;
         if (ctx.fragmentName != null) {
             final FinalExpression fragExpr = this.visit(ctx.fragmentName);

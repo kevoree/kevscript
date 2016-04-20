@@ -25,7 +25,7 @@ public class RealWorldTest {
     }
 
     private Commands expectedRealWorld() {
-        final InstanceExpression mainGroupInstance = new InstanceExpression("mainGroup", null);
+        final InstanceExpression mainGroupInstance = new InstanceExpression("mainGroup");
 
         final Commands commands = new Commands()
                 .addCommand(new InstanceCommand("mainGroup", new TypeExpression(null, "RemoteWSGroup", null, null)))
@@ -41,19 +41,19 @@ public class RealWorldTest {
         final Commands edison3 = initEdison(edison2, mainGroupInstance, "edison3");
         final Commands edison4 = initEdison(edison3, mainGroupInstance, "edison4");
         final Commands edison5 = initEdison(edison4, mainGroupInstance, "edison5");
-        final Commands forLoop1 = forLoop(edison5, "web1", mainGroupInstance, new InstanceExpression("edison1", null));
-        final Commands forLoop2 = forLoop(forLoop1, "web2", mainGroupInstance, new InstanceExpression("edison2", null));
-        final Commands forLoop3 = forLoop(forLoop2, "web3", mainGroupInstance, new InstanceExpression("edison3", null));
+        final Commands forLoop1 = forLoop(edison5, "web1", mainGroupInstance, new InstanceExpression("edison1"));
+        final Commands forLoop2 = forLoop(forLoop1, "web2", mainGroupInstance, new InstanceExpression("edison2"));
+        final Commands forLoop3 = forLoop(forLoop2, "web3", mainGroupInstance, new InstanceExpression("edison3"));
         return forLoop3;
     }
 
     private Commands initEdison(final Commands abstractCommands, final InstanceExpression mainGroupInstance, final String nodeName) {
-        final InstanceExpression lcdInstance = new InstanceExpression("lcd", null);
-        final InstanceExpression ledInstance = new InstanceExpression("led", null);
-        final InstanceExpression noiseInstance = new InstanceExpression("noise", null);
-        final InstanceExpression lightInstance = new InstanceExpression("light", null);
-        final InstanceExpression tempInstance = new InstanceExpression("temp", null);
-        final InstanceExpression edison1Instance = new InstanceExpression(nodeName, null);
+        final InstanceExpression lcdInstance = new InstanceExpression("lcd");
+        final InstanceExpression ledInstance = new InstanceExpression("led");
+        final InstanceExpression noiseInstance = new InstanceExpression("noise");
+        final InstanceExpression lightInstance = new InstanceExpression("light");
+        final InstanceExpression tempInstance = new InstanceExpression("temp");
+        final InstanceExpression edison1Instance = new InstanceExpression(nodeName);
         return abstractCommands
                 .addCommand(new InstanceCommand(nodeName, new TypeExpression(null, "JavascriptNode", new VersionExpression(533), null)))
                 .addCommand(new InstanceCommand("lcd", new TypeExpression("eu_heads", "HeadsLCDDisplayComp", new VersionExpression(2), null)))
@@ -76,25 +76,25 @@ public class RealWorldTest {
     }
 
     private Commands forLoop(Commands commands, String nodeName, InstanceExpression mainGroupInstance, InstanceExpression edison1) {
-        final InstanceExpression webInstance = new InstanceExpression(nodeName, null);
+        final InstanceExpression webInstance = new InstanceExpression(nodeName);
         final Commands initWebNode = commands
                 .addCommand(new InstanceCommand(nodeName, new TypeExpression(null, "JavascriptNode", new VersionExpression(533), null)))
                 .addCommand(new InstanceCommand("chart1", new TypeExpression(null, "Chart", new VersionExpression(2), null)))
                 .addCommand(new InstanceCommand("chart2", new TypeExpression(null, "Chart", new VersionExpression(2), null)))
                 .addCommand(new InstanceCommand("chart3", new TypeExpression(null, "Chart", new VersionExpression(2), null)))
                 .addCommand(new AddCommand(MODEL_ROOT, webInstance))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart1", null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart2", null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart3", null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart1")))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart2")))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression(nodeName + ":chart3")))
                 .addCommand(new AttachCommand(mainGroupInstance, webInstance));
-        final Commands ret = bindByChan(initWebNode, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart2", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":temp", null), false, "out"), "chan", "edison1Temp");
-        final Commands ret1 = bindByChan(ret, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart3", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":light", null), false, "out"), "chan1", "edison1Light");
-        final Commands ret2 = bindByChan(ret1, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart1", null), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":noise", null), false, "out"), "chan2", "edison1Noise");
+        final Commands ret = bindByChan(initWebNode, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart2"), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":temp"), false, "out"), "chan", "edison1Temp");
+        final Commands ret1 = bindByChan(ret, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart3"), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":light"), false, "out"), "chan1", "edison1Light");
+        final Commands ret2 = bindByChan(ret1, new PortPathExpression(new InstanceExpression(webInstance.instanceName + ":chart1"), true, "input"), new PortPathExpression(new InstanceExpression(edison1.instanceName + ":noise"), false, "out"), "chan2", "edison1Noise");
         return ret2;
     }
 
     private Commands bindByChan(final Commands initWebNode, final PortPathExpression port0, final PortPathExpression port1, final String chanName, final String uuid) {
-        final InstanceExpression chanInstance = new InstanceExpression(chanName, null);
+        final InstanceExpression chanInstance = new InstanceExpression(chanName);
         return initWebNode
                 .addCommand(new InstanceCommand(chanName, new TypeExpression(null, "RemoteWSChan", new VersionExpression(5), null)))
                 .addCommand(new AddCommand(MODEL_ROOT, chanInstance))

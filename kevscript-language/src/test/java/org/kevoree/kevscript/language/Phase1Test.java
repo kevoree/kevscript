@@ -35,9 +35,9 @@ public class Phase1Test {
     public void testAdd0() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", new VersionExpression(1), null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", null)))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0")))
                 .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1")));
         fileTestUtil.analyzeDirectory(expected, "phase1/add_0");
     }
 
@@ -51,7 +51,7 @@ public class Phase1Test {
     @Test
     public void testLetRec1() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:g", null), "c", null), "a"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:g"), "c", null), "a"));
         fileTestUtil.analyzeDirectory(expected, "phase1/let/rec1");
     }
 
@@ -71,7 +71,7 @@ public class Phase1Test {
 
     @Test
     public void testLetArray() throws Exception {
-        final DictionaryPathExpression dicPathExpr = new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null);
+        final DictionaryPathExpression dicPathExpr = new DictionaryPathExpression(new InstanceExpression("x:y"), "d", null);
         final Commands expected = new Commands()
                 .addCommand(new SetCommand(dicPathExpr, "a"))
                 .addCommand(new SetCommand(dicPathExpr, "b"))
@@ -82,17 +82,17 @@ public class Phase1Test {
     @Test
     public void testLetObjects() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "2"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "e", null), "3"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y"), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y"), "e", null), "3"));
         fileTestUtil.analyzeDirectory(expected, "phase1/let/objects");
     }
 
     @Test
     public void testLetArrayObject() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "d", null), "2"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "e", null), "a"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y", null), "f", null), "1"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y"), "d", null), "2"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y"), "e", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("x:y"), "f", null), "1"));
         fileTestUtil.analyzeDirectory(expected, "phase1/let/array_object");
     }
 
@@ -100,8 +100,8 @@ public class Phase1Test {
     @Test
     public void testMoveTest1() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b", null)))
-                .addCommand(new MoveCommand(new InstanceExpression("a:b", null), new InstanceExpression("b:b", null)));
+                .addCommand(new MoveCommand(new InstanceExpression("a"), new InstanceExpression("b")))
+                .addCommand(new MoveCommand(new InstanceExpression("a:b"), new InstanceExpression("b:b")));
         fileTestUtil.analyzeDirectory(expected, "phase1/move/test1");
     }
 
@@ -109,8 +109,8 @@ public class Phase1Test {
     public void testMoveTest2() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b", null)))
-                .addCommand(new MoveCommand(new InstanceExpression("a:b", null), new InstanceExpression("test:b", null)));
+                .addCommand(new MoveCommand(new InstanceExpression("a"), new InstanceExpression("b")))
+                .addCommand(new MoveCommand(new InstanceExpression("a:b"), new InstanceExpression("test:b")));
         fileTestUtil.analyzeDirectory(expected, "phase1/move/test2");
     }
 
@@ -118,32 +118,32 @@ public class Phase1Test {
     public void testMoveTest3() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "Ticker", null, null)))
-                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("b:b", null)))
-                .addCommand(new MoveCommand(new InstanceExpression("a", null), new InstanceExpression("test", null)));
+                .addCommand(new MoveCommand(new InstanceExpression("a"), new InstanceExpression("b:b")))
+                .addCommand(new MoveCommand(new InstanceExpression("a"), new InstanceExpression("test")));
         fileTestUtil.analyzeDirectory(expected, "phase1/move/test3");
     }
 
     @Test
     public void testNativeFunctionReturnArray() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "0.0"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "10.0"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "20.0"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "0.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "10.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "20.0"));
         fileTestUtil.analyzeDirectory(expected, "phase1/native_function/return_array");
     }
 
     @Test
     public void testNativeFunctionReturnObject() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "0.0"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "x", null), "100"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "0.0"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "x", null), "100"));
         fileTestUtil.analyzeDirectory(expected, "phase1/native_function/return_object");
     }
 
     @Test
     public void testNativeFunctionTest1() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("a", null), "b", null), "81.0"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("a"), "b", null), "81.0"));
         fileTestUtil.analyzeDirectory(expected, "phase1/native_function/test1");
     }
 
@@ -154,7 +154,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new NetInitCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new NetInitCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-init/test1");
     }
 
@@ -165,7 +165,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new NetInitCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new NetInitCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-init/test2");
     }
 
@@ -190,7 +190,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new NetMergeCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new NetMergeCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-merge/test1");
     }
 
@@ -202,7 +202,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new MetaMergeCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new MetaMergeCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/meta-merge/test1");
     }
 
@@ -213,7 +213,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new MetaMergeCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new MetaMergeCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/meta-merge/test2");
     }
 
@@ -224,7 +224,7 @@ public class Phase1Test {
         wlan0Value.put("ip", new StringExpression("192.168.1.1"));
         network.put("wlan0", wlan0Value);
         final Commands expected = new Commands()
-                .addCommand(new NetMergeCommand(new InstanceExpression("node0", null), network));
+                .addCommand(new NetMergeCommand(new InstanceExpression("node0"), network));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-merge/test2");
     }
 
@@ -264,9 +264,9 @@ public class Phase1Test {
         keys2.add("c");
         keys2.add("d.e.f");
         final Commands expected = new Commands()
-                .addCommand(new NetRemoveCommand(new InstanceExpression("node0", null), keys))
+                .addCommand(new NetRemoveCommand(new InstanceExpression("node0"), keys))
                 .addCommand(new InstanceCommand("node2", new TypeExpression(null, "DotnetNode", null, null)))
-                .addCommand(new NetRemoveCommand(new InstanceExpression("node2", null), keys2));
+                .addCommand(new NetRemoveCommand(new InstanceExpression("node2"), keys2));
         fileTestUtil.analyzeDirectory(expected, "phase1/net-remove/test1");
     }
 
@@ -278,15 +278,15 @@ public class Phase1Test {
         keys2.add("c");
         keys2.add("d.e.f");
         final Commands expected = new Commands()
-                .addCommand(new MetaRemoveCommand(new InstanceExpression("node0", null), keys))
+                .addCommand(new MetaRemoveCommand(new InstanceExpression("node0"), keys))
                 .addCommand(new InstanceCommand("node2", new TypeExpression(null, "DotnetNode", null, null)))
-                .addCommand(new MetaRemoveCommand(new InstanceExpression("node2", null), keys2));
+                .addCommand(new MetaRemoveCommand(new InstanceExpression("node2"), keys2));
         fileTestUtil.analyzeDirectory(expected, "phase1/meta-remove/test1");
     }
 
     @Test
     public void testFor() throws Exception {
-        final InstanceExpression nodeInstance = new InstanceExpression("node", null);
+        final InstanceExpression nodeInstance = new InstanceExpression("node");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node", new TypeExpression(null, "JavaNode", new VersionExpression(0), null)))
                 .addCommand(new AddCommand(MODEL_ROOT, nodeInstance))
@@ -302,7 +302,7 @@ public class Phase1Test {
 
     @Test
     public void testFunctionReturn() throws Exception {
-        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
                 .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
@@ -312,25 +312,25 @@ public class Phase1Test {
 
     @Test
     public void testImportByFilesNonQualifiedTest1() throws Exception {
-        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "ok"));
         fileTestUtil.analyzeDirectory(expected, "phase1/import_by_files/non_qualified/test1");
     }
 
     @Test
     public void testImportByFilesNonQualifiedTest2() throws Exception {
-        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "ok"));
         fileTestUtil.analyzeDirectory(expected, "phase1/import_by_files/non_qualified/test2");
     }
 
     @Test
     public void testImportByFilesQualifiedTest1() throws Exception {
-        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "ok"));
         fileTestUtil.analyzeDirectory(expected, "phase1/import_by_files/qualified/test1");
     }
 
     @Test
     public void testImportByFilesQualifiedTest2() throws Exception {
-        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "ok"));
+        final Commands expected = new Commands().addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "ok"));
         fileTestUtil.analyzeDirectory(expected, "phase1/import_by_files/qualified/test2");
     }
 
@@ -422,21 +422,21 @@ public class Phase1Test {
     public void testForFunctionReturn() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0", null)))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node0", null), "dico", null), "1"))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node0")))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node0"), "dico", null), "1"))
                 .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1", null)))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node1", null), "dico", null), "1"))
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node1")))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node1"), "dico", null), "1"))
                 .addCommand(new InstanceCommand("node2", new TypeExpression(null, "JavaNode", null, null)))
-                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node2", null)))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node2", null), "dico", null), "1"));
+                .addCommand(new AddCommand(MODEL_ROOT, new InstanceExpression("node2")))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("node2"), "dico", null), "1"));
 
         fileTestUtil.analyzeDirectory(expected, "phase1/for_function_return");
     }
 
     @Test
     public void testFunction() throws Exception {
-        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavascriptNode", new VersionExpression(1), null)))
                 .addCommand(new AddCommand(MODEL_ROOT, instanceNode0))
@@ -483,12 +483,12 @@ public class Phase1Test {
         final TypeExpression typeJavaNodeV42 = new TypeExpression(null, "JavaNode", new VersionExpression(42), null);
         final TypeExpression typeWSGroup = new TypeExpression(null, "WSGroup", null, null);
         final TypeExpression typeWSGroup2 = new TypeExpression(null, "WSGroup", new VersionExpression(2), new ObjectDeclExpression());
-        final InstanceExpression instanceNode0 = new InstanceExpression("node0", null);
-        final InstanceExpression instanceNode1 = new InstanceExpression("node1", null);
-        final InstanceExpression instanceNode3 = new InstanceExpression("node3", null);
-        final InstanceExpression instanceGroup0 = new InstanceExpression("group0", null);
-        final InstanceExpression instanceGroup1 = new InstanceExpression("group1", null);
-        final InstanceExpression instanceGroup2 = new InstanceExpression("group2", null);
+        final InstanceExpression instanceNode0 = new InstanceExpression("node0");
+        final InstanceExpression instanceNode1 = new InstanceExpression("node1");
+        final InstanceExpression instanceNode3 = new InstanceExpression("node3");
+        final InstanceExpression instanceGroup0 = new InstanceExpression("group0");
+        final InstanceExpression instanceGroup1 = new InstanceExpression("group1");
+        final InstanceExpression instanceGroup2 = new InstanceExpression("group2");
         Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", typeJavaNode))
                 .addCommand(new InstanceCommand("node1", typeJavaNode))
@@ -523,11 +523,11 @@ public class Phase1Test {
         final TypeExpression typeJavaNode = new TypeExpression(null, "JavaNode", null, null);
         final TypeExpression typeJsNode = new TypeExpression(null, "JsNode", null, null);
         final TypeExpression typeWSChan = new TypeExpression(null, "WSChan", null, null);
-        final InstanceExpression chanInstance = new InstanceExpression("chan0", null);
-        final InstanceExpression node0Instance = new InstanceExpression("node0", null);
-        final InstanceExpression node1Instance = new InstanceExpression("node1", null);
-        final InstanceExpression node0CompInstance = new InstanceExpression("node0:comp1", null);
-        final InstanceExpression node1CompInstance = new InstanceExpression("node1:comp1", null);
+        final InstanceExpression chanInstance = new InstanceExpression("chan0");
+        final InstanceExpression node0Instance = new InstanceExpression("node0");
+        final InstanceExpression node1Instance = new InstanceExpression("node1");
+        final InstanceExpression node0CompInstance = new InstanceExpression("node0:comp1");
+        final InstanceExpression node1CompInstance = new InstanceExpression("node1:comp1");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", typeJavaNode))
                 .addCommand(new InstanceCommand("node1", typeJsNode))
@@ -576,8 +576,8 @@ public class Phase1Test {
 
     @Test
     public void testDetach() throws Exception {
-        final InstanceExpression node0 = new InstanceExpression("node0", null);
-        final InstanceExpression group0 = new InstanceExpression("group0", null);
+        final InstanceExpression node0 = new InstanceExpression("node0");
+        final InstanceExpression group0 = new InstanceExpression("group0");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
                 .addCommand(new InstanceCommand("group0", new TypeExpression(null, "WSGroup", null, null)))
@@ -591,22 +591,22 @@ public class Phase1Test {
     public void testRemoveManyInstances() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", new VersionExpression(2), null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("test", null)));
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b")))
+                .addCommand(new RemoveCommand(new InstanceExpression("b")))
+                .addCommand(new RemoveCommand(new InstanceExpression("test")));
         fileTestUtil.analyzeDirectory(expected, "phase1/remove/many_instances");
     }
 
     @Test
     public void testRemoveSingleInstance() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b")))
+                .addCommand(new RemoveCommand(new InstanceExpression("b")))
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("test", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("a:b", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("b", null)))
-                .addCommand(new RemoveCommand(new InstanceExpression("test", null)));
+                .addCommand(new RemoveCommand(new InstanceExpression("test")))
+                .addCommand(new RemoveCommand(new InstanceExpression("a:b")))
+                .addCommand(new RemoveCommand(new InstanceExpression("b")))
+                .addCommand(new RemoveCommand(new InstanceExpression("test")));
         fileTestUtil.analyzeDirectory(expected, "phase1/remove/single_instance");
     }
 
@@ -619,7 +619,7 @@ public class Phase1Test {
     @Test
     public void testFirstOrderFunction() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "d"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "d"));
         fileTestUtil.analyzeDirectory(expected, "phase1/first_order_function");
     }
 
@@ -639,9 +639,9 @@ public class Phase1Test {
     public void testStartTest1() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
-                .addCommand(new StartCommand(new InstanceExpression("a", null)))
-                .addCommand(new StartCommand(new InstanceExpression("b:c", null)))
-                .addCommand(new StartCommand(new InstanceExpression("test", null)));
+                .addCommand(new StartCommand(new InstanceExpression("a")))
+                .addCommand(new StartCommand(new InstanceExpression("b:c")))
+                .addCommand(new StartCommand(new InstanceExpression("test")));
         fileTestUtil.analyzeDirectory(expected, "phase1/start/test1");
     }
 
@@ -649,17 +649,17 @@ public class Phase1Test {
     public void testStopTest1() throws Exception {
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("test", new TypeExpression(null, "WSGroup", null, null)))
-                .addCommand(new StopCommand(new InstanceExpression("a", null)))
-                .addCommand(new StopCommand(new InstanceExpression("b:c", null)))
-                .addCommand(new StopCommand(new InstanceExpression("test", null)));
+                .addCommand(new StopCommand(new InstanceExpression("a")))
+                .addCommand(new StopCommand(new InstanceExpression("b:c")))
+                .addCommand(new StopCommand(new InstanceExpression("test")));
         fileTestUtil.analyzeDirectory(expected, "phase1/stop/test1");
     }
 
     @Test
     public void testUnbind() throws Exception {
-        final InstanceExpression node0 = new InstanceExpression("node0", null);
-        final InstanceExpression node1 = new InstanceExpression("node1", null);
-        final InstanceExpression chan0 = new InstanceExpression("chan0", null);
+        final InstanceExpression node0 = new InstanceExpression("node0");
+        final InstanceExpression node1 = new InstanceExpression("node1");
+        final InstanceExpression chan0 = new InstanceExpression("chan0");
         final Commands expected = new Commands()
                 .addCommand(new InstanceCommand("node0", new TypeExpression(null, "JavaNode", null, null)))
                 .addCommand(new InstanceCommand("node1", new TypeExpression(null, "JSNode", null, null)))
@@ -694,16 +694,16 @@ public class Phase1Test {
     @Test
     public void testVariableScope() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "a"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "a"));
         fileTestUtil.analyzeDirectory(expected, "/phase1/variable_scope");
     }
 
     @Test
     public void testValueAfterFunctionReturn() throws Exception {
         final Commands expected = new Commands()
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "w", null), "a"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "x", null), "a"))
-                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v", null), "z", null), "b"));
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "w", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "x", null), "a"))
+                .addCommand(new SetCommand(new DictionaryPathExpression(new InstanceExpression("u:v"), "z", null), "b"));
 
         this.fileTestUtil.validateFile(expected, "/phase1", "value_after_function_return.kevs");
     }
@@ -734,7 +734,7 @@ public class Phase1Test {
 
     @Test
     public void testConcat() throws Exception {
-        final InstanceExpression instance = new InstanceExpression("u:v", null);
+        final InstanceExpression instance = new InstanceExpression("u:v");
         final DictionaryPathExpression dicPathExpr = new DictionaryPathExpression(instance, "w", null);
         final Commands expected = new Commands()
                 .addCommand(new SetCommand(dicPathExpr, "ab"))

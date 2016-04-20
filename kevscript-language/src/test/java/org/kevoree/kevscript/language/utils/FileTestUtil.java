@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class FileTestUtil {
 
-    public final static InstanceExpression MODEL_ROOT = new InstanceExpression("/", null);
+    public final static InstanceExpression MODEL_ROOT = new InstanceExpression("/");
 
     public String pathToString(String name1) throws IOException {
         final InputStream newKev = getClass().getResourceAsStream(name1);

@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language.visitors.helper;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.kevoree.kevscript.KevScriptParser.IdentifierBasicIdentifierContext;
 import org.kevoree.kevscript.KevScriptParser.IdentifierListContext;
 import org.kevoree.kevscript.KevScriptParser.InstancePathContext;
@@ -9,8 +8,10 @@ import org.kevoree.kevscript.language.KevscriptInterpreter;
 import org.kevoree.kevscript.language.context.Context;
 import org.kevoree.kevscript.language.excpt.ResourceNotFoundException;
 import org.kevoree.kevscript.language.excpt.WrongTypeException;
-import org.kevoree.kevscript.language.expressions.Expression;
-import org.kevoree.kevscript.language.expressions.finalexp.*;
+import org.kevoree.kevscript.language.expressions.finalexp.FinalExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.NullExpression;
+import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
 import org.kevoree.kevscript.language.expressions.nonfinalexp.IdentifierExpression;
 import org.kevoree.kevscript.language.utils.StringUtils;
 import org.kevoree.kevscript.language.utils.UrlDownloader;
@@ -47,9 +48,9 @@ public class KevscriptHelper {
         final FinalExpression instanceExpr = new ExpressionVisitor(this.context).visit(ctx);
         InstanceExpression instance;
         if (instanceExpr == null) {
-            instance = new InstanceExpression(ctx.getText(), null);
+            instance = new InstanceExpression(ctx.getText());
         } else {
-            instance = new InstanceExpression(instanceExpr.toText(), null);
+            instance = new InstanceExpression(instanceExpr.toText());
         }
 
         return instance;
@@ -140,7 +141,7 @@ public class KevscriptHelper {
             // reference to a component via its node, might be found in the context or later in the CDN
             final InstanceExpression nodeInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(0));
             final InstanceExpression componentInstance = this.getInstanceFromIdentifierContext(instancePathContext.identifier(1));
-            ret = new InstanceExpression(nodeInstance.instanceName + ":" + componentInstance.instanceName, componentInstance.typeExpr);
+            ret = new InstanceExpression(nodeInstance.instanceName + ":" + componentInstance.instanceName);
         }
         return ret;
     }
@@ -151,47 +152,13 @@ public class KevscriptHelper {
         final InstanceExpression ret;
 
         if ((nodeInstance == null) && (node instanceof IdentifierBasicIdentifierContext)) {
-            ret = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
+            ret = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText());
         } else {
-            final String nodeName = nodeInstance.instanceName;
-            final Long nodeVersion = this.convertVersionToLong(nodeInstance.typeExpr.versionExpr, node);
-            final String instanceTypeDefName = nodeInstance.typeExpr.name;
-            final VersionExpression versionExpr;
-            if (nodeVersion != null) {
-                versionExpr = new VersionExpression(nodeVersion);
-            } else {
-                versionExpr = null;
-            }
-            final TypeExpression typeExpr = new TypeExpression(null, instanceTypeDefName, versionExpr, null);
-            ret = new InstanceExpression(nodeName, typeExpr);
+            ret = new InstanceExpression(nodeInstance.instanceName);
         }
         return ret;
     }
 
-    public Long convertVersionToLong(final Expression expression, final ParserRuleContext ctx) {
-
-        final Long versionValue;
-        if (expression instanceof VersionExpression) {
-            versionValue = ((VersionExpression) expression).version;
-        } else if (expression != null) {
-            final FinalExpression version = context.lookup(expression, FinalExpression.class, ctx);
-            if (version instanceof StringExpression) {
-                versionValue = Long.parseLong(((StringExpression) version).text);
-            } else if (version instanceof InstanceExpression) {
-                final VersionExpression instanceTypeDefVersion = ((InstanceExpression) version).typeExpr.versionExpr;
-                if (instanceTypeDefVersion != null) {
-                    versionValue = instanceTypeDefVersion.version;
-                } else {
-                    versionValue = null;
-                }
-            } else {
-                throw new WrongTypeException(ctx, FinalExpression.class, null);
-            }
-        } else {
-            versionValue = null;
-        }
-        return versionValue;
-    }
 
     public InstanceExpression getInstanceExpressionFromContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
@@ -201,13 +168,13 @@ public class KevscriptHelper {
         } else if (nodeExpression instanceof InstanceExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
         } else if (nodeExpression == null) {
-            nodeInstance = new InstanceExpression(node.getText(), null);
+            nodeInstance = new InstanceExpression(node.getText());
         } else {
             throw new WrongTypeException(node, InstanceExpression.class, null);
         }
         final InstanceExpression nodeInstanceExpression;
         if (nodeInstance == null && node instanceof IdentifierBasicIdentifierContext) {
-            nodeInstanceExpression = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText(), null);
+            nodeInstanceExpression = new InstanceExpression(((IdentifierBasicIdentifierContext) node).basicIdentifier().getText());
         } else {
             nodeInstanceExpression = nodeInstance;
         }

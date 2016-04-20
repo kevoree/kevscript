@@ -89,7 +89,7 @@ public class TestInterpretation {
         Commands expected = new Commands();
         TypeExpression typeExpr = new TypeExpression(null, "JavascriptNode", null, null);
         expected.addCommand(new InstanceCommand("otherName", typeExpr));
-        expected.addCommand(new AddCommand(new InstanceExpression("/", null), new InstanceExpression("otherName", null)));
+        expected.addCommand(new AddCommand(new InstanceExpression("/"), new InstanceExpression("otherName")));
 
         final KevscriptInterpreter interpreter = new KevscriptInterpreter();
         final Commands cmds = interpreter.interpret(script.toString(), new KevscriptVisitor(null));
@@ -105,7 +105,7 @@ public class TestInterpretation {
         Commands cmds = new Commands();
         TypeExpression typeExpr = new TypeExpression(null, "JavascriptNode", null, null);
         cmds.addCommand(new InstanceCommand("otherName", typeExpr));
-        cmds.addCommand(new AddCommand(new InstanceExpression("/", null), new InstanceExpression("otherName", null)));
+        cmds.addCommand(new AddCommand(new InstanceExpression("/"), new InstanceExpression("otherName")));
 
         this.test(script.toString(), cmds);
     }
@@ -116,7 +116,7 @@ public class TestInterpretation {
         script.append("add node0 comp0\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new AddCommand(new InstanceExpression("node0", null), new InstanceExpression("comp0", null)));
+        cmds.addCommand(new AddCommand(new InstanceExpression("node0"), new InstanceExpression("comp0")));
 
         this.test(script.toString(), cmds);
     }
@@ -127,8 +127,8 @@ public class TestInterpretation {
         script.append("add node0 [comp0, node1:comp1]\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new AddCommand(new InstanceExpression("node0", null), new InstanceExpression("comp0", null)));
-        cmds.addCommand(new AddCommand(new InstanceExpression("node0", null), new InstanceExpression("node1:comp1", null)));
+        cmds.addCommand(new AddCommand(new InstanceExpression("node0"), new InstanceExpression("comp0")));
+        cmds.addCommand(new AddCommand(new InstanceExpression("node0"), new InstanceExpression("node1:comp1")));
 
         this.test(script.toString(), cmds);
     }
@@ -139,7 +139,7 @@ public class TestInterpretation {
         script.append("set node0#param = 'value'\n");
 
         Commands cmds = new Commands();
-        InstanceExpression instance = new InstanceExpression("node0", null);
+        InstanceExpression instance = new InstanceExpression("node0");
         DictionaryPathExpression paramExpr = new DictionaryPathExpression(instance, "param", null);
         cmds.addCommand(new SetCommand(paramExpr, "value"));
 
@@ -152,7 +152,7 @@ public class TestInterpretation {
         script.append("set node0:comp0#param = 'value'\n");
 
         Commands cmds = new Commands();
-        InstanceExpression instance = new InstanceExpression("node0:comp0", null);
+        InstanceExpression instance = new InstanceExpression("node0:comp0");
         DictionaryPathExpression paramExpr = new DictionaryPathExpression(instance, "param", null);
         cmds.addCommand(new SetCommand(paramExpr, "value"));
 
@@ -166,7 +166,7 @@ public class TestInterpretation {
         script.append("set comp#param = 'value'\n");
 
         Commands cmds = new Commands();
-        InstanceExpression instance = new InstanceExpression("comp", null);
+        InstanceExpression instance = new InstanceExpression("comp");
         DictionaryPathExpression paramExpr = new DictionaryPathExpression(instance, "param", null);
         TypeExpression typeExpr = new TypeExpression(null, "Ticker", null, null);
         cmds.addCommand(new InstanceCommand("comp", typeExpr));
@@ -197,8 +197,8 @@ public class TestInterpretation {
         script.append("move node0 node1:comp0\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new MoveCommand(new InstanceExpression("node0", null),
-                new InstanceExpression("node1:comp0", null)));
+        cmds.addCommand(new MoveCommand(new InstanceExpression("node0"),
+                new InstanceExpression("node1:comp0")));
 
         this.test(script.toString(), cmds);
     }
@@ -209,9 +209,9 @@ public class TestInterpretation {
         script.append("move node0 [comp0, node1:comp1]\n");
 
         Commands cmds = new Commands();
-        InstanceExpression target = new InstanceExpression("node0", null);
-        cmds.addCommand(new MoveCommand(target, new InstanceExpression("comp0", null)));
-        cmds.addCommand(new MoveCommand(target, new InstanceExpression("node1:comp1", null)));
+        InstanceExpression target = new InstanceExpression("node0");
+        cmds.addCommand(new MoveCommand(target, new InstanceExpression("comp0")));
+        cmds.addCommand(new MoveCommand(target, new InstanceExpression("node1:comp1")));
 
         this.test(script.toString(), cmds);
     }
@@ -222,7 +222,7 @@ public class TestInterpretation {
         script.append("detach node0\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new DetachCommand(new InstanceExpression("node0", null)));
+        cmds.addCommand(new DetachCommand(new InstanceExpression("node0")));
 
         this.test(script.toString(), cmds);
     }
@@ -233,8 +233,8 @@ public class TestInterpretation {
         script.append("detach [node0, node1]\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new DetachCommand(new InstanceExpression("node0", null)));
-        cmds.addCommand(new DetachCommand(new InstanceExpression("node1", null)));
+        cmds.addCommand(new DetachCommand(new InstanceExpression("node0")));
+        cmds.addCommand(new DetachCommand(new InstanceExpression("node1")));
 
         this.test(script.toString(), cmds);
     }
@@ -245,8 +245,8 @@ public class TestInterpretation {
         script.append("start [node0, node1]\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new StartCommand(new InstanceExpression("node0", null)));
-        cmds.addCommand(new StartCommand(new InstanceExpression("node1", null)));
+        cmds.addCommand(new StartCommand(new InstanceExpression("node0")));
+        cmds.addCommand(new StartCommand(new InstanceExpression("node1")));
 
         this.test(script.toString(), cmds);
     }
@@ -257,8 +257,8 @@ public class TestInterpretation {
         script.append("stop [node0, node1]\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new StopCommand(new InstanceExpression("node0", null)));
-        cmds.addCommand(new StopCommand(new InstanceExpression("node1", null)));
+        cmds.addCommand(new StopCommand(new InstanceExpression("node0")));
+        cmds.addCommand(new StopCommand(new InstanceExpression("node1")));
 
         this.test(script.toString(), cmds);
     }
@@ -269,8 +269,8 @@ public class TestInterpretation {
         script.append("unbind chan node0:comp<-input\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new UnbindCommand(new InstanceExpression("chan", null),
-                new PortPathExpression(new InstanceExpression("node0:comp", null), true, "input")));
+        cmds.addCommand(new UnbindCommand(new InstanceExpression("chan"),
+                new PortPathExpression(new InstanceExpression("node0:comp"), true, "input")));
 
         this.test(script.toString(), cmds);
     }
@@ -284,8 +284,8 @@ public class TestInterpretation {
         script.append("unbindPort(node0:comp<-input)\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new UnbindCommand(new InstanceExpression("chan", null),
-                new PortPathExpression(new InstanceExpression("node0:comp", null), true, "input")));
+        cmds.addCommand(new UnbindCommand(new InstanceExpression("chan"),
+                new PortPathExpression(new InstanceExpression("node0:comp"), true, "input")));
 
         this.test(script.toString(), cmds);
     }
@@ -296,8 +296,8 @@ public class TestInterpretation {
         script.append("bind chan node0:comp->output\n");
 
         Commands cmds = new Commands();
-        cmds.addCommand(new BindCommand(new InstanceExpression("chan", null),
-                new PortPathExpression(new InstanceExpression("node0:comp", null), false, "output")));
+        cmds.addCommand(new BindCommand(new InstanceExpression("chan"),
+                new PortPathExpression(new InstanceExpression("node0:comp"), false, "output")));
 
         this.test(script.toString(), cmds);
     }
@@ -309,7 +309,7 @@ public class TestInterpretation {
 
         Commands cmds = new Commands();
         ObjectDeclExpression objDecl = new ObjectDeclExpression();
-        cmds.addCommand(new MetaInitCommand(new InstanceExpression("node0", null),
+        cmds.addCommand(new MetaInitCommand(new InstanceExpression("node0"),
                 objDecl));
 
         this.test(script.toString(), cmds);
@@ -323,7 +323,7 @@ public class TestInterpretation {
         Commands cmds = new Commands();
         ObjectDeclExpression objDecl = new ObjectDeclExpression();
         objDecl.put("foo", new StringExpression("bar"));
-        cmds.addCommand(new MetaInitCommand(new InstanceExpression("node0", null),
+        cmds.addCommand(new MetaInitCommand(new InstanceExpression("node0"),
                 objDecl));
 
         this.test(script.toString(), cmds);

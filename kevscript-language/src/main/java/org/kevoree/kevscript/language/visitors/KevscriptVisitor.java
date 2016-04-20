@@ -73,25 +73,25 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             final InstanceExpression targetExpr = exprVisitor.visitInstancePath(ctx.target);
             if (targetExpr == null) {
                 // unable to find a reference for this identifier => use it literally
-                target = new InstanceExpression(ctx.target.getText(), null);
+                target = new InstanceExpression(ctx.target.getText());
             } else {
                 if (targetExpr.instanceName.contains(":")) {
                     // TODO create a dedicated exception
                     throw new IllegalArgumentException("Cannot add instances to component " + targetExpr.toText());
                 } else {
-                    target = new InstanceExpression(targetExpr.toText(), null);
+                    target = new InstanceExpression(targetExpr.toText());
                 }
             }
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
                 InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
-                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
+                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText())));
             }
         } else {
-            target = new InstanceExpression("/", null);
+            target = new InstanceExpression("/");
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
                 //final InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);
                 final InstanceExpression sourceExpr = helper.getInstanceElement(sourcesCtx);
-                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText(), null)));
+                cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText())));
             }
         }
 
@@ -105,7 +105,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final List<InstancePathContext> instancePathContextList = ctx.instanceList().instances;
         for (final InstancePathContext iPath : instancePathContextList) {
             final InstanceExpression instanceExpr = new ExpressionVisitor(this.context).visitInstancePath(iPath);
-            commands.addCommand(new RemoveCommand(new InstanceExpression(instanceExpr.instanceName, null)));
+            commands.addCommand(new RemoveCommand(new InstanceExpression(instanceExpr.instanceName)));
         }
         return commands;
     }
@@ -119,7 +119,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         // instance creation using the identifier name(s) for the name
         for (BasicIdentifierContext id : ctx.varIdentifierList().basicIdentifier()) {
             final InstanceExpression instanceExpr;
-            instanceExpr = new InstanceExpression(id.getText(), typeExpr);
+            instanceExpr = new InstanceExpression(id.getText());
             this.context.addExpression(instanceExpr.instanceName, instanceExpr);
             cmds.addCommand(new InstanceCommand(id.getText(), typeExpr));
         }
@@ -139,12 +139,12 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
             // instance creation using an expression for the name
             final FinalExpression nameExpr = new ExpressionVisitor(context).visit(ctx.instanceName);
             final String instanceName = nameExpr.toText();
-            final InstanceExpression instanceExpr = new InstanceExpression(instanceName, typeExpr);
+            final InstanceExpression instanceExpr = new InstanceExpression(instanceName);
             this.context.addExpression(instanceVarName, instanceExpr);
             cmds.addCommand(new InstanceCommand(instanceName, typeExpr));
         } else {
             // instance creation using the identifier name for the name
-            final InstanceExpression instanceExpr = new InstanceExpression(instanceVarName, typeExpr);
+            final InstanceExpression instanceExpr = new InstanceExpression(instanceVarName);
             this.context.addExpression(instanceExpr.instanceName, instanceExpr);
             cmds.addCommand(new InstanceCommand(instanceVarName, typeExpr));
         }
@@ -161,18 +161,18 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         InstanceExpression group;
         if (groupExpr == null) {
             // unable to resolve reference => using identifier as name
-            group = new InstanceExpression(ctx.groupId.getText(), null);
+            group = new InstanceExpression(ctx.groupId.getText());
         } else {
-            group = new InstanceExpression(groupExpr.toText(), null);
+            group = new InstanceExpression(groupExpr.toText());
         }
 
         final FinalExpression nodeExpr = exprVisitor.visit(ctx.nodeId);
         final InstanceExpression node;
         if (nodeExpr == null) {
             // unable to resolve reference => using identifier as name
-            node = new InstanceExpression(ctx.nodeId.getText(), null);
+            node = new InstanceExpression(ctx.nodeId.getText());
         } else {
-            node = new InstanceExpression(nodeExpr.toText(), null);
+            node = new InstanceExpression(nodeExpr.toText());
         }
 
         return new Commands().addCommand(new AttachCommand(group, node));
@@ -183,7 +183,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final Commands cmds = new Commands();
         for (final InstancePathContext iPath : ctx.instanceList().instancePath()) {
             InstanceExpression instance = new ExpressionVisitor(this.context).visitInstancePath(iPath);
-            cmds.addCommand(new DetachCommand(new InstanceExpression(instance.instanceName, null)));
+            cmds.addCommand(new DetachCommand(new InstanceExpression(instance.instanceName)));
         }
         return cmds;
     }
@@ -196,7 +196,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final InstanceExpression target = exprVisitor.visitInstancePath(ctx.instancePath());
         for (final InstancePathContext sourceCtx : ctx.instanceList().instancePath()) {
             final InstanceExpression source = exprVisitor.visitInstancePath(sourceCtx);
-            commands.addCommand(new MoveCommand(target, new InstanceExpression(source.instanceName, null)));
+            commands.addCommand(new MoveCommand(target, new InstanceExpression(source.instanceName)));
         }
 
         return commands;
@@ -208,7 +208,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         for (final InstancePathContext instancePath : ctx.instanceList().instances) {
             final InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
-            commands.addCommand(new StartCommand(new InstanceExpression(instanceExpr.instanceName, null)));
+            commands.addCommand(new StartCommand(new InstanceExpression(instanceExpr.instanceName)));
         }
         return commands;
     }
@@ -219,7 +219,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final ExpressionVisitor expressionVisitor = new ExpressionVisitor(context);
         for (final InstancePathContext instancePath : ctx.instanceList().instances) {
             final InstanceExpression instanceExpr = expressionVisitor.visitInstancePath(instancePath);
-            commands.addCommand(new StopCommand(new InstanceExpression(instanceExpr.instanceName, null)));
+            commands.addCommand(new StopCommand(new InstanceExpression(instanceExpr.instanceName)));
         }
         return commands;
     }
@@ -239,9 +239,9 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final FinalExpression chanExpr = exprVisitor.visit(ctx.chan);
         final InstanceExpression chanInstance;
         if (chanExpr == null) {
-            chanInstance = new InstanceExpression(ctx.chan.getText(), null);
+            chanInstance = new InstanceExpression(ctx.chan.getText());
         } else {
-            chanInstance = new InstanceExpression(chanExpr.toText(), null);
+            chanInstance = new InstanceExpression(chanExpr.toText());
         }
 
         final Commands cmds = new Commands();
@@ -260,14 +260,14 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
         final FinalExpression chanExpr = exprVisitor.visit(ctx.chan);
         final InstanceExpression chanInstance;
         if (chanExpr == null) {
-            chanInstance = new InstanceExpression(ctx.chan.getText(), null);
+            chanInstance = new InstanceExpression(ctx.chan.getText());
         } else {
-            chanInstance = new InstanceExpression(chanExpr.toText(), null);
+            chanInstance = new InstanceExpression(chanExpr.toText());
         }
 
         for (final PortPathContext pPath : ctx.portList().instances) {
             final PortPathExpression pExpr = exprVisitor.visitPortPath(pPath);
-            cmds.addCommand(new UnbindCommand(new InstanceExpression(chanInstance.instanceName, null), pExpr));
+            cmds.addCommand(new UnbindCommand(new InstanceExpression(chanInstance.instanceName), pExpr));
         }
 
         return cmds;
