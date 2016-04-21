@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
 
 /**
  *
@@ -41,5 +42,10 @@ public class AddCommand implements ICommand {
         int result = target != null ? target.hashCode() : 0;
         result = 31 * result + (source != null ? source.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitAddCommand(this);
     }
 }

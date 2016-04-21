@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.DictionaryPathExpression;
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
 
 /**
  *
@@ -39,5 +40,10 @@ public class SetCommand implements ICommand {
         int result = dicPathExpr != null ? dicPathExpr.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitSetCommand(this);
     }
 }

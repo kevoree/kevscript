@@ -2,6 +2,7 @@ package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.PortPathExpression;
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
 
 /**
  *
@@ -41,5 +42,10 @@ public class UnbindCommand implements ICommand {
         int result = chan != null ? chan.hashCode() : 0;
         result = 31 * result + (port != null ? port.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitUnbindCommand(this);
     }
 }

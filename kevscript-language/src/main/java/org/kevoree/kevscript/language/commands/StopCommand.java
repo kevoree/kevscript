@@ -1,6 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
 
 /**
  *
@@ -34,5 +35,10 @@ public class StopCommand implements ICommand {
     @Override
     public int hashCode() {
         return instance != null ? instance.hashCode() : 0;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitStopCommand(this);
     }
 }

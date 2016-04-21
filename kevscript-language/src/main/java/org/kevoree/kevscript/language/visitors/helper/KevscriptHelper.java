@@ -46,7 +46,7 @@ public class KevscriptHelper {
 
     public InstanceExpression processIdentifierAsInstance(final IdentifierContext ctx) {
         final FinalExpression instanceExpr = new ExpressionVisitor(this.context).visit(ctx);
-        InstanceExpression instance;
+        final InstanceExpression instance;
         if (instanceExpr == null) {
             instance = new InstanceExpression(ctx.getText());
         } else {
@@ -163,9 +163,7 @@ public class KevscriptHelper {
     public InstanceExpression getInstanceExpressionFromContext(final IdentifierContext node) {
         final FinalExpression nodeExpression = new ExpressionVisitor(context).visit(node);
         final InstanceExpression nodeInstance;
-        if (nodeExpression instanceof IdentifierExpression) {
-            nodeInstance = (InstanceExpression) nodeExpression;
-        } else if (nodeExpression instanceof InstanceExpression) {
+        if (nodeExpression instanceof IdentifierExpression || nodeExpression instanceof InstanceExpression) {
             nodeInstance = (InstanceExpression) nodeExpression;
         } else if (nodeExpression == null) {
             nodeInstance = new InstanceExpression(node.getText());

@@ -2,6 +2,7 @@ package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
 
 /**
  *
@@ -44,5 +45,10 @@ public class NetMergeCommand implements ICommand {
         int result = instance != null ? instance.hashCode() : 0;
         result = 31 * result + (network != null ? network.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitnetMergeCommand(this);
     }
 }

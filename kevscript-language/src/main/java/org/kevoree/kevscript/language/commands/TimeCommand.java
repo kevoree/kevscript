@@ -1,5 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
+import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+
 /**
  * Created by mleduc on 18/04/16.
  */
@@ -38,5 +40,10 @@ public class TimeCommand implements ICommand {
         int result = (int) (time ^ (time >>> 32));
         result = 31 * result + (commands != null ? commands.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public <T> T accept(DefaultCommandVisitor<T> visitor) {
+        return visitor.visitTimeCommand(this);
     }
 }

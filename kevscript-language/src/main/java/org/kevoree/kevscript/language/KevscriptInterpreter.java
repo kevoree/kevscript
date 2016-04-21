@@ -17,6 +17,7 @@ public class KevscriptInterpreter {
     public Commands interpreter(final String expression, final String basePath) {
         return this.interpret(expression, new KevscriptVisitor(new RootContext(basePath)));
     }
+
     public Commands interpret(final String expression, final KevscriptVisitor kevscriptVisitor) {
         final KevScriptLexer lexer = new KevScriptLexer(new ANTLRInputStream(expression));
         final KevScriptParser parser = new KevScriptParser(new CommonTokenStream(lexer));
