@@ -14,14 +14,8 @@ public abstract class DefaultCommandVisitor<T> implements ICommandsVisitor<T> {
         return mergeResults(r1, r2);
     }
 
-    protected T mergeResults(T... results) {
-        final T ret;
-        if (results == null || results.length == 0) {
-            ret = null;
-        } else {
-            ret = results[results.length - 1];
-        }
-        return ret;
+    protected T mergeResults(T t1, T t2) {
+        return t2;
     }
 
     @Override
@@ -42,10 +36,12 @@ public abstract class DefaultCommandVisitor<T> implements ICommandsVisitor<T> {
     public T visitCommands(Commands commands) {
         T ret = null;
         for (ICommand iCommand : commands) {
-            ret = iCommand.accept(this);
+            final T accept = iCommand.accept(this);
+            ret = mergeResults(ret, accept);
         }
         return ret;
     }
+
 
     @Override
     public T visitDetachCommand(DetachCommand detachCommand) {
