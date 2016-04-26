@@ -8,7 +8,7 @@ import org.kevoree.kevscript.language.utils.FileTestUtil;
 import static org.kevoree.kevscript.language.utils.FileTestUtil.MODEL_ROOT;
 
 /**
- * Created by mleduc on 19/04/16.
+ *
  */
 public class RealWorldTest {
 

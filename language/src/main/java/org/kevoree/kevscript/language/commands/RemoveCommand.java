@@ -1,10 +1,10 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
- * Created by mleduc on 17/03/16.
+ *
  */
 public class RemoveCommand implements Command {
     public final InstanceExpression instance;
@@ -21,7 +21,7 @@ public class RemoveCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitRemoveCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitRemoveCommand(this, context);
     }
 }

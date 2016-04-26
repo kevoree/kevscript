@@ -1,7 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.DictionaryPathExpression;
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
  *
@@ -24,7 +24,7 @@ public class SetCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitSetCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitSetCommand(this, context);
     }
 }

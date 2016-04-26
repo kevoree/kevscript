@@ -1,7 +1,7 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class NetRemoveCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitNetRemoveCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitNetRemoveCommand(this, context);
     }
 }

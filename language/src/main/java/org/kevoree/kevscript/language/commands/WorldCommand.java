@@ -1,9 +1,9 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
- * Created by mleduc on 18/04/16.
+ *
  */
 public class WorldCommand implements Command {
     public final long world;
@@ -23,7 +23,7 @@ public class WorldCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitWorldCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitWorldCommand(this, context);
     }
 }

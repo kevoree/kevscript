@@ -2,7 +2,7 @@ package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 import org.kevoree.kevscript.language.expressions.finalexp.ObjectDeclExpression;
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
  *
@@ -26,7 +26,7 @@ public class MetaMergeCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitMetaMergeCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitMetaMergeCommand(this, context);
     }
 }

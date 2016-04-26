@@ -1,10 +1,10 @@
 package org.kevoree.kevscript.language.commands;
 
 import org.kevoree.kevscript.language.expressions.finalexp.TypeExpression;
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
- * Created by leiko on 4/1/16.
+ *
  */
 public class InstanceCommand implements Command {
 
@@ -25,7 +25,7 @@ public class InstanceCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitInstanceCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitInstanceCommand(this, context);
     }
 }

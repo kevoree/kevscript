@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by mleduc on 02/03/16.
+ *
  */
 public class Context {
     private final Map<String, FinalExpression> mapIdentifiers;

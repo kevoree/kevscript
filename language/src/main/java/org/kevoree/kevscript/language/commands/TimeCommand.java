@@ -1,9 +1,9 @@
 package org.kevoree.kevscript.language.commands;
 
-import org.kevoree.kevscript.language.processor.visitor.DefaultCommandVisitor;
+import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 
 /**
- * Created by mleduc on 18/04/16.
+ *
  */
 public class TimeCommand implements Command {
     public final long time;
@@ -24,7 +24,7 @@ public class TimeCommand implements Command {
     }
 
     @Override
-    public <T> T accept(DefaultCommandVisitor<T> visitor) {
-        return visitor.visitTimeCommand(this);
+    public <T> void accept(CommandVisitor<T> visitor, T context) {
+        visitor.visitTimeCommand(this, context);
     }
 }
