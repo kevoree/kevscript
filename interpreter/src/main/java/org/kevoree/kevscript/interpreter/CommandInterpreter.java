@@ -1,11 +1,15 @@
 package org.kevoree.kevscript.interpreter;
 
 import org.KevoreeModel;
-import org.KevoreeView;
 import org.kevoree.*;
+import org.kevoree.kevscript.command.AddCmd;
+import org.kevoree.kevscript.command.InstanceCmd;
+import org.kevoree.kevscript.exception.AddCommandException;
+import org.kevoree.kevscript.exception.UnknownInstanceException;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.processor.visitor.CommandVisitor;
 import org.kevoree.kevscript.resolver.RegistryResolver;
+import org.kevoree.modeling.KCallback;
 
 /**
  *
@@ -33,28 +37,12 @@ public class CommandInterpreter implements CommandVisitor<ModelContext> {
 
     @Override
     public void visitInstanceCommand(InstanceCommand cmd, ModelContext context) {
-        final KevoreeView kView = this.kModel.universe(currentUniverse).time(currentTime);
-        TypeDefinition tdef = this.resolver.resolve(kView, cmd.typeExpr);
-        Instance instance = null;
-        if (tdef instanceof NodeType) {
-            instance = kView.createNode();
-        } else if (tdef instanceof ChannelType) {
-            instance = kView.createChannel();
-        } else if (tdef instanceof ComponentType) {
-            instance = kView.createComponent();
-        } else if (tdef instanceof ModelConnectorType) {
-            instance = kView.createModelConnector();
-        }
-
-        if (instance != null) {
-            instance.setName(cmd.name);
-            context.instances.put(cmd.name, instance);
-        }
+        InstanceCmd.process(cmd, context, resolver, kModel.universe(currentUniverse).time(currentTime));
     }
 
     @Override
-    public void visitAddCommand(AddCommand cmd, ModelContext context) {
-        
+    public void visitAddCommand(final AddCommand cmd, final ModelContext context) {
+        AddCmd.process(cmd, context);
     }
 
     @Override
