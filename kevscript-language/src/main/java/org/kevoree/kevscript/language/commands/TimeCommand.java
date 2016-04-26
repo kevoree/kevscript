@@ -24,25 +24,6 @@ public class TimeCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TimeCommand that = (TimeCommand) o;
-
-        if (time != that.time) return false;
-        return commands != null ? commands.equals(that.commands) : that.commands == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (time ^ (time >>> 32));
-        result = 31 * result + (commands != null ? commands.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitTimeCommand(this);
     }

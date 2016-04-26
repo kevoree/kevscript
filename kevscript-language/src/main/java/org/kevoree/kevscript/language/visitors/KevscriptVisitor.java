@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.kevoree.kevscript.KevScriptParser.*;
 
 /**
- * Created by mleduc on 01/03/16.
+ * 
  */
 public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
 
@@ -65,11 +65,10 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
     public Commands visitAdd(final AddContext ctx) {
         final Commands cmds = new Commands();
         final ExpressionVisitor exprVisitor = new ExpressionVisitor(this.context);
-        // target defaults to model root represented as '/'
         final InstanceExpression target;
 
         if (ctx.target != null) {
-            // a specific target as been given
+            // a specific target has been given
             final InstanceExpression targetExpr = exprVisitor.visitInstancePath(ctx.target);
             if (targetExpr == null) {
                 // unable to find a reference for this identifier => use it literally
@@ -87,6 +86,7 @@ public class KevscriptVisitor extends KevScriptBaseVisitor<Commands> {
                 cmds.addCommand(new AddCommand(target, new InstanceExpression(sourceExpr.toText())));
             }
         } else {
+            // target defaults to model root represented as '/'
             target = new InstanceExpression("/");
             for (InstancePathContext sourcesCtx : ctx.sources.instancePath()) {
                 //final InstanceExpression sourceExpr = exprVisitor.visitInstancePath(sourcesCtx);

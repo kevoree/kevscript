@@ -1,6 +1,5 @@
 package org.kevoree.kevscript.language;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.kevoree.kevscript.language.commands.*;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
@@ -86,14 +85,12 @@ public class TestInterpretation {
         script.append("instance node0 = 'otherName' JavascriptNode\n");
         script.append("add node0\n");
 
-        Commands expected = new Commands();
+        Commands cmds = new Commands();
         TypeExpression typeExpr = new TypeExpression(null, "JavascriptNode", null, null);
-        expected.addCommand(new InstanceCommand("otherName", typeExpr));
-        expected.addCommand(new AddCommand(new InstanceExpression("/"), new InstanceExpression("otherName")));
+        cmds.addCommand(new InstanceCommand("otherName", typeExpr));
+        cmds.addCommand(new AddCommand(new InstanceExpression("/"), new InstanceExpression("otherName")));
 
-        final KevscriptInterpreter interpreter = new KevscriptInterpreter();
-        final Commands cmds = interpreter.interpret(script.toString(), new KevscriptVisitor(null));
-        Assert.assertEquals(expected, cmds);
+        this.test(script.toString(), cmds);
     }
 
     @Test

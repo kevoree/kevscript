@@ -25,25 +25,6 @@ public class AttachCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AttachCommand that = (AttachCommand) o;
-
-        if (group != null ? !group.equals(that.group) : that.group != null) return false;
-        return node != null ? node.equals(that.node) : that.node == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = group != null ? group.hashCode() : 0;
-        result = 31 * result + (node != null ? node.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitAttachCommand(this);
     }

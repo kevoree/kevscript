@@ -26,25 +26,6 @@ public class UnbindCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UnbindCommand that = (UnbindCommand) o;
-
-        if (chan != null ? !chan.equals(that.chan) : that.chan != null) return false;
-        return port != null ? port.equals(that.port) : that.port == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = chan != null ? chan.hashCode() : 0;
-        result = 31 * result + (port != null ? port.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitUnbindCommand(this);
     }

@@ -10,6 +10,7 @@ import org.kevoree.kevscript.language.commands.InstanceCommand;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.expressions.finalexp.*;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
+import org.unitils.reflectionassert.ReflectionAssert;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,8 +51,8 @@ public class Phase0Test {
         value.put("name", new StringExpression("nodeName"));
         expression.put("node", value);
         externalContext.addExternalExpression("default", expression);
-
-        assertEquals(expected, interpret(externalContext, newStr));
+        ReflectionAssert.assertReflectionEquals(expected, interpret(externalContext, newStr));
+//        assertEquals(expected, interpret(externalContext, newStr));
     }
 
     private String addTrailingSlash(final String file) {

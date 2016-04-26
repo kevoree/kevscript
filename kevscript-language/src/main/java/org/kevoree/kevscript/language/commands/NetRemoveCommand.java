@@ -27,25 +27,6 @@ public class NetRemoveCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        NetRemoveCommand that = (NetRemoveCommand) o;
-
-        if (instance != null ? !instance.equals(that.instance) : that.instance != null) return false;
-        return keys != null ? keys.equals(that.keys) : that.keys == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = instance != null ? instance.hashCode() : 0;
-        result = 31 * result + (keys != null ? keys.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitNetRemoveCommand(this);
     }

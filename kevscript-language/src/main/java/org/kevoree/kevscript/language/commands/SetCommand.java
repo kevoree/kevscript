@@ -24,25 +24,6 @@ public class SetCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SetCommand that = (SetCommand) o;
-
-        if (dicPathExpr != null ? !dicPathExpr.equals(that.dicPathExpr) : that.dicPathExpr != null) return false;
-        return value != null ? value.equals(that.value) : that.value == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = dicPathExpr != null ? dicPathExpr.hashCode() : 0;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitSetCommand(this);
     }

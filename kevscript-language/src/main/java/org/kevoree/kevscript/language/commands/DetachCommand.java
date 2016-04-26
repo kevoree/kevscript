@@ -22,22 +22,6 @@ public class DetachCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DetachCommand that = (DetachCommand) o;
-
-        return instance != null ? instance.equals(that.instance) : that.instance == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return instance != null ? instance.hashCode() : 0;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitDetachCommand(this);
     }

@@ -27,25 +27,6 @@ public class NetInitCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        NetInitCommand that = (NetInitCommand) o;
-
-        if (instance != null ? !instance.equals(that.instance) : that.instance != null) return false;
-        return network != null ? network.equals(that.network) : that.network == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = instance != null ? instance.hashCode() : 0;
-        result = 31 * result + (network != null ? network.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitNetInitCommand(this);
     }

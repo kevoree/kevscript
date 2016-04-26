@@ -23,25 +23,6 @@ public class WorldCommand implements ICommand {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        WorldCommand that = (WorldCommand) o;
-
-        if (world != that.world) return false;
-        return commands != null ? commands.equals(that.commands) : that.commands == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (world ^ (world >>> 32));
-        result = 31 * result + (commands != null ? commands.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public <T> T accept(DefaultCommandVisitor<T> visitor) {
         return visitor.visitWorldCommand(this);
     }

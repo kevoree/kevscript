@@ -7,6 +7,7 @@ import org.kevoree.kevscript.language.commands.InstanceCommand;
 import org.kevoree.kevscript.language.commands.TimeCommand;
 import org.kevoree.kevscript.language.commands.WorldCommand;
 import org.kevoree.kevscript.language.expressions.finalexp.TypeExpression;
+import org.unitils.reflectionassert.ReflectionAssert;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class InstancesAggregationVisitorTest {
 
         final ArrayList<InstanceContext> expected = new ArrayList<>();
         expected.add(new InstanceContext(0, 0, new InstanceCommand("a", new TypeExpression(null, "JavaNode", null, null))));
-        Assert.assertEquals(expected, res);
+        ReflectionAssert.assertReflectionEquals(expected, res);
     }
 
     @Test
@@ -41,7 +42,7 @@ public class InstancesAggregationVisitorTest {
         final ArrayList<InstanceContext> expected = new ArrayList<>();
         expected.add(new InstanceContext(0, 0, new InstanceCommand("a", new TypeExpression(null, "JavaNode", null, null))));
         expected.add(new InstanceContext(0, 0, new InstanceCommand("b", new TypeExpression(null, "JavaNode", null, null))));
-        Assert.assertEquals(expected, res);
+        ReflectionAssert.assertReflectionEquals(expected, res);
     }
 
     @Test
@@ -57,7 +58,7 @@ public class InstancesAggregationVisitorTest {
         expected.add(new InstanceContext(0, 0, new InstanceCommand("a", new TypeExpression(null, "JavaNode", null, null))));
         expected.add(new InstanceContext(1, 0, new InstanceCommand("b", new TypeExpression(null, "JavaNode", null, null))));
         expected.add(new InstanceContext(0, 0, new InstanceCommand("c", new TypeExpression(null, "JavaNode", null, null))));
-        Assert.assertEquals(expected, res);
+        ReflectionAssert.assertReflectionEquals(expected, res);
     }
 
     @Test
@@ -73,6 +74,6 @@ public class InstancesAggregationVisitorTest {
         expected.add(new InstanceContext(0, 0, new InstanceCommand("a", new TypeExpression(null, "JavaNode", null, null))));
         expected.add(new InstanceContext(0, 1, new InstanceCommand("b", new TypeExpression(null, "JavaNode", null, null))));
         expected.add(new InstanceContext(0, 0, new InstanceCommand("c", new TypeExpression(null, "JavaNode", null, null))));
-        Assert.assertEquals(expected, res);
+        ReflectionAssert.assertReflectionEquals(expected, res);
     }
 }

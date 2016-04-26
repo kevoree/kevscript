@@ -6,6 +6,7 @@ import org.kevoree.kevscript.language.commands.Commands;
 import org.kevoree.kevscript.language.context.RootContext;
 import org.kevoree.kevscript.language.expressions.finalexp.InstanceExpression;
 import org.kevoree.kevscript.language.visitors.KevscriptVisitor;
+import org.unitils.reflectionassert.ReflectionAssert;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,8 @@ import static java.io.File.separatorChar;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by mleduc on 19/04/16.
+ *
+ *
  */
 public class FileTestUtil {
 
@@ -33,8 +35,8 @@ public class FileTestUtil {
         return new KevscriptInterpreter().interpret(expression, new KevscriptVisitor(new RootContext(basePath)));
     }
 
-    public void validate(final Commands expected, final String dirPath, final String fileContent) {
-        assertEquals(expected, interpretPhase1(dirPath, fileContent));
+    private void validate(final Commands expected, final String dirPath, final String fileContent) {
+        ReflectionAssert.assertReflectionEquals(expected, interpretPhase1(dirPath, fileContent));
     }
 
     public void validateFile(final Commands expected, final String dirPath, final String fileName) throws IOException {
