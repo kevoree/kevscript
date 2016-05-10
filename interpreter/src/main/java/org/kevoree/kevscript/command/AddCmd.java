@@ -38,8 +38,12 @@ public class AddCmd {
                     context.model.select("nodes[name=" + cmd.target.instanceName + "]", new KCallback<Object[]>() {
                         @Override
                         public void on(Object[] objects) {
-                            if (objects[0] != null) {
-                                processTarget(source, (Instance) objects[0]);
+                            if (objects.length == 1) {
+                                if (objects[0] != null) {
+                                    processTarget(source, (Instance) objects[0]);
+                                }
+                            } else {
+                                throw new UnknownInstanceException(cmd.target.instanceName);
                             }
                         }
                     });

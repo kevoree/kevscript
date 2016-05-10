@@ -7,43 +7,43 @@ import org.kevoree.kevscript.language.commands.*;
  */
 public interface CommandVisitor<T> {
 
-    T visitCommands(Commands cmds);
+    void visitCommands(final Commands cmds, final VisitCallback<T> callback);
 
-    void visitAddCommand(AddCommand cmd, T context);
+    void visitAddCommand(final AddCommand cmd, final T context);
 
-    void visitAttachCommand(AttachCommand cmd, T context);
+    void visitAttachCommand(final AttachCommand cmd, final T context);
 
-    void visitBindCommand(BindCommand cmd, T context);
+    void visitBindCommand(final BindCommand cmd, final T context);
 
-    void visitDetachCommand(DetachCommand cmd, T context);
+    void visitDetachCommand(final DetachCommand cmd, final T context);
 
-    void visitInstanceCommand(InstanceCommand cmd, T context);
+    void visitInstanceCommand(final InstanceCommand cmd, final T context);
 
-    void visitMetaInitCommand(MetaInitCommand cmd, T context);
+    void visitMetaInitCommand(final MetaInitCommand cmd, final T context);
 
-    void visitMetaMergeCommand(MetaMergeCommand cmd, T context);
+    void visitMetaMergeCommand(final MetaMergeCommand cmd, final T context);
 
-    void visitMetaRemoveCommand(MetaRemoveCommand cmd, T context);
+    void visitMetaRemoveCommand(final MetaRemoveCommand cmd, final T context);
 
-    void visitMoveCommand(MoveCommand cmd, T context);
+    void visitMoveCommand(final MoveCommand cmd, final T context);
 
-    void visitNetInitCommand(NetInitCommand cmd, T context);
+    void visitNetInitCommand(final NetInitCommand cmd, final T context);
 
-    void visitNetMergeCommand(NetMergeCommand cmd, T context);
+    void visitNetMergeCommand(final NetMergeCommand cmd, final T context);
 
-    void visitNetRemoveCommand(NetRemoveCommand cmd, T context);
+    void visitNetRemoveCommand(final NetRemoveCommand cmd, final T context);
 
-    void visitRemoveCommand(RemoveCommand cmd, T context);
+    void visitRemoveCommand(final RemoveCommand cmd, final T context);
 
-    void visitSetCommand(SetCommand cmd, T context);
+    void visitSetCommand(final SetCommand cmd, final T context);
 
-    void visitStartCommand(StartCommand cmd, T context);
+    void visitStartCommand(final StartCommand cmd, final T context);
 
-    void visitStopCommand(StopCommand cmd, T context);
+    void visitStopCommand(final StopCommand cmd, final T context);
 
-    void visitTimeCommand(TimeCommand cmd, T context);
+    void visitTimeCommand(final TimeCommand cmd, final T context);
 
-    void visitUnbindCommand(UnbindCommand cmd, T context);
+    void visitUnbindCommand(final UnbindCommand cmd, final T context);
 
-    void visitWorldCommand(WorldCommand cmd, T context);
+    void visitWorldCommand(final WorldCommand cmd, final T context);
 }
